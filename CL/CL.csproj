@@ -1,0 +1,435 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3AF71769-3FF8-4369-9572-7796B875C899}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LouvorJA</RootNamespace>
+    <AssemblyName>Coletanea-de-Louvor</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Coletânea de Louvor\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\Coletânea de Louvor\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>none</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>coletanea.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FormSalmos2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSalmos2.Designer.cs">
+      <DependentUpon>FormSalmos2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCelebraSP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCelebraSP.Designer.cs">
+      <DependentUpon>FormCelebraSP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAcusticoNT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAcusticoNT.Designer.cs">
+      <DependentUpon>FormAcusticoNT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCelebraSP2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCelebraSP2.Designer.cs">
+      <DependentUpon>FormCelebraSP2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormConfig.Designer.cs">
+      <DependentUpon>FormConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCronometro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCronometro.Designer.cs">
+      <DependentUpon>FormCronometro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormEuCreio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEuCreio.Designer.cs">
+      <DependentUpon>FormEuCreio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAdoradores3.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAdoradores3.Designer.cs">
+      <DependentUpon>FormAdoradores3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormJA2011.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormJA2011.Designer.cs">
+      <DependentUpon>FormJA2011.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPrincipal.Designer.cs">
+      <DependentUpon>FormPrincipal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormProgresso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormProgresso.Designer.cs">
+      <DependentUpon>FormProgresso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSorteio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSorteio.Designer.cs">
+      <DependentUpon>FormSorteio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormVideo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormVideo.Designer.cs">
+      <DependentUpon>FormVideo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hino.cs" />
+    <Compile Include="Louvor.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormSalmos2.resx">
+      <DependentUpon>FormSalmos2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCelebraSP.resx">
+      <DependentUpon>FormCelebraSP.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAcusticoNT.resx">
+      <DependentUpon>FormAcusticoNT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCelebraSP2.resx">
+      <DependentUpon>FormCelebraSP2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormConfig.resx">
+      <DependentUpon>FormConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCronometro.resx">
+      <DependentUpon>FormCronometro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEuCreio.resx">
+      <DependentUpon>FormEuCreio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAdoradores3.resx">
+      <DependentUpon>FormAdoradores3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormJA2011.resx">
+      <DependentUpon>FormJA2011.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPrincipal.resx">
+      <DependentUpon>FormPrincipal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormProgresso.resx">
+      <DependentUpon>FormProgresso.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSorteio.resx">
+      <DependentUpon>FormSorteio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormVideo.resx">
+      <DependentUpon>FormVideo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="coletanea.ico" />
+    <None Include="Resources\Salmos2.png" />
+    <None Include="Resources\Primeiro Deus.png" />
+    <None Include="Resources\Seu balaão.png" />
+    <None Include="Resources\Peixes.png" />
+    <None Include="Resources\Pai da Fé.png" />
+    <None Include="Resources\Onde é que tá.png" />
+    <None Include="Resources\O menino Sonhador.png" />
+    <None Include="Resources\Muito bom.png" />
+    <None Include="Resources\Milagres no Deserto.png" />
+    <None Include="Resources\Instrumentos.png" />
+    <None Include="Resources\I Corintios 12.png" />
+    <None Include="Resources\Herói.png" />
+    <None Include="Resources\Fortao do Cabelão.png" />
+    <None Include="Resources\Estrela.png" />
+    <None Include="Resources\Instrumental.jpg" />
+    <None Include="Resources\infantil2.jpg" />
+    <None Include="Resources\infantil1.jpg" />
+    <None Include="Resources\Interop.WMPLib.dll" />
+    <None Include="Resources\AxInterop.WMPLib.dll" />
+    <None Include="Resources\dados.mdb" />
+    <None Include="Resources\config.png" />
+    <None Include="Resources\celebrasp.jpg" />
+    <None Include="Resources\diferente.jpg" />
+    <None Include="Resources\AcusticoNT.jpg" />
+    <None Include="Resources\AcusticoNT1.jpg" />
+    <None Include="Resources\Adoradores3Menu.JPG" />
+    <None Include="Resources\Adoradores3.jpg" />
+    <None Include="Resources\CelebraSP2.jpg" />
+    <None Include="Resources\CelebraSP2Menu.jpg" />
+    <None Include="Resources\CelebraSPMenu.jpg" />
+    <None Include="Resources\A vida é tão boa.png" />
+    <None Include="Resources\Armadura do Cristão.png" />
+    <None Include="Resources\Auê.png" />
+    <None Include="Resources\Bebê Jesus.png" />
+    <None Include="Resources\Deus te fez para sorrir.png" />
+    <Content Include="Resources\Escola Sabatina.jpg" />
+    <None Include="Resources\Nuvens.jpg" />
+    <None Include="Resources\Eu-Creio.png" />
+    <None Include="Resources\Eu_creio.jpg" />
+    <None Include="Resources\Zaqueu.jpg" />
+    <None Include="Resources\TCHIBUM.jpg" />
+    <None Include="Resources\O que é que tem na arca de Noé.jpg" />
+    <None Include="Resources\O Cordeiro.jpg" />
+    <None Include="Resources\Naamã.jpg" />
+    <None Include="Resources\Minha vida é uma viagem.jpg" />
+    <None Include="Resources\Mãe, eu amo você.jpg" />
+    <None Include="Resources\Jesus Pode Tudo.jpg" />
+    <None Include="Resources\Gigante Davi.jpg" />
+    <None Include="Resources\Daniel.jpg" />
+    <None Include="Resources\Adão.jpg" />
+    <None Include="Resources\JA2016Adoradores2.jpg" />
+    <None Include="Resources\Quem Irá.jpg" />
+    <None Include="Resources\Salmos.jpg" />
+    <None Include="Resources\Quebrantado.jpg" />
+    <None Include="Resources\Ofertório.jpg" />
+    <None Include="Resources\Meu Universo.jpg" />
+    <None Include="Resources\Jesus Luz do Mundo.jpg" />
+    <None Include="Resources\JA2015.jpg" />
+    <None Include="Resources\Filhos de Israel.jpg" />
+    <None Include="Resources\Despedida.jpg" />
+    <None Include="Resources\Vinde Meninos.jpg" />
+    <None Include="Resources\Vim Para Adorar-te.jpg" />
+    <None Include="Resources\Venha Espírito Santo.jpg" />
+    <None Include="Resources\Vem Espírito Santo.jpg" />
+    <None Include="Resources\Vaso de Alabastro.jpg" />
+    <None Include="Resources\Vamos Louvar.jpg" />
+    <None Include="Resources\Unidos na Esperança.jpg" />
+    <None Include="Resources\Um Milagre se Realizará.jpg" />
+    <None Include="Resources\Um Dia de Esperança.jpg" />
+    <None Include="Resources\Toque Minhas Mãos.jpg" />
+    <None Include="Resources\Toque de Poder.jpg" />
+    <None Include="Resources\Toma Meu Coração.jpg" />
+    <None Include="Resources\Tempo de Ser Feliz.jpg" />
+    <None Include="Resources\Te Agradeço.jpg" />
+    <None Include="Resources\Superação.jpg" />
+    <None Include="Resources\Sorteio.jpg" />
+    <None Include="Resources\Songs.jpg" />
+    <None Include="Resources\Sinto a Presença do Senhor.jpg" />
+    <None Include="Resources\Shekinah.jpg" />
+    <None Include="Resources\Restaurando Vidas.jpg" />
+    <None Include="Resources\Reina em Mim.jpg" />
+    <None Include="Resources\QueroTeVer.jpg" />
+    <None Include="Resources\Quero Ofertar.jpg" />
+    <None Include="Resources\Quebrando o Silêncio.jpg" />
+    <None Include="Resources\Quando Me Chamar.jpg" />
+    <None Include="Resources\Provérbios 15.jpg" />
+    <None Include="Resources\Prisma Teen.jpg" />
+    <None Include="Resources\Pra Ser Feliz.jpg" />
+    <None Include="Resources\Permaneça em Mim.jpg" />
+    <None Include="Resources\Pedido de Oração.jpg" />
+    <None Include="Resources\Pais de Esperança.jpg" />
+    <None Include="Resources\Os Sonhos de Deus.jpg" />
+    <None Include="Resources\Oh! Adorai.jpg" />
+    <None Include="Resources\O Senhor Está Aqui.jpg" />
+    <None Include="Resources\Novo Sentido.jpg" />
+    <None Include="Resources\Nova Voz - Uma Geração.jpg" />
+    <None Include="Resources\Nova Voz - Creio em Ti.jpg" />
+    <None Include="Resources\Nos Braços de Jesus.jpg" />
+    <None Include="Resources\Nos Átrios de Deus.jpg" />
+    <None Include="Resources\Na Trilha da Conquista.jpg" />
+    <None Include="Resources\Na Presença de Deus.jpg" />
+    <None Include="Resources\Na Contramão do Mundo.jpg" />
+    <None Include="Resources\Ministério Novo Tempo.jpg" />
+    <None Include="Resources\Ministério do Louvor - Está Escrito Vol 2.jpg" />
+    <None Include="Resources\Ministério do Louvor - Está Escrito Vol 1.jpg" />
+    <None Include="Resources\Ministério da Mulher.jpg" />
+    <None Include="Resources\Ministério da Família - Vida Plena.jpg" />
+    <None Include="Resources\Ministério da Criança II.jpg" />
+    <None Include="Resources\Ministério da Criança I.jpg" />
+    <None Include="Resources\Minha Permissão.jpg" />
+    <None Include="Resources\Meu FIlho Vem.jpg" />
+    <None Include="Resources\Mensageiros da Esperança.jpg" />
+    <None Include="Resources\Melhore o Mundo.jpg" />
+    <None Include="Resources\Louvor 2005.jpg" />
+    <None Include="Resources\Louve ao Senhor.jpg" />
+    <None Include="Resources\Jovens Por Uma Paixão.jpg" />
+    <None Include="Resources\Jesus é Meu Capitão.jpg" />
+    <None Include="Resources\JA2014.jpg" />
+    <None Include="Resources\JA2013.jpg" />
+    <None Include="Resources\JA2012.jpg" />
+    <None Include="Resources\JA2011.jpg" />
+    <None Include="Resources\JA2010.jpg" />
+    <None Include="Resources\JA2009.jpg" />
+    <None Include="Resources\JA2008.jpg" />
+    <None Include="Resources\JA2007.jpg" />
+    <None Include="Resources\JA2006.jpg" />
+    <None Include="Resources\JA2005.jpg" />
+    <None Include="Resources\JA2004.jpg" />
+    <None Include="Resources\JA2003.jpg" />
+    <None Include="Resources\JA2002.jpg" />
+    <None Include="Resources\JA2001.jpg" />
+    <None Include="Resources\JA2000.jpg" />
+    <None Include="Resources\JA1999.jpg" />
+    <None Include="Resources\JA1998.jpg" />
+    <None Include="Resources\JA1997.jpg" />
+    <None Include="Resources\JA1996.jpg" />
+    <None Include="Resources\JA1995.jpg" />
+    <None Include="Resources\JA1994.jpg" />
+    <None Include="Resources\JA1993.jpg" />
+    <None Include="Resources\JA1992.jpg" />
+    <None Include="Resources\Impacto Esperança.jpg" />
+    <None Include="Resources\HASD.gif" />
+    <None Include="Resources\Gente Como Jesus.jpg" />
+    <None Include="Resources\Família.jpg" />
+    <None Include="Resources\Família por Famílias.jpg" />
+    <None Include="Resources\Facebook.png" />
+    <None Include="Resources\Evangelizando com Esperança.jpg" />
+    <None Include="Resources\EvangelismoEmLouvor2012.jpg" />
+    <None Include="Resources\Evangelismo Integrado.jpg" />
+    <None Include="Resources\Eu Tenho Que Orar.jpg" />
+    <None Include="Resources\Escolhidos para Brilhar.jpg" />
+    <None Include="Resources\Escolhido por Jesus.jpg" />
+    <None Include="Resources\Escolhas.jpg" />
+    <None Include="Resources\Email.png" />
+    <None Include="Resources\Em Paz eu Vou.jpg" />
+    <None Include="Resources\Em Comunhão.jpg" />
+    <None Include="Resources\Ele Virá.jpg" />
+    <None Include="Resources\É Só Louvor.jpg" />
+    <None Include="Resources\E Recebereis Poder.jpg" />
+    <None Include="Resources\É Hora de Viver.jpg" />
+    <None Include="Resources\Doce Como o Mel.jpg" />
+    <None Include="Resources\Diga ao Mundo.jpg" />
+    <None Include="Resources\Deus Está Presente.jpg" />
+    <None Include="Resources\Deus de Israel.jpg" />
+    <None Include="Resources\Desculpas.jpg" />
+    <None Include="Resources\Desbravadores - Nova Descoberta.jpg" />
+    <None Include="Resources\Deixai Vir a Mim os Pequeninos.jpg" />
+    <None Include="Resources\De Volta ao Jardim do Éden.jpg" />
+    <None Include="Resources\CultoDoxologia.jpg" />
+    <None Include="Resources\CultoAbertura.jpg" />
+    <None Include="Resources\Cronômetro.jpg" />
+    <None Include="Resources\Cristo Volte, Volte Já.jpg" />
+    <None Include="Resources\Colheita 2006.jpg" />
+    <None Include="Resources\CL.gif" />
+    <None Include="Resources\Cantando com Jesus 2.jpg" />
+    <None Include="Resources\Cantando com Jesus 1.jpg" />
+    <None Include="Resources\Campori ACeAM.jpg" />
+    <None Include="Resources\Campori AAMAR.jpg" />
+    <None Include="Resources\Cada Passo.jpg" />
+    <None Include="Resources\Ao Orarmos, Senhor.jpg" />
+    <None Include="Resources\Amizade.jpg" />
+    <None Include="Resources\Amizade é pra Sempre.jpg" />
+    <None Include="Resources\AmigosDaEsperancaMenu.jpg" />
+    <None Include="Resources\Amigos Vamos Ser.jpg" />
+    <None Include="Resources\Amigos da Esperança.jpg" />
+    <None Include="Resources\Amigo Não Saia sem Cristo.jpg" />
+    <None Include="Resources\Adoradores.jpg" />
+    <None Include="Resources\AdoraçãoInfantil.jpg" />
+    <None Include="Resources\A Esperança é Jesus - PG.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxWMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+      <Private>False</Private>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
