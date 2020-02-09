@@ -33,7 +33,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>D:\Coletânea de Louvor\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -82,7 +82,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DAO\ApresentacaoSlide.cs" />
     <Compile Include="DAO\ArquivoZip.cs" />
     <Compile Include="DAO\GradientPanel.cs">
       <SubType>Component</SubType>
@@ -91,12 +90,6 @@
     <Compile Include="DAO\Download.cs" />
     <Compile Include="DAO\ScreenProperties.cs" />
     <Compile Include="Database\DadosAccess.cs" />
-    <Compile Include="Forms\FormBiblia.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormBiblia.Designer.cs">
-      <DependentUpon>FormBiblia.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\FormButton.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,12 +108,6 @@
     <Compile Include="Forms\FormCronometro.Designer.cs">
       <DependentUpon>FormCronometro.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormCultos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormCultos.Designer.cs">
-      <DependentUpon>FormCultos.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\FormEscolaSabatina.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,12 +119,6 @@
     </Compile>
     <Compile Include="Forms\FormHinario.Designer.cs">
       <DependentUpon>FormHinario.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FormLiturgiaPowerPoint.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormLiturgiaPowerPoint.Designer.cs">
-      <DependentUpon>FormLiturgiaPowerPoint.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormPrincipal.cs">
       <SubType>Form</SubType>
@@ -163,23 +144,11 @@
     <Compile Include="Forms\FormSobre.Designer.cs">
       <DependentUpon>FormSobre.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormSorteioNomes.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormSorteioNomes.Designer.cs">
-      <DependentUpon>FormSorteioNomes.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\FormSorteioNum.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormSorteioNum.Designer.cs">
       <DependentUpon>FormSorteioNum.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FormSplashScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormSplashScreen.Designer.cs">
-      <DependentUpon>FormSplashScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\Culto.cs" />
     <Compile Include="Model\ProvaieVede.cs" />
@@ -194,17 +163,11 @@
     <EmbeddedResource Include="Forms\FormCronometro.resx">
       <DependentUpon>FormCronometro.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCultos.resx">
-      <DependentUpon>FormCultos.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormEscolaSabatina.resx">
       <DependentUpon>FormEscolaSabatina.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormHinario.resx">
       <DependentUpon>FormHinario.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLiturgiaPowerPoint.resx">
-      <DependentUpon>FormLiturgiaPowerPoint.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormPrincipal.resx">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
@@ -218,14 +181,8 @@
     <EmbeddedResource Include="Forms\FormSobre.resx">
       <DependentUpon>FormSobre.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSorteioNomes.resx">
-      <DependentUpon>FormSorteioNomes.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormSorteioNum.resx">
       <DependentUpon>FormSorteioNum.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSplashScreen.resx">
-      <DependentUpon>FormSplashScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -288,9 +245,6 @@
     <None Include="Resources\escola_sabatina.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\provai e vede.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Cronômetro.jpg" />
   </ItemGroup>
   <ItemGroup>
@@ -310,13 +264,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="coletanea.ico" />
-    <Content Include="Database\Culto.mdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Database\Culto_log.ldf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>Culto.mdf</DependentUpon>
-    </Content>
     <None Include="Resources\provai_e_vede.jpg" />
     <None Include="Resources\logo e midias.png" />
     <None Include="Resources\Maximize.png" />

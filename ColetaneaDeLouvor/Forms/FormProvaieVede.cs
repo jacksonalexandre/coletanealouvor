@@ -99,11 +99,10 @@ namespace ColetaneaDeLouvor.Forms
                         download.abrir(caminhoArquivo);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     string local = AppDomain.CurrentDomain.BaseDirectory.ToString() + "\\arquivos\\provai_e_vede";
                     MessageBox.Show("Arquivo não encontrado, por favor, realize o download através do site\n https://downloads.adventistas.org/pt/projeto/provai-e-vede/ \nVocê também pode entrar em contato com a equipe da Coletânea de Louvor ou adquira a mídia com a sua Associação/Missão local.\n\nApós estar com o conteúdo em mãos, coloque os vídeos de acordo com o seu dia da semana e mês nesse local:\n" + local, "Falha ao encontrar o vídeo.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //MessageBox.Show(ex.Message);
                 }                   
             }
             else

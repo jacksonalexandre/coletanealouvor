@@ -20,32 +20,13 @@ namespace ColetaneaDeLouvor.Forms
 {
     public partial class FormPrincipal : Form
     {
-        //Cria um Timer para um efeito na inicialização do programa
-        System.Windows.Forms.Timer t1 = new System.Windows.Forms.Timer();
-
-        //cria a conexão com o banco de dados do Microsoft Access
         OleDbConnection aConnection = new OleDbConnection(DadosAccess.Dados());
-
-        //Criação do textBox para a escolha do hino do Hinário Adventista
         TextBox numHino = new TextBox();
-
-        //Efeito para aparecer a tela do sobre
-        //bool TelaDoSobre = false; //Indicar se a tela de sobre está aberta ou fechada
-        //int LarguraTelaDoSobre = 0; // Variável da largura da tela de sobre
-        //Panel sobre = new Panel(); //Panel da tela de sobre
-
         public FormPrincipal()
         {
-            //SPLASH SCREEN (Tela inicial com o logotipo do programa ao iniciar)
-            FormSplashScreen frmSplashScreen = new FormSplashScreen();//Instanciando o form do SplashScreen
-            frmSplashScreen.Show();//Exibindo o SplashScreen
-            Thread.Sleep(1500);//Tempo que irá aparecer em milisegundos
-            frmSplashScreen.Close();//Fechando o SplashScreen           
-
             InitializeComponent();            
         }
 
-        //AO INICIAR O PROGRAMA
         private void FormPrincipal_Load(object sender, EventArgs e)
         {
             //abre a conexão com o banco de dados
@@ -82,62 +63,23 @@ namespace ColetaneaDeLouvor.Forms
                 MessageBox.Show(ex.Message);
             }    
 
-            //efeito ao iniciar o formprincipal
-            Opacity = 0;      //first the opacity is 0
-            t1.Interval = 10;  //we'll increase the opacity every 10ms
-            t1.Tick += new EventHandler(fadeIn);  //this calls the function that changes opacity 
-            t1.Start();   
-
-            //LISTA TODAS AS TELAS DO COMPUTADOR
             foreach (var post in ScreenProperties.getAllScreens())
-                comboScreen.Items.Add(post.DeviceName);
+                cboTela.Items.Add(post.DeviceName.Replace(@"\\.\DISPLAY", "Tela "));
 
             //SELECIONAR A TELA SECUNDÁRIA COMO PADRÃO NO COMBO
-            if (comboScreen.Items.Count != 1)
-                comboScreen.SelectedIndex = ScreenProperties.getScreenSecondary() - 1;
+            if (cboTela.Items.Count != 1)
+                cboTela.SelectedIndex = ScreenProperties.getScreenSecondary() - 1;
             else //SE NÃO TIVER, SERÁ SELECIONADA A TELA PRINCIPAL
-                comboScreen.SelectedIndex = 0;
+                cboTela.SelectedIndex = 0;
         }
 
-        //EFEITO AO INICIAR O PROGRAMA
-        void fadeIn(object sender, EventArgs e)
-        {
-            if (Opacity >= 1)
-                t1.Stop();   //this stops the timer if the form is completely displayed
-            else
-                Opacity += 0.03;
-        }        
-
-        //FECHAR O PROGRAMA
         private void FormPrincipal_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //fecha a conexao
             aConnection.Close();
-
-            //Cancela o fechamento
-            e.Cancel = true;
-
-            //Abre o Timer para o efeito de fechar o programa
-            timerFadeOut.Start();
-        }
-
-        //TIMER PARA O EFEITO AO FECHAR O PROGRAMA
-        private void timerFadeOut_Tick(object sender, EventArgs e)
-        {
-            if (this.Opacity > 0.0)
-            {
-                this.Opacity -= 0.2;
-            }
-            else
-            {
-                timerFadeOut.Stop();
-                this.Dispose();
-                Application.Exit();
-            }
         }
 
         //CLASSE DAS CRIAÇÕES DOS BOTÕES NO PANELDIREITA. Exceto o Hinário
-        private void Botao(OleDbCommand aCommand)
+        private void btn(OleDbCommand aCommand)
         {
             panelDireita.Controls.Clear(); //Limpar o panel
 
@@ -168,7 +110,7 @@ namespace ColetaneaDeLouvor.Forms
                         panelDireita.Controls.Add(button);
 
                         //AQUI CRIA OS BOTÕES PARA QUE O USUÁRIO ABRA O CD
-                        button.Click += new EventHandler(ButtonAbrir_Click);
+                        button.Click += new EventHandler(btnAbrir_Click);
                         button.Cursor = Cursors.Hand;
                     }
                     else //se a capa não existir, será feito o download e se for sucessível, será criado o botão
@@ -195,7 +137,7 @@ namespace ColetaneaDeLouvor.Forms
                             panelDireita.Controls.Add(button);
 
                             //AQUI CRIA OS BOTÕES PARA QUE O USUÁRIO ABRA O CD
-                            button.Click += new EventHandler(ButtonAbrir_Click);
+                            button.Click += new EventHandler(btnAbrir_Click);
                             button.Cursor = Cursors.Hand;
                         }
                     }
@@ -221,15 +163,11 @@ namespace ColetaneaDeLouvor.Forms
             }
         }
 
-        //CLASSE DOS BOTÕES CRIADOS
-        private void ButtonAbrir_Click(object sender, EventArgs e)
+        private void btnAbrir_Click(object sender, EventArgs e)
         {
             Button button = sender as Button;//para pegar as informações do button criado
-
-            //Aqui verifica se o nome do botão é o mesmo da TAG do botão
             if (button.Name.Equals(button.Tag))
             {
-                //um novo form é aberto com as faixas do cd escolhido
                 FormButton botao = new FormButton(button.Name);
                 botao.Show();
             }
@@ -253,7 +191,6 @@ namespace ColetaneaDeLouvor.Forms
             }            
         }
 
-        //BOTÃO HINÁRIO
         private void btnHinario_Click(object sender, EventArgs e)
         {            
             panelDireita.Controls.Clear(); //Limpar o panel
@@ -290,7 +227,6 @@ namespace ColetaneaDeLouvor.Forms
             hinario.ShowDialog();
         }
 
-        //BOTÃO JA/ADORADORES
         private void btnJa_Click(object sender, EventArgs e)
         {
             //Trocando as cores dos botões do panelEsquerda
@@ -317,7 +253,7 @@ namespace ColetaneaDeLouvor.Forms
             OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'ja_%' OR Button LIKE 'Adoradores-%' OR Button LIKE 'Celebra-SP-%' OR Button LIKE 'Acustico-NT%' OR Button LIKE 'Daniel-Ludtke_%' OR Button LIKE 'Ministerio-Louvor_%' ORDER BY Album DESC", aConnection);
 
             //Chama a classe para importar os botões
-            Botao(aCommand);
+            btn(aCommand);
 
             //Habilita/desabilita os botões.
             btnJa.Enabled = false;
@@ -328,7 +264,6 @@ namespace ColetaneaDeLouvor.Forms
             btnUtilitarios.Enabled = true;
         }
 
-        //BOTÃO COLETÂNEA
         private void btnColetanea_Click(object sender, EventArgs e)
         {
             //Trocando as cores dos botões do panelEsquerda
@@ -355,7 +290,7 @@ namespace ColetaneaDeLouvor.Forms
             OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button NOT LIKE 'HASD%' AND Button NOT LIKE 'ja_%' AND Button NOT LIKE 'Adoradores-%' AND Button NOT LIKE 'Celebra-SP-%' AND Button NOT LIKE 'Acustico-NT%' AND Button NOT LIKE 'Daniel-Ludtke_%' AND Button NOT LIKE 'Ministerio-Louvor_%' AND Button NOT LIKE 'louvores_%' AND Button NOT LIKE 'doxologia_%' AND Button NOT LIKE 'infantil_%' ORDER BY Button", aConnection);
 
             //Chama a classe para importar os botões
-            Botao(aCommand);
+            btn(aCommand);
 
             //Habilita/desabilita os botões.
             btnJa.Enabled = true;
@@ -366,7 +301,6 @@ namespace ColetaneaDeLouvor.Forms
             btnUtilitarios.Enabled = true;
         }
 
-        //BOTÃO LOUVORES
         private void btnLouvores_Click(object sender, EventArgs e)
         {
             //Trocando as cores dos botões do panelEsquerda
@@ -393,7 +327,7 @@ namespace ColetaneaDeLouvor.Forms
             OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'louvores_%' ORDER BY Capa", aConnection);
 
             //Chama a classe para importar os botões
-            Botao(aCommand);
+            btn(aCommand);
 
             //Habilita/desabilita os botões.
             btnJa.Enabled = true;
@@ -431,7 +365,7 @@ namespace ColetaneaDeLouvor.Forms
             OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'doxologia_%' ORDER BY Capa", aConnection);
 
             //Chama a classe para importar os botões
-            Botao(aCommand);
+            btn(aCommand);
 
             //Habilita/desabilita os botões.
             btnJa.Enabled = true;
@@ -469,7 +403,7 @@ namespace ColetaneaDeLouvor.Forms
             OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'infantil_%' ORDER BY Capa", aConnection);
 
             //Chama a classe para importar os botões
-            Botao(aCommand);
+            btn(aCommand);
 
             //Habilita/desabilita os botões.
             btnJa.Enabled = true;
@@ -537,16 +471,6 @@ namespace ColetaneaDeLouvor.Forms
             btnEscolaSabatina.BackgroundImageLayout = ImageLayout.Stretch;
             btnEscolaSabatina.FlatStyle = FlatStyle.Flat;
 
-            Button btnLiturgiaPowerPoint = new Button();
-            btnLiturgiaPowerPoint.Name = "btnLiturgiaPowerPoint";
-            btnLiturgiaPowerPoint.Font = new Font("Calibri", 15, FontStyle.Regular);
-            btnLiturgiaPowerPoint.ForeColor = Color.Black;
-            btnLiturgiaPowerPoint.Size = new Size(165, 165);
-            btnLiturgiaPowerPoint.BackColor = Color.Transparent;
-            // btnLiturgiaPowerPoint.BackgroundImage = Properties.Resources.
-            btnLiturgiaPowerPoint.BackgroundImageLayout = ImageLayout.Stretch;
-            btnLiturgiaPowerPoint.FlatStyle = FlatStyle.Flat;
-
             Button btnProvaieVede = new Button();
             btnProvaieVede.Name = "btnProvaieVede";
             btnProvaieVede.Font = new Font("Calibri", 15, FontStyle.Regular);
@@ -556,16 +480,6 @@ namespace ColetaneaDeLouvor.Forms
             btnProvaieVede.BackgroundImage = Properties.Resources.provai_e_vede;
             btnProvaieVede.BackgroundImageLayout = ImageLayout.Stretch;
             btnProvaieVede.FlatStyle = FlatStyle.Flat;
-
-            Button btnSorteioNomes = new Button();
-            btnSorteioNomes.Name = "btnSorteioNomes";
-            btnSorteioNomes.Font = new Font("Calibri", 15, FontStyle.Regular);
-            btnSorteioNomes.ForeColor = Color.Black;
-            btnSorteioNomes.Size = new Size(165, 165);
-            btnSorteioNomes.BackColor = Color.Transparent;
-            //btnSorteioNomes.BackgroundImage = Properties.Resources.
-            btnSorteioNomes.BackgroundImageLayout = ImageLayout.Stretch;
-            btnSorteioNomes.FlatStyle = FlatStyle.Flat;
 
             Button btnSorteioNum = new Button();
             btnSorteioNum.Name = "btnSorteioNum";
@@ -579,32 +493,20 @@ namespace ColetaneaDeLouvor.Forms
             #endregion
 
             //Adiciona o botão no panelcentral
-            //panelDireita.Controls.Add(btnBiblia);
             panelDireita.Controls.Add(btnCronometro);
             panelDireita.Controls.Add(btnEscolaSabatina);
-            //panelDireita.Controls.Add(btnLiturgiaPowerPoint);
             panelDireita.Controls.Add(btnProvaieVede);
-            //panelDireita.Controls.Add(btnSorteioNomes);
             panelDireita.Controls.Add(btnSorteioNum);
 
             //AQUI CRIA OS BOTÕES PARA QUE O USUÁRIO ABRA O UTILITÁRIO
-            btnBiblia.Click += new EventHandler(btnBiblia_Click);
-            btnBiblia.Cursor = Cursors.Hand;
-
             btnCronometro.Click += new EventHandler(btnCronometro_Click);
             btnCronometro.Cursor = Cursors.Hand;
 
             btnEscolaSabatina.Click += new EventHandler(EscolaSabatina_Click);
             btnEscolaSabatina.Cursor = Cursors.Hand;
 
-            btnLiturgiaPowerPoint.Click += new EventHandler(btnLiturgiaPowerPoint_Click);
-            btnLiturgiaPowerPoint.Cursor = Cursors.Hand;
-
             btnProvaieVede.Click += new EventHandler(btnProvaieVede_Click);
             btnProvaieVede.Cursor = Cursors.Hand;
-
-            btnSorteioNomes.Click += new EventHandler(btnSorteioNomes_Click);
-            btnSorteioNomes.Cursor = Cursors.Hand;
 
             btnSorteioNum.Click += new EventHandler(btnSorteioNum_Click);
             btnSorteioNum.Cursor = Cursors.Hand;
@@ -624,32 +526,20 @@ namespace ColetaneaDeLouvor.Forms
             abrir.Show();
         }
 
-        private void btnSorteioNomes_Click(object sender, EventArgs e)
-        {
-            FormSorteioNomes abrir = new FormSorteioNomes();
-            abrir.Show();
-        }
-
         private void btnProvaieVede_Click(object sender, EventArgs e)
         {
             //Comando para selecionar o monitor da tela estendida
-            string selecionaTela = Convert.ToString(comboScreen.SelectedItem);
+            string selecionaTela = Convert.ToString(cboTela.SelectedItem);
             int numTela = ScreenProperties.getIndexFromName(selecionaTela);
 
             FormProvaieVede abrir = new FormProvaieVede();
             abrir.Show();
         }
 
-        private void btnLiturgiaPowerPoint_Click(object sender, EventArgs e)
-        {
-            FormLiturgiaPowerPoint abrir = new FormLiturgiaPowerPoint();
-            abrir.Show();
-        }
-
         private void EscolaSabatina_Click(object sender, EventArgs e)
         {
             //Comando para selecionar o monitor da tela estendida
-            string selecionaTela = Convert.ToString(comboScreen.SelectedItem);
+            string selecionaTela = Convert.ToString(cboTela.SelectedItem);
             int numTela = ScreenProperties.getIndexFromName(selecionaTela);
 
             FormEscolaSabatina abrir = new FormEscolaSabatina(numTela - 1); //variável 'numTela' diminui um valor para que se inicie em '0'
@@ -662,21 +552,15 @@ namespace ColetaneaDeLouvor.Forms
             abrir.Show();
         }
 
-        private void btnBiblia_Click(object sender, EventArgs e)
-        {
-            FormBiblia abrir = new FormBiblia();
-            abrir.Show();
-        }
-
         //Usuário poder dar ENTER no Busca
         private void txtBusca_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)
-                this.btnBusca.PerformClick();
+                this.busca();
         }
 
         //CAMPO PESQUISAR LOUVOR
-        private void btnBusca_Click(object sender, EventArgs e)
+        private void busca()
         {
             panelEncontradas.Controls.Clear();//limpa todo o groupbox das músicas já listadas (se houver)
             panelEncontradas.BackgroundImage = null;
@@ -716,7 +600,7 @@ namespace ColetaneaDeLouvor.Forms
                         y = y + 20;//aumenta o número de linhas do nome das músicas
 
                         //AQUI É CHAMADO O EVENTO PARA ABRIR O HINO ESCOLHIDO
-                        label.Click += new EventHandler(LabelInserir_Click);
+                        label.Click += new EventHandler(lblInserir_Click);
                         label.Cursor = Cursors.Hand;
                     }
                     //fecha o reader
@@ -737,7 +621,7 @@ namespace ColetaneaDeLouvor.Forms
         }
 
         //LABEL CRIADA PELO SISTEMA DE BUSCA
-        private void LabelInserir_Click(object sender, EventArgs e)
+        private void lblInserir_Click(object sender, EventArgs e)
         {
             //Aqui pega as informações do label clicado
             Label label = sender as Label;
@@ -1005,7 +889,7 @@ namespace ColetaneaDeLouvor.Forms
         }*/
 
         //LINK DOS BOTÕES DO CONTATO NA TELA SOBRE
-        private void LblContato_Click(object sender, EventArgs e)
+        private void lblContato_Click(object sender, EventArgs e)
         {
             Label label = sender as Label;
             ProcessStartInfo abrirLink;

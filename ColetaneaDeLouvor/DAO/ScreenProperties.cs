@@ -2,9 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ColetaneaDeLouvor.DAO
 {
@@ -12,64 +10,64 @@ namespace ColetaneaDeLouvor.DAO
     {
         public static bool hasMoreThanOneScreen()
         {
-            return System.Windows.Forms.Screen.AllScreens.Length > 1;
+            return Screen.AllScreens.Length > 1;
         }
 
         public static int numberOfScreens()
         {
-            return System.Windows.Forms.Screen.AllScreens.Length;
+            return Screen.AllScreens.Length;
         }
 
         public static Rectangle getCurrentScreenBounds()
         {
-            return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+            return Screen.PrimaryScreen.Bounds;
         }
 
         public static int getCurrentScreenX()
         {
-            return System.Windows.Forms.Screen.PrimaryScreen.Bounds.X;
+            return Screen.PrimaryScreen.Bounds.X;
         }
 
         public static int getCurrentScreenY()
         {
-            return System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y;
+            return Screen.PrimaryScreen.Bounds.Y;
         }
 
         public static int getCurrentScreenWidth()
         {
-            return System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+            return Screen.PrimaryScreen.Bounds.Width;
         }
 
         public static int getCurrentScreenHeight()
         {
-            return System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+            return Screen.PrimaryScreen.Bounds.Height;
         }
 
         public static Size getCurrentScreenResolution()
         {
-            Rectangle rec = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+            Rectangle rec = Screen.PrimaryScreen.Bounds;
             return new Size(rec.Width, rec.Height);
         }
 
         public static Point getCurrentScreenLocation()
         {
-            Rectangle rec = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+            Rectangle rec = Screen.PrimaryScreen.Bounds;
             return new Point(rec.X, rec.Y);
         }
 
         public static string getCurrentScreenName()
         {
-            return System.Windows.Forms.Screen.PrimaryScreen.DeviceName;
+            return Screen.PrimaryScreen.DeviceName;
         }
 
         public static Rectangle getScreenBounds(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    return (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    return (ie.Current as Screen).Bounds;
                 }
             }
             return new Rectangle();
@@ -77,12 +75,12 @@ namespace ColetaneaDeLouvor.DAO
 
         public static int getScreenX(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    Rectangle rec = (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    Rectangle rec = (ie.Current as Screen).Bounds;
                     return rec.X;
                 }
             }
@@ -91,12 +89,12 @@ namespace ColetaneaDeLouvor.DAO
 
         public static int getScreenY(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    Rectangle rec = (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    Rectangle rec = (ie.Current as Screen).Bounds;
                     return rec.Y;
                 }
             }
@@ -105,12 +103,12 @@ namespace ColetaneaDeLouvor.DAO
 
         public static Size getScreenResolution(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    Rectangle rec = (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    Rectangle rec = (ie.Current as Screen).Bounds;
                     return new Size(rec.Width, rec.Height);
                 }
             }
@@ -119,12 +117,12 @@ namespace ColetaneaDeLouvor.DAO
 
         public static Point getScreenLocation(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    Rectangle rec = (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    Rectangle rec = (ie.Current as Screen).Bounds;
                     return new Point(rec.X, rec.Y);
                 }
             }
@@ -133,12 +131,12 @@ namespace ColetaneaDeLouvor.DAO
 
         public static int getScreenWidth(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    Rectangle rec = (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    Rectangle rec = (ie.Current as Screen).Bounds;
                     return rec.Width;
                 }
             }
@@ -147,12 +145,12 @@ namespace ColetaneaDeLouvor.DAO
 
         public static int getScreenHeight(int index)
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if (getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName) == index)
+                if (getIndexFromName((ie.Current as Screen).DeviceName) == index)
                 {
-                    Rectangle rec = (ie.Current as System.Windows.Forms.Screen).Bounds;
+                    Rectangle rec = (ie.Current as Screen).Bounds;
                     return rec.Height;
                 }
             }
@@ -162,12 +160,12 @@ namespace ColetaneaDeLouvor.DAO
         //RETORNAR O NÚMERO DA TELA PRIMÁRIA
         public static int getScreenIndex()
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if ((ie.Current as System.Windows.Forms.Screen).Primary == true)
+                if ((ie.Current as Screen).Primary == true)
                 {
-                    return getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName);
+                    return getIndexFromName((ie.Current as Screen).DeviceName);
                 }
             }
             return 0;
@@ -176,12 +174,12 @@ namespace ColetaneaDeLouvor.DAO
         //RETORNAR O NÚMERO DA TELA NÃO PRIMÁRIA
         public static int getScreenSecondary()
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
             while (ie.MoveNext())
             {
-                if ((ie.Current as System.Windows.Forms.Screen).Primary == false)
+                if ((ie.Current as Screen).Primary == false)
                 {
-                    return getIndexFromName((ie.Current as System.Windows.Forms.Screen).DeviceName);
+                    return getIndexFromName((ie.Current as Screen).DeviceName);
                 }
             }
             return 0;
@@ -194,13 +192,13 @@ namespace ColetaneaDeLouvor.DAO
         }
 
         //LISTAR TODAS AS TELAS
-        public static List<System.Windows.Forms.Screen> getAllScreens()
+        public static List<Screen> getAllScreens()
         {
-            IEnumerator ie = System.Windows.Forms.Screen.AllScreens.GetEnumerator();
-            List<System.Windows.Forms.Screen> screens = new List<System.Windows.Forms.Screen>();
+            IEnumerator ie = Screen.AllScreens.GetEnumerator();
+            List<Screen> screens = new List<Screen>();
             while (ie.MoveNext())
             {
-                screens.Add((ie.Current as System.Windows.Forms.Screen));
+                screens.Add((ie.Current as Screen));
             }
             return screens;
         }

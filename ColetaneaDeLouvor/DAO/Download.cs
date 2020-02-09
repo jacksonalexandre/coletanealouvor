@@ -1,13 +1,9 @@
 ﻿using ColetaneaDeLouvor.Database;
 using ColetaneaDeLouvor.Forms;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ColetaneaDeLouvor.DAO
