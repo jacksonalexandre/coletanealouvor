@@ -46,7 +46,6 @@
             this.lnkAjustar = new System.Windows.Forms.LinkLabel();
             this.lnkVerificar = new System.Windows.Forms.LinkLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pnlLinkSite = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -70,10 +69,9 @@
             this.panel1.Controls.Add(this.lnkAjustar);
             this.panel1.Controls.Add(this.lnkVerificar);
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Controls.Add(this.pnlLinkSite);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(645, 567);
             this.panel1.TabIndex = 0;
@@ -107,8 +105,8 @@
             this.pictureBox2.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox2.BackgroundImage = global::ColetaneaDeLouvor.Properties.Resources.Midias;
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBox2.Location = new System.Drawing.Point(165, 476);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox2.Location = new System.Drawing.Point(180, 474);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(301, 69);
             this.pictureBox2.TabIndex = 12;
@@ -271,20 +269,11 @@
             this.pictureBox1.BackgroundImage = global::ColetaneaDeLouvor.Properties.Resources._9_LEGENDA_SUPERIOR;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBox1.Location = new System.Drawing.Point(113, 2);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(419, 114);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            // 
-            // pnlLinkSite
-            // 
-            this.pnlLinkSite.Location = new System.Drawing.Point(165, 475);
-            this.pnlLinkSite.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.pnlLinkSite.Name = "pnlLinkSite";
-            this.pnlLinkSite.Size = new System.Drawing.Size(301, 22);
-            this.pnlLinkSite.TabIndex = 16;
-            this.pnlLinkSite.Click += new System.EventHandler(this.pnlLinkSite_Click);
             // 
             // FormSobre
             // 
@@ -295,7 +284,7 @@
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "FormSobre";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -327,7 +316,6 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Panel pnlLinkSite;
         private System.Windows.Forms.LinkLabel lnkAjustar;
     }
 }
