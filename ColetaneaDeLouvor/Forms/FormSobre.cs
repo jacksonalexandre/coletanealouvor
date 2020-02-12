@@ -98,7 +98,7 @@ namespace ColetaneaDeLouvor.Forms
             var lstNaoEncontradosFaltando = new List<String>();
             var lstNaoEncontradosSobrando = new List<String>();
 
-            var pastaRaiz = Application.StartupPath.ToLower() + @"\arquivos\coletaneas";
+            var pastaRaiz = Application.StartupPath.ToLower();
             moverPasta(pastaRaiz, "a_esperanca_e_jesus_pg", "a_esperanca_e_jesus_pg.exe");
             moverPasta(pastaRaiz, "amigos_da_esperanca", "amigos da esperança.exe");
             moverPasta(pastaRaiz, "amizade", "amizade.exe");
@@ -200,8 +200,18 @@ namespace ColetaneaDeLouvor.Forms
             moverArquivo(pastaRaiz, @"infantil\i_corintios_12.mp4", "infantil_minhavidaeumaviagem-3", "i_corintios_12.mp4");
             moverArquivo(pastaRaiz, @"infantil\muito_bom.mp4", "infantil_minhavidaeumaviagem-3", "muito_bom.mp4");
             moverArquivo(pastaRaiz, @"infantil\onde_é_que_tá.mp4", "infantil_minhavidaeumaviagem-3", "onde_é_que_tá.mp4");
-
+            
+            moverArquivo(pastaRaiz, @"daniel-ludtke_salmos-1\lâmpada para os meus pés.exe", "daniel-ludtke_salmos-1", "lâmpada para meus pés.exe");
+            moverArquivo(pastaRaiz, @"pra_ser_feliz\Pra Ser Feliz 1.exe", "pra_ser_feliz", "Pra Ser Feliz I.exe");
+            moverArquivo(pastaRaiz, @"pra_ser_feliz\Pra Ser Feliz 2.exe", "pra_ser_feliz", "Pra Ser Feliz II.exe");
+            
+            moverArquivo(pastaRaiz, @"ja_1993\jesus, toda vida.exe", "ja_1993", "jesus toda vida.exe");
+            moverArquivo(pastaRaiz, @"ja_1993\vem espirito santo.exe", "ja_1993", "vem espírito santo.exe");
+            moverArquivo(pastaRaiz, @"ja_2016\o alto do clamor.exe", "ja_2016", "o alto clamor.exe");
+            moverArquivo(pastaRaiz, @"doxologia_\toquedepoder.exe", "louvores_", "toquedepoder.exe");
             moverArquivo(pastaRaiz, @"Colheita 2006.exe", "colheita_2006", "louvar seu nome.exe");
+
+            pastaRaiz = pastaRaiz + @"\arquivos\coletaneas";
 
             var sb = new StringBuilder();
             var lstArquivosFisicos = Directory.GetFiles(pastaRaiz, "*.*", SearchOption.AllDirectories).ToList();
@@ -225,6 +235,7 @@ namespace ColetaneaDeLouvor.Forms
                     lstNaoEncontradosFaltando.Add(c);
             }
             sb.AppendLine("Arquivos faltando: " + lstNaoEncontradosFaltando.Count);
+            Console.WriteLine("Arquivos faltando");
             lstNaoEncontradosFaltando.ForEach(i => Console.WriteLine(i));
 
             //2ª verificação
@@ -239,6 +250,7 @@ namespace ColetaneaDeLouvor.Forms
                     lstNaoEncontradosSobrando.Add(a2);
             }
             sb.AppendLine("Arquivos sobrando: " + lstNaoEncontradosSobrando.Count);
+            Console.WriteLine("Arquivos sobrando");
             lstNaoEncontradosSobrando.ForEach(i => Console.WriteLine(i));
             MessageBox.Show(sb.ToString(), "Arquivos", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -248,7 +260,7 @@ namespace ColetaneaDeLouvor.Forms
             if (!File.Exists(Path.Combine(pastaRaiz, arquivo)))
                 return;
 
-            var dir2 = Path.Combine(pastaRaiz, dir);
+            var dir2 = Path.Combine(pastaRaiz + @"\arquivos\coletaneas", dir);
             if (!Directory.Exists(dir2))
                 Directory.CreateDirectory(dir2);
             File.Move(Path.Combine(pastaRaiz, arquivo), Path.Combine(dir2, arquivo));
@@ -259,7 +271,7 @@ namespace ColetaneaDeLouvor.Forms
             if (!File.Exists(arquivoAntigo2))
                 return;
 
-            var dir2 = Path.Combine(pastaRaiz, dir);
+            var dir2 = Path.Combine(pastaRaiz + @"\arquivos\coletaneas", dir);
             if (!Directory.Exists(dir2))
                 Directory.CreateDirectory(dir2);
             File.Move(arquivoAntigo2, Path.Combine(dir2, arquivoNovo));
@@ -268,7 +280,7 @@ namespace ColetaneaDeLouvor.Forms
         {
             if (!Directory.Exists(Path.Combine(pastaRaiz, pastaAntiga)))
                 return;
-            Directory.Move(Path.Combine(pastaRaiz, pastaAntiga), Path.Combine(pastaRaiz, pastaNova));
+            Directory.Move(Path.Combine(pastaRaiz, pastaAntiga), Path.Combine(pastaRaiz + @"\arquivos\coletaneas", pastaNova));
         }
 
         private void lnkAjustar_Click(object sender, EventArgs e)

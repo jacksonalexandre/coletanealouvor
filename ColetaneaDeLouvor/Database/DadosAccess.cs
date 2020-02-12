@@ -10,7 +10,7 @@ namespace ColetaneaDeLouvor.Database
     {
         public static string Dados()
         {
-            string result = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Dados.mdb;Persist Security Info=True;Jet OLEDB:Database Password=Colet*17;";
+            string result = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Dados.mdb;Persist Security Info=True;Jet OLEDB:Database Password=Colet*20;";
             return result;
         }
 

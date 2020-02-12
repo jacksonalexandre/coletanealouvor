@@ -32,10 +32,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.lblVersao = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -46,8 +44,8 @@
             this.lnkAjustar = new System.Windows.Forms.LinkLabel();
             this.lnkVerificar = new System.Windows.Forms.LinkLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,7 +53,6 @@
             // 
             this.panel1.Controls.Add(this.label12);
             this.panel1.Controls.Add(this.label11);
-            this.panel1.Controls.Add(this.pictureBox2);
             this.panel1.Controls.Add(this.lblVersao);
             this.panel1.Controls.Add(this.label9);
             this.panel1.Controls.Add(this.label8);
@@ -81,7 +78,7 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label12.ForeColor = System.Drawing.Color.White;
-            this.label12.Location = new System.Drawing.Point(137, 437);
+            this.label12.Location = new System.Drawing.Point(136, 534);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(357, 24);
@@ -92,7 +89,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.ForeColor = System.Drawing.Color.White;
-            this.label11.Location = new System.Drawing.Point(-16, 404);
+            this.label11.Location = new System.Drawing.Point(-16, 502);
             this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(688, 17);
@@ -100,24 +97,12 @@
             this.label11.Text = "_________________________________________________________________________________" +
     "____";
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox2.BackgroundImage = global::ColetaneaDeLouvor.Properties.Resources.Midias;
-            this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBox2.Location = new System.Drawing.Point(180, 474);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(301, 69);
-            this.pictureBox2.TabIndex = 12;
-            this.pictureBox2.TabStop = false;
-            // 
             // lblVersao
             // 
             this.lblVersao.AutoSize = true;
             this.lblVersao.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblVersao.ForeColor = System.Drawing.Color.White;
-            this.lblVersao.Location = new System.Drawing.Point(176, 377);
+            this.lblVersao.Location = new System.Drawing.Point(176, 475);
             this.lblVersao.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblVersao.Name = "lblVersao";
             this.lblVersao.Size = new System.Drawing.Size(66, 24);
@@ -129,31 +114,19 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.ForeColor = System.Drawing.Color.White;
-            this.label9.Location = new System.Drawing.Point(16, 377);
+            this.label9.Location = new System.Drawing.Point(16, 475);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(122, 24);
             this.label9.TabIndex = 10;
             this.label9.Text = "Versão Atual:";
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.ForeColor = System.Drawing.Color.White;
-            this.label8.Location = new System.Drawing.Point(-16, 338);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(688, 17);
-            this.label8.TabIndex = 9;
-            this.label8.Text = "_________________________________________________________________________________" +
-    "____";
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(176, 279);
+            this.label6.Location = new System.Drawing.Point(176, 335);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(237, 48);
@@ -165,7 +138,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(16, 279);
+            this.label7.Location = new System.Drawing.Point(16, 335);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(139, 24);
@@ -180,10 +153,10 @@
             this.label4.Location = new System.Drawing.Point(176, 170);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(212, 96);
+            this.label4.Size = new System.Drawing.Size(212, 144);
             this.label4.TabIndex = 6;
             this.label4.Text = "Cássio Leandro - RJ\r\nSamuel Nascimento - PA\r\nRodrigo Mauro - SP\r\nCaíque Marcel - " +
-    "BH";
+    "BA\r\nRafael Almeida - BA\r\nDaniel Martins - SP";
             // 
             // label5
             // 
@@ -239,7 +212,7 @@
             this.lnkAjustar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lnkAjustar.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lnkAjustar.LinkColor = System.Drawing.Color.White;
-            this.lnkAjustar.Location = new System.Drawing.Point(567, 437);
+            this.lnkAjustar.Location = new System.Drawing.Point(572, 537);
             this.lnkAjustar.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lnkAjustar.Name = "lnkAjustar";
             this.lnkAjustar.Size = new System.Drawing.Size(60, 21);
@@ -254,7 +227,7 @@
             this.lnkVerificar.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lnkVerificar.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lnkVerificar.LinkColor = System.Drawing.Color.White;
-            this.lnkVerificar.Location = new System.Drawing.Point(464, 377);
+            this.lnkVerificar.Location = new System.Drawing.Point(464, 475);
             this.lnkVerificar.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lnkVerificar.Name = "lnkVerificar";
             this.lnkVerificar.Size = new System.Drawing.Size(161, 21);
@@ -275,6 +248,18 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.ForeColor = System.Drawing.Color.White;
+            this.label8.Location = new System.Drawing.Point(-16, 436);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(688, 17);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "_________________________________________________________________________________" +
+    "____";
+            // 
             // FormSobre
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -292,7 +277,6 @@
             this.Load += new System.EventHandler(this.FormSobre_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
@@ -311,11 +295,10 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label lblVersao;
-        private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.LinkLabel lnkAjustar;
+        private System.Windows.Forms.Label label8;
     }
 }

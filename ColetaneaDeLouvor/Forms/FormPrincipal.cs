@@ -73,6 +73,8 @@ namespace ColetaneaDeLouvor.Forms
                 cboTela.SelectedIndex = ScreenProperties.getScreenSecondary() - 1;
             else //SE NÃO TIVER, SERÁ SELECIONADA A TELA PRINCIPAL
                 cboTela.SelectedIndex = 0;
+
+            btnJa_Click(sender, e);
         }
 
         private void FormPrincipal_FormClosing(object sender, FormClosingEventArgs e)
@@ -195,7 +197,7 @@ namespace ColetaneaDeLouvor.Forms
 
         private void btnHinario_Click(object sender, EventArgs e)
         {            
-            panelDireita.Controls.Clear(); //Limpar o panel
+            //panelDireita.Controls.Clear(); //Limpar o panel
 
             //Trocando as cores dos botões do panelEsquerda
             //Imagens
@@ -252,7 +254,7 @@ namespace ColetaneaDeLouvor.Forms
             btnSobre.BackColor = Color.FromArgb(39, 44, 51);
 
             //cria o objeto command and armazena a consulta SQL
-            OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'ja_%' OR Button LIKE 'Adoradores-%' OR Button LIKE 'Celebra-SP-%' OR Button LIKE 'Acustico-NT%' OR Button LIKE 'Daniel-Ludtke_%' OR Button LIKE 'Ministerio-Louvor_%' ORDER BY Album DESC", aConnection);
+            OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa, Ordem FROM Dados WHERE Button LIKE 'ja_%' OR Button LIKE 'Adoradores-%' OR Button LIKE 'Celebra-SP-%' OR Button LIKE 'Acustico-NT%' OR Button LIKE 'Daniel-Ludtke_%' OR Button LIKE 'Ministerio-Louvor_%' ORDER BY Ordem DESC, Album DESC", aConnection);
 
             //Chama a classe para importar os botões
             btn(aCommand);
@@ -340,7 +342,6 @@ namespace ColetaneaDeLouvor.Forms
             btnUtilitarios.Enabled = true;
         }
 
-        //BOTÃO DOXOLOGIA
         private void btnDoxologia_Click(object sender, EventArgs e)
         {
             //Trocando as cores dos botões do panelEsquerda
@@ -364,7 +365,7 @@ namespace ColetaneaDeLouvor.Forms
             btnSobre.BackColor = Color.FromArgb(39, 44, 51);
 
             //cria o objeto command and armazena a consulta SQL
-            OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'doxologia_%' ORDER BY Capa", aConnection);
+            OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa, Ordem FROM Dados WHERE Button LIKE 'doxologia_%' ORDER BY Ordem Desc, Capa", aConnection);
 
             //Chama a classe para importar os botões
             btn(aCommand);
@@ -378,7 +379,6 @@ namespace ColetaneaDeLouvor.Forms
             btnUtilitarios.Enabled = true;
         }
 
-        //BOTÃO INFANTIL
         private void btnInfantil_Click(object sender, EventArgs e)
         {
             //Trocando as cores dos botões do panelEsquerda
@@ -402,7 +402,7 @@ namespace ColetaneaDeLouvor.Forms
             btnSobre.BackColor = Color.FromArgb(39, 44, 51);
 
             //cria o objeto command and armazena a consulta SQL
-            OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa FROM Dados WHERE Button LIKE 'infantil_%' ORDER BY Capa", aConnection);
+            OleDbCommand aCommand = new OleDbCommand("SELECT DISTINCT Album, Button, Capa, Ordem FROM Dados WHERE Button LIKE 'infantil_%' ORDER BY Ordem DESC, Capa", aConnection);
 
             //Chama a classe para importar os botões
             btn(aCommand);
@@ -416,7 +416,6 @@ namespace ColetaneaDeLouvor.Forms
             btnUtilitarios.Enabled = true;
         }
 
-        //BOTÃO UTILITÁRIOS
         private void btnUtilitarios_Click(object sender, EventArgs e)
         {
             panelDireita.Controls.Clear(); //Limpar o panel
@@ -667,7 +666,7 @@ namespace ColetaneaDeLouvor.Forms
         //BOTÃO SOBRE
         private void btnSobre_Click(object sender, EventArgs e)
         {
-            panelDireita.Controls.Clear(); //Limpar o panel
+            //panelDireita.Controls.Clear(); //Limpar o panel
 
             //Trocando as cores dos botões do panelEsquerda
             //Imagens
