@@ -99,6 +99,10 @@ namespace ColetaneaDeLouvor.Forms
             var lstNaoEncontradosSobrando = new List<String>();
 
             var pastaRaiz = Application.StartupPath.ToLower();
+
+            if (!Directory.Exists(Path.Combine(pastaRaiz, @"arquivos\coletaneas")))
+                Directory.CreateDirectory(Path.Combine(pastaRaiz, @"arquivos\coletaneas"));
+
             moverPasta(pastaRaiz, "a_esperanca_e_jesus_pg", "a_esperanca_e_jesus_pg.exe");
             moverPasta(pastaRaiz, "amigos_da_esperanca", "amigos da esperança.exe");
             moverPasta(pastaRaiz, "amizade", "amizade.exe");
@@ -171,6 +175,7 @@ namespace ColetaneaDeLouvor.Forms
             renomear(pastaRaiz, "Outros", "louvores_");
             renomear(pastaRaiz, "Salmos-2", "daniel-ludtke_salmos-2");
             renomear(pastaRaiz, "eu-creio", "ja_2017");
+            renomear(pastaRaiz, "HASD", "HASD");
 
             moverArquivo(pastaRaiz, @"infantil\adão.mp4", "infantil_minhavidaeumaviagem-1", "adão.mp4");
             moverArquivo(pastaRaiz, @"infantil\daniel.mp4", "infantil_minhavidaeumaviagem-1", "daniel.mp4");
@@ -211,9 +216,29 @@ namespace ColetaneaDeLouvor.Forms
             moverArquivo(pastaRaiz, @"doxologia_\toquedepoder.exe", "louvores_", "toquedepoder.exe");
             moverArquivo(pastaRaiz, @"Colheita 2006.exe", "colheita_2006", "louvar seu nome.exe");
 
+            moverAntigo(pastaRaiz, "21_dias_de_Poder.exe");
+            moverAntigo(pastaRaiz, "AcusticoNT.exe");
+            moverAntigo(pastaRaiz, "Adoradores.exe");
+            moverAntigo(pastaRaiz, "Celebra_SP.exe");
+            moverAntigo(pastaRaiz, "ELE Me Leva a ADORAR.exe");
+            moverAntigo(pastaRaiz, "Encontro Jovem Somos Teus.exe");
+            moverAntigo(pastaRaiz, "Escolhas.exe");
+            moverAntigo(pastaRaiz, "Fernanda_Lara_Magnifico_Deus.exe");
+            moverAntigo(pastaRaiz, "JA 1992.exe");
+            moverAntigo(pastaRaiz, "JA 1993.exe");
+            moverAntigo(pastaRaiz, "JA 2016.exe");
+            moverAntigo(pastaRaiz, "Jeferson_Pillar_Redencao.exe");
+            moverAntigo(pastaRaiz, "Jesus Luz do Mundo.exe");
+            moverAntigo(pastaRaiz, "Jesus, Meu Rei, Meu Amigo.exe");
+            moverAntigo(pastaRaiz, "Louvor 2006.exe");
+            moverAntigo(pastaRaiz, "Ministério de Louvor.exe");
+            moverAntigo(pastaRaiz, "Pra ser Feliz.exe");
+            moverAntigo(pastaRaiz, "Salmos.exe");
+            moverAntigo(pastaRaiz, "Tudo_Posso_em_Jesus.exe");
+            moverAntigo(pastaRaiz, "Vamos Louvar.exe");
+
             pastaRaiz = pastaRaiz + @"\arquivos\coletaneas";
 
-            var sb = new StringBuilder();
             var lstArquivosFisicos = Directory.GetFiles(pastaRaiz, "*.*", SearchOption.AllDirectories).ToList();
             for(int x=0; x< lstArquivosFisicos.Count; x++)
                 lstArquivosFisicos[x] = lstArquivosFisicos[x].ToLower();
@@ -225,6 +250,7 @@ namespace ColetaneaDeLouvor.Forms
             var adapter = new OleDbDataAdapter("select distinct LCASE(button+'\\'+caminho) as caminho from dados", DadosAccess.Dados());
             adapter.Fill(dt);
 
+            var sb = new StringBuilder();
             //1ª verificação
             foreach (DataRow r in dt.Rows)
             {
@@ -235,8 +261,11 @@ namespace ColetaneaDeLouvor.Forms
                     lstNaoEncontradosFaltando.Add(c);
             }
             sb.AppendLine("Arquivos faltando: " + lstNaoEncontradosFaltando.Count);
-            Console.WriteLine("Arquivos faltando");
-            lstNaoEncontradosFaltando.ForEach(i => Console.WriteLine(i));
+
+            var sbLog = new StringBuilder();
+            if(lstNaoEncontradosFaltando.Count > 0)
+                log(sbLog, "Arquivos faltando");
+            lstNaoEncontradosFaltando.ForEach(i => log(sbLog, i));
 
             //2ª verificação
             foreach (String a in lstArquivosFisicos)
@@ -250,17 +279,38 @@ namespace ColetaneaDeLouvor.Forms
                     lstNaoEncontradosSobrando.Add(a2);
             }
             sb.AppendLine("Arquivos sobrando: " + lstNaoEncontradosSobrando.Count);
-            Console.WriteLine("Arquivos sobrando");
-            lstNaoEncontradosSobrando.ForEach(i => Console.WriteLine(i));
+
+            if (lstNaoEncontradosSobrando.Count > 0)
+                log(sbLog, "Arquivos sobrando");
+            lstNaoEncontradosSobrando.ForEach(i => log(sbLog, i));
+
+            if(sbLog.Length > 0)
+                File.WriteAllText(Path.Combine(Application.StartupPath, "arquivos.txt"), sbLog.ToString(), Encoding.Default);
+
             MessageBox.Show(sb.ToString(), "Arquivos", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        void log(StringBuilder sb, String texto)
+        {
+            sb.AppendLine(texto);
+            Console.WriteLine(texto);
+        }
         void moverPasta(String pastaRaiz, String dir, String arquivo)
         {
             if (!File.Exists(Path.Combine(pastaRaiz, arquivo)))
                 return;
 
             var dir2 = Path.Combine(pastaRaiz + @"\arquivos\coletaneas", dir);
+            if (!Directory.Exists(dir2))
+                Directory.CreateDirectory(dir2);
+            File.Move(Path.Combine(pastaRaiz, arquivo), Path.Combine(dir2, arquivo));
+        }
+        void moverAntigo(String pastaRaiz, String arquivo)
+        {
+            if (!File.Exists(Path.Combine(pastaRaiz, arquivo)))
+                return;
+
+            var dir2 = Path.Combine(pastaRaiz, "_antigo");
             if (!Directory.Exists(dir2))
                 Directory.CreateDirectory(dir2);
             File.Move(Path.Combine(pastaRaiz, arquivo), Path.Combine(dir2, arquivo));

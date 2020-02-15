@@ -81,7 +81,7 @@ namespace ColetaneaDeLouvor.Forms
                 c++; //aumenta o contador
             }       
             //fecha o reader
-            aReader.Close();            
+            aReader.Close();
         }        
 
         //CLASSE PARA ABRIR O LINK DO LABEL
@@ -119,36 +119,7 @@ namespace ColetaneaDeLouvor.Forms
             //fecha o reader
             aReader.Close();
         }
-
-        /*public bool ArquivoEmUso(string caminhoArquivo)
-        {
-            try
-            {
-                if (!caminhoArquivo.Equals(string.Empty))
-                {
-                    FileStream fs = File.OpenWrite(caminhoArquivo);
-                    fs.Close();
-                }
-                return false;
-            }
-            catch (IOException ex)
-            {
-                return true;
-            }
-        }*/
-
-        private void pbFechar_Click(object sender, EventArgs e)
-        {
-            //fecha a conexao
-            aConnection.Close();
-            this.Close();
-        }
-
-        private void pbMinimizar_Click(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
-        }
-
+               
         //SE O ESC FOR PRESSIONADO, O FORM IRÁ SE FECHAR
         private void FormButton_KeyDown(object sender, KeyEventArgs e)
         {
