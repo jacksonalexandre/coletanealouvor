@@ -287,5 +287,13 @@ namespace ColetaneaDeLouvor.Forms
         {
             ajustar();
         }
+
+        private void FormSobre_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue.Equals(27)) //ESC
+            {
+                this.Close();
+            }
+        }
     }
 }

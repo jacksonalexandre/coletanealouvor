@@ -55,5 +55,13 @@ namespace ColetaneaDeLouvor.Forms
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void FormHinario_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue.Equals(27)) //ESC
+            {
+                this.Close();
+            }
+        }
     }
 }
