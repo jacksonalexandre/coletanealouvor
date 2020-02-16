@@ -150,8 +150,6 @@
     <Compile Include="Forms\FormSorteioNum.Designer.cs">
       <DependentUpon>FormSorteioNum.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\Culto.cs" />
-    <Compile Include="Model\ProvaieVede.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FormButton.resx">
