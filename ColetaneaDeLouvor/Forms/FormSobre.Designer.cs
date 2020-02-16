@@ -143,7 +143,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(237, 72);
             this.label6.TabIndex = 8;
-            this.label6.Text = "Andre Libanio Volpato - RO\r\nFilipe Santos Costa - BA\r\nIdo";
+            this.label6.Text = "Andre Libanio Volpato - RO\r\nFilipe Santos Costa - BA\r\nIdo Rodrigues - BA";
             // 
             // label7
             // 
