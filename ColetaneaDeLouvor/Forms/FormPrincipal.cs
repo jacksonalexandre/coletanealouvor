@@ -1,20 +1,12 @@
 ﻿using ColetaneaDeLouvor.DAO;
 using ColetaneaDeLouvor.Database;
-using Microsoft.VisualBasic.Devices;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 
 namespace ColetaneaDeLouvor.Forms
 {
@@ -22,6 +14,10 @@ namespace ColetaneaDeLouvor.Forms
     {
         OleDbConnection aConnection = new OleDbConnection(DadosAccess.Dados());
         TextBox numHino = new TextBox();
+        Timer timer = new Timer();
+        String ultimaBusca = "";
+        Boolean ultimoFiltro = false;
+
         public FormPrincipal()
         {
             InitializeComponent();            
@@ -75,6 +71,11 @@ namespace ColetaneaDeLouvor.Forms
                 cboTela.SelectedIndex = 0;
 
             btnJa_Click(sender, e);
+
+            timer.Tick += T_Tick;
+
+            txtBusca.Focus();
+            txtBusca.SelectAll();
         }
 
         private void FormPrincipal_FormClosing(object sender, FormClosingEventArgs e)
@@ -556,69 +557,90 @@ namespace ColetaneaDeLouvor.Forms
         //Usuário poder dar ENTER no Busca
         private void txtBusca_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 13)
-                this.busca();
+            //if (e.KeyChar == 13)
+            //this.busca();
         }
 
-        //CAMPO PESQUISAR LOUVOR
-        private void busca()
+        void T_Tick(object sender, EventArgs e)
         {
+            if (timer.Tag.ToString() != txtBusca.Text)
+                return;
+            busca2();
+        }
+
+        void busca()
+        {
+            timer.Stop();
+
+            timer.Interval = 500;
+            timer.Tag = txtBusca.Text;
+            timer.Start();
+        }
+        void busca2()
+        {
+            if (ultimaBusca == txtBusca.Text && ultimoFiltro == chkLetra.Checked)
+                return;
+
+            ultimaBusca = txtBusca.Text;
+            ultimoFiltro = chkLetra.Checked;
+
             panelEncontradas.Controls.Clear();//limpa todo o groupbox das músicas já listadas (se houver)
             panelEncontradas.BackgroundImage = null;
 
-            if (txtBusca.Text != "" && txtBusca.Text != "Busque o Hino...")
+            if (txtBusca.Text == "")
             {
-
-                //CRIAÇÃO DAS LABELS COM O NOME DAS MÚSICAS NO GROUPBOX LISTAMÚSICAS
-                int x = 5; //definir local  horizontal
-                int y = 10; //definir local vertical
-
-                //cria o objeto command and armazena a consulta SQL
-                OleDbCommand aCommand = new OleDbCommand("SELECT * FROM Dados WHERE Titulo LIKE '%" + txtBusca.Text + "%' OR Id LIKE '" + txtBusca.Text + "' OR Letra LIKE '%" + txtBusca.Text + "%' ORDER BY Album", aConnection);
-
-                try
-                {
-                    //cria o objeto datareader para fazer a conexao com a tabela
-                    OleDbDataReader aReader = aCommand.ExecuteReader();
-
-                    //Faz a interação com o banco de dados lendo os dados da tabela
-                    while (aReader.Read())
-                    {
-                        //cria as labels da pesquisa
-                        Label label = new Label();
-                        label.Name = aReader.GetString(4); //nome do button no Access
-                        label.Font = new Font("Calibri", 10, FontStyle.Bold);
-                        label.ForeColor = Color.White;
-                        label.AutoSize = true;
-                        label.BackColor = Color.Transparent;
-                        label.Location = new Point(x, y);
-                        label.Tag = aReader.GetString(6); //nome do caminho no Access
-                        label.Text = aReader.GetString(1) + " (" + aReader.GetString(2) + ")";
-
-                        //INSERE O BOTÃO E LABEL NO PANEL DAS MÚSICAS ENCONTRADAS
-                        panelEncontradas.Controls.Add(label);
-
-                        y = y + 20;//aumenta o número de linhas do nome das músicas
-
-                        //AQUI É CHAMADO O EVENTO PARA ABRIR O HINO ESCOLHIDO
-                        label.Click += new EventHandler(lblInserir_Click);
-                        label.Cursor = Cursors.Hand;
-                    }
-                    //fecha o reader
-                    aReader.Close();
-
-                }
-                //Trata a exceção
-                catch (OleDbException ex)
-                {
-                    MessageBox.Show("Error: {0}", ex.Errors[0].Message);
-                }
-            }
-            else
-            {                
                 panelEncontradas.BackgroundImage = Properties.Resources.logo_e_midias;
-                MessageBox.Show("O campo de pesquisa está em branco, preencha corretamente e tente novamente.", "Falha na Pesquisa!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }                
+                return;
+            }
+
+            //CRIAÇÃO DAS LABELS COM O NOME DAS MÚSICAS NO GROUPBOX LISTAMÚSICAS
+            int x = 5; //definir local  horizontal
+            int y = 10; //definir local vertical
+
+            //cria o objeto command and armazena a consulta SQL
+            var sql = "SELECT * FROM Dados WHERE Titulo LIKE '%" + txtBusca.Text + "%' OR Id LIKE '" + txtBusca.Text + "' ";
+            if(chkLetra.Checked)
+                sql += "OR Letra LIKE '%" + txtBusca.Text + "%' ";
+            sql += "ORDER BY Album";
+
+            OleDbCommand aCommand = new OleDbCommand(sql, aConnection);
+            try
+            {
+                //cria o objeto datareader para fazer a conexao com a tabela
+                OleDbDataReader aReader = aCommand.ExecuteReader();
+
+                //Faz a interação com o banco de dados lendo os dados da tabela
+                while (aReader.Read())
+                {
+                    //cria as labels da pesquisa
+                    Label label = new Label();
+                    label.Name = aReader.GetString(4); //nome do button no Access
+                    label.Font = new Font("Calibri", 10, FontStyle.Bold);
+                    label.ForeColor = Color.White;
+                    label.AutoSize = true;
+                    label.BackColor = Color.Transparent;
+                    label.Location = new Point(x, y);
+                    label.Tag = aReader.GetString(6); //nome do caminho no Access
+                    label.Text = aReader.GetString(1) + " (" + aReader.GetString(2) + ")";
+
+                    //INSERE O BOTÃO E LABEL NO PANEL DAS MÚSICAS ENCONTRADAS
+                    panelEncontradas.Controls.Add(label);
+
+                    y = y + 20;//aumenta o número de linhas do nome das músicas
+
+                    //AQUI É CHAMADO O EVENTO PARA ABRIR O HINO ESCOLHIDO
+                    label.Click += new EventHandler(lblInserir_Click);
+                    label.Cursor = Cursors.Hand;
+                }
+                //fecha o reader
+                aReader.Close();
+
+            }
+            //Trata a exceção
+            catch (OleDbException ex)
+            {
+                MessageBox.Show("Error: {0}", ex.Errors[0].Message);
+            }
         }
 
         //LABEL CRIADA PELO SISTEMA DE BUSCA
@@ -715,24 +737,6 @@ namespace ColetaneaDeLouvor.Forms
             Process.Start(abrirLink);
         }
 
-        //TEXTBOX Busca - Quando o usuário sai do textbox
-        private void txtBusca_Leave(object sender, EventArgs e)
-        {
-            timerBuscaHino.Interval = 3000;
-            timerBuscaHino.Start();
-            
-        }
-
-        //TEXTBOX Busca - Quando o usuário clica no textbox
-        private void txtBusca_MouseClick(object sender, MouseEventArgs e)
-        {            
-            if (txtBusca.Text == "Busque o Hino...")
-            {
-                txtBusca.Text = "";
-                txtBusca.ForeColor = Color.Black;
-            }                
-        }
-
         //Picturebox para fechar
         private void pbFechar_Click(object sender, EventArgs e)
         {
@@ -755,17 +759,14 @@ namespace ColetaneaDeLouvor.Forms
             
         }
 
-        //Timer para voltar a escrever 'Busque o Hino...'
-        private void timerBuscaHino_Tick(object sender, EventArgs e)
-        {
-            txtBusca.Text = "Busque o Hino...";
-            txtBusca.ForeColor = Color.Silver;
-            timerBuscaHino.Stop();
-        }
-
         private void txtBusca_TextChanged(object sender, EventArgs e)
         {
+            busca();
+        }
 
+        private void chkLetra_CheckedChanged(object sender, EventArgs e)
+        {
+            busca();
         }
     }
 }

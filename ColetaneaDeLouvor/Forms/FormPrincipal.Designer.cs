@@ -47,6 +47,7 @@
             this.timerFadeOut = new System.Windows.Forms.Timer(this.components);
             this.panelDireita = new System.Windows.Forms.FlowLayoutPanel();
             this.timerBuscaHino = new System.Windows.Forms.Timer(this.components);
+            this.chkLetra = new System.Windows.Forms.CheckBox();
             this.panelEsquerda.SuspendLayout();
             this.panelCentral.SuspendLayout();
             this.SuspendLayout();
@@ -222,6 +223,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelCentral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(70)))), ((int)(((byte)(82)))));
+            this.panelCentral.Controls.Add(this.chkLetra);
             this.panelCentral.Controls.Add(this.panelEncontradas);
             this.panelCentral.Controls.Add(this.txtInformacoes);
             this.panelCentral.Controls.Add(this.txtBusca);
@@ -239,9 +241,9 @@
             this.panelEncontradas.BackgroundImage = global::ColetaneaDeLouvor.Properties.Resources.logo_e_midias;
             this.panelEncontradas.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.panelEncontradas.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelEncontradas.Location = new System.Drawing.Point(7, 34);
+            this.panelEncontradas.Location = new System.Drawing.Point(7, 51);
             this.panelEncontradas.Name = "panelEncontradas";
-            this.panelEncontradas.Size = new System.Drawing.Size(351, 644);
+            this.panelEncontradas.Size = new System.Drawing.Size(351, 653);
             this.panelEncontradas.TabIndex = 6;
             // 
             // txtInformacoes
@@ -250,11 +252,11 @@
             this.txtInformacoes.BackColor = System.Drawing.Color.White;
             this.txtInformacoes.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtInformacoes.ForeColor = System.Drawing.Color.Black;
-            this.txtInformacoes.Location = new System.Drawing.Point(7, 684);
+            this.txtInformacoes.Location = new System.Drawing.Point(7, 710);
             this.txtInformacoes.Multiline = true;
             this.txtInformacoes.Name = "txtInformacoes";
             this.txtInformacoes.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtInformacoes.Size = new System.Drawing.Size(351, 164);
+            this.txtInformacoes.Size = new System.Drawing.Size(351, 138);
             this.txtInformacoes.TabIndex = 10;
             this.txtInformacoes.Text = "Anotações:";
             this.txtInformacoes.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtInformacoes_MouseClick);
@@ -263,16 +265,12 @@
             // txtBusca
             // 
             this.txtBusca.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtBusca.ForeColor = System.Drawing.Color.Silver;
             this.txtBusca.Location = new System.Drawing.Point(7, 6);
             this.txtBusca.Name = "txtBusca";
-            this.txtBusca.Size = new System.Drawing.Size(351, 26);
+            this.txtBusca.Size = new System.Drawing.Size(348, 26);
             this.txtBusca.TabIndex = 8;
-            this.txtBusca.Text = "Busque o Hino...";
-            this.txtBusca.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtBusca_MouseClick);
             this.txtBusca.TextChanged += new System.EventHandler(this.txtBusca_TextChanged);
             this.txtBusca.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtBusca_KeyPress);
-            this.txtBusca.Leave += new System.EventHandler(this.txtBusca_Leave);
             // 
             // panelDireita
             // 
@@ -288,9 +286,17 @@
             this.panelDireita.Size = new System.Drawing.Size(734, 858);
             this.panelDireita.TabIndex = 7;
             // 
-            // timerBuscaHino
+            // chkLetra
             // 
-            this.timerBuscaHino.Tick += new System.EventHandler(this.timerBuscaHino_Tick);
+            this.chkLetra.AutoSize = true;
+            this.chkLetra.ForeColor = System.Drawing.Color.White;
+            this.chkLetra.Location = new System.Drawing.Point(10, 32);
+            this.chkLetra.Name = "chkLetra";
+            this.chkLetra.Size = new System.Drawing.Size(191, 21);
+            this.chkLetra.TabIndex = 0;
+            this.chkLetra.Text = "Buscar na letra dos hinos";
+            this.chkLetra.UseVisualStyleBackColor = true;
+            this.chkLetra.CheckedChanged += new System.EventHandler(this.chkLetra_CheckedChanged);
             // 
             // FormPrincipal
             // 
@@ -336,5 +342,6 @@
         private System.Windows.Forms.Timer timerFadeOut;
         private System.Windows.Forms.Button btnSobre;
         private System.Windows.Forms.Timer timerBuscaHino;
+        private System.Windows.Forms.CheckBox chkLetra;
     }
 }
