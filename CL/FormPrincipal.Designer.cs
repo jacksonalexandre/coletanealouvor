@@ -28,16 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.pnl1 = new System.Windows.Forms.Panel();
+            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.mnu = new System.Windows.Forms.MenuStrip();
+            this.mnuPrincipal = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuDoxologia = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuJovens = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuColetaneas = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuLouvor = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuInfantil = new System.Windows.Forms.ToolStripMenuItem();
             this.lnkConfig = new System.Windows.Forms.LinkLabel();
-            this.lnkSite = new System.Windows.Forms.LinkLabel();
-            this.lnkFacebook = new System.Windows.Forms.LinkLabel();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.imgFacebook = new System.Windows.Forms.PictureBox();
             this.lblInfantil = new System.Windows.Forms.Label();
             this.lblLouvor = new System.Windows.Forms.Label();
             this.lblColetaneas = new System.Windows.Forms.Label();
@@ -56,23 +60,13 @@
             this.txtBusca = new System.Windows.Forms.TextBox();
             this.pnlBusca = new System.Windows.Forms.Panel();
             this.cboFiltro = new System.Windows.Forms.ComboBox();
-            this.mnu = new System.Windows.Forms.MenuStrip();
-            this.mnuPrincipal = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuDoxologia = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuJovens = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuColetaneas = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuLouvor = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuInfantil = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgFacebook)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.grd)).BeginInit();
-            this.pnlBusca.SuspendLayout();
-            this.mnu.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
+            this.mnu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grd)).BeginInit();
+            this.pnlBusca.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnl1
@@ -80,11 +74,7 @@
             this.pnl1.BackColor = System.Drawing.Color.Transparent;
             this.pnl1.Controls.Add(this.toolStripContainer1);
             this.pnl1.Controls.Add(this.lnkConfig);
-            this.pnl1.Controls.Add(this.lnkSite);
-            this.pnl1.Controls.Add(this.lnkFacebook);
             this.pnl1.Controls.Add(this.pictureBox2);
-            this.pnl1.Controls.Add(this.pictureBox1);
-            this.pnl1.Controls.Add(this.imgFacebook);
             this.pnl1.Controls.Add(this.lblInfantil);
             this.pnl1.Controls.Add(this.lblLouvor);
             this.pnl1.Controls.Add(this.lblColetaneas);
@@ -100,11 +90,93 @@
             this.pnl1.Size = new System.Drawing.Size(233, 561);
             this.pnl1.TabIndex = 0;
             // 
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(230, 34);
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 3);
+            this.toolStripContainer1.Name = "toolStripContainer1";
+            this.toolStripContainer1.Size = new System.Drawing.Size(230, 34);
+            this.toolStripContainer1.TabIndex = 21;
+            this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStripContainer1.TopToolStripPanel
+            // 
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.mnu);
+            // 
+            // mnu
+            // 
+            this.mnu.Dock = System.Windows.Forms.DockStyle.None;
+            this.mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuPrincipal,
+            this.mnuDoxologia,
+            this.mnuJovens,
+            this.mnuColetaneas,
+            this.mnuLouvor,
+            this.mnuInfantil});
+            this.mnu.Location = new System.Drawing.Point(0, 0);
+            this.mnu.Name = "mnu";
+            this.mnu.Size = new System.Drawing.Size(389, 24);
+            this.mnu.TabIndex = 0;
+            this.mnu.Text = "menuStrip1";
+            this.mnu.Visible = false;
+            // 
+            // mnuPrincipal
+            // 
+            this.mnuPrincipal.Name = "mnuPrincipal";
+            this.mnuPrincipal.ShortcutKeyDisplayString = "";
+            this.mnuPrincipal.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
+            this.mnuPrincipal.Size = new System.Drawing.Size(65, 20);
+            this.mnuPrincipal.Text = "Principal";
+            this.mnuPrincipal.Click += new System.EventHandler(this.lblPrincipal_Click);
+            // 
+            // mnuDoxologia
+            // 
+            this.mnuDoxologia.Name = "mnuDoxologia";
+            this.mnuDoxologia.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
+            this.mnuDoxologia.Size = new System.Drawing.Size(73, 20);
+            this.mnuDoxologia.Text = "Doxologia";
+            this.mnuDoxologia.Click += new System.EventHandler(this.lblPrograma_Click);
+            // 
+            // mnuJovens
+            // 
+            this.mnuJovens.Name = "mnuJovens";
+            this.mnuJovens.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.J)));
+            this.mnuJovens.Size = new System.Drawing.Size(54, 20);
+            this.mnuJovens.Text = "Jovens";
+            this.mnuJovens.Click += new System.EventHandler(this.lblJovens_Click);
+            // 
+            // mnuColetaneas
+            // 
+            this.mnuColetaneas.Name = "mnuColetaneas";
+            this.mnuColetaneas.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+            this.mnuColetaneas.Size = new System.Drawing.Size(77, 20);
+            this.mnuColetaneas.Text = "Coletâneas";
+            this.mnuColetaneas.Click += new System.EventHandler(this.lblColetaneas_Click);
+            // 
+            // mnuLouvor
+            // 
+            this.mnuLouvor.Name = "mnuLouvor";
+            this.mnuLouvor.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this.mnuLouvor.Size = new System.Drawing.Size(56, 20);
+            this.mnuLouvor.Text = "Louvor";
+            this.mnuLouvor.Click += new System.EventHandler(this.lblIndividuais_Click);
+            // 
+            // mnuInfantil
+            // 
+            this.mnuInfantil.Name = "mnuInfantil";
+            this.mnuInfantil.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
+            this.mnuInfantil.Size = new System.Drawing.Size(56, 20);
+            this.mnuInfantil.Text = "Infantil";
+            this.mnuInfantil.Click += new System.EventHandler(this.lblInfantil_Click);
+            // 
             // lnkConfig
             // 
             this.lnkConfig.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lnkConfig.AutoSize = true;
-            this.lnkConfig.Location = new System.Drawing.Point(63, 450);
+            this.lnkConfig.Location = new System.Drawing.Point(60, 528);
             this.lnkConfig.Name = "lnkConfig";
             this.lnkConfig.Size = new System.Drawing.Size(83, 13);
             this.lnkConfig.TabIndex = 5;
@@ -113,64 +185,17 @@
             this.lnkConfig.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSite_LinkClicked);
             this.lnkConfig.Click += new System.EventHandler(this.lnkConfig_Click);
             // 
-            // lnkSite
-            // 
-            this.lnkSite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lnkSite.AutoSize = true;
-            this.lnkSite.Location = new System.Drawing.Point(62, 486);
-            this.lnkSite.Name = "lnkSite";
-            this.lnkSite.Size = new System.Drawing.Size(140, 13);
-            this.lnkSite.TabIndex = 5;
-            this.lnkSite.TabStop = true;
-            this.lnkSite.Text = "coletanealouvor.com.br";
-            this.lnkSite.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSite_LinkClicked);
-            this.lnkSite.Click += new System.EventHandler(this.lnkFacebook_Click);
-            // 
-            // lnkFacebook
-            // 
-            this.lnkFacebook.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lnkFacebook.AutoSize = true;
-            this.lnkFacebook.Location = new System.Drawing.Point(61, 524);
-            this.lnkFacebook.Name = "lnkFacebook";
-            this.lnkFacebook.Size = new System.Drawing.Size(142, 13);
-            this.lnkFacebook.TabIndex = 5;
-            this.lnkFacebook.TabStop = true;
-            this.lnkFacebook.Text = "fb.com/coletanealouvor";
-            this.lnkFacebook.Click += new System.EventHandler(this.lnkFacebook_Click);
-            // 
             // pictureBox2
             // 
             this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pictureBox2.BackColor = System.Drawing.Color.White;
-            this.pictureBox2.Image = global::LouvorJA.Properties.Resources.config;
-            this.pictureBox2.Location = new System.Drawing.Point(24, 441);
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(21, 519);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(37, 32);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 8;
             this.pictureBox2.TabStop = false;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.pictureBox1.BackColor = System.Drawing.Color.White;
-            this.pictureBox1.Image = global::LouvorJA.Properties.Resources.CL;
-            this.pictureBox1.Location = new System.Drawing.Point(24, 479);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 8;
-            this.pictureBox1.TabStop = false;
-            // 
-            // imgFacebook
-            // 
-            this.imgFacebook.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.imgFacebook.Image = global::LouvorJA.Properties.Resources.Facebook;
-            this.imgFacebook.Location = new System.Drawing.Point(24, 517);
-            this.imgFacebook.Name = "imgFacebook";
-            this.imgFacebook.Size = new System.Drawing.Size(37, 32);
-            this.imgFacebook.TabIndex = 8;
-            this.imgFacebook.TabStop = false;
             // 
             // lblInfantil
             // 
@@ -405,95 +430,12 @@
             this.cboFiltro.Items.AddRange(new object[] {
             "Título",
             "Letra",
-            "Hinário",
-            "H. PPS"});
+            "Hinário"});
             this.cboFiltro.Location = new System.Drawing.Point(3, 11);
             this.cboFiltro.Name = "cboFiltro";
             this.cboFiltro.Size = new System.Drawing.Size(111, 37);
             this.cboFiltro.TabIndex = 18;
             this.cboFiltro.SelectedIndexChanged += new System.EventHandler(this.cboFiltro_SelectedIndexChanged);
-            // 
-            // mnu
-            // 
-            this.mnu.Dock = System.Windows.Forms.DockStyle.None;
-            this.mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuPrincipal,
-            this.mnuDoxologia,
-            this.mnuJovens,
-            this.mnuColetaneas,
-            this.mnuLouvor,
-            this.mnuInfantil});
-            this.mnu.Location = new System.Drawing.Point(0, 0);
-            this.mnu.Name = "mnu";
-            this.mnu.Size = new System.Drawing.Size(150, 24);
-            this.mnu.TabIndex = 0;
-            this.mnu.Text = "menuStrip1";
-            this.mnu.Visible = false;
-            // 
-            // mnuPrincipal
-            // 
-            this.mnuPrincipal.Name = "mnuPrincipal";
-            this.mnuPrincipal.ShortcutKeyDisplayString = "";
-            this.mnuPrincipal.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
-            this.mnuPrincipal.Size = new System.Drawing.Size(65, 20);
-            this.mnuPrincipal.Text = "Principal";
-            this.mnuPrincipal.Click += new System.EventHandler(this.lblPrincipal_Click);
-            // 
-            // mnuDoxologia
-            // 
-            this.mnuDoxologia.Name = "mnuDoxologia";
-            this.mnuDoxologia.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
-            this.mnuDoxologia.Size = new System.Drawing.Size(73, 20);
-            this.mnuDoxologia.Text = "Doxologia";
-            this.mnuDoxologia.Click += new System.EventHandler(this.lblPrograma_Click);
-            // 
-            // mnuJovens
-            // 
-            this.mnuJovens.Name = "mnuJovens";
-            this.mnuJovens.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.J)));
-            this.mnuJovens.Size = new System.Drawing.Size(54, 20);
-            this.mnuJovens.Text = "Jovens";
-            this.mnuJovens.Click += new System.EventHandler(this.lblJovens_Click);
-            // 
-            // mnuColetaneas
-            // 
-            this.mnuColetaneas.Name = "mnuColetaneas";
-            this.mnuColetaneas.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-            this.mnuColetaneas.Size = new System.Drawing.Size(77, 20);
-            this.mnuColetaneas.Text = "Coletâneas";
-            this.mnuColetaneas.Click += new System.EventHandler(this.lblColetaneas_Click);
-            // 
-            // mnuLouvor
-            // 
-            this.mnuLouvor.Name = "mnuLouvor";
-            this.mnuLouvor.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
-            this.mnuLouvor.Size = new System.Drawing.Size(56, 20);
-            this.mnuLouvor.Text = "Louvor";
-            this.mnuLouvor.Click += new System.EventHandler(this.lblIndividuais_Click);
-            // 
-            // mnuInfantil
-            // 
-            this.mnuInfantil.Name = "mnuInfantil";
-            this.mnuInfantil.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
-            this.mnuInfantil.Size = new System.Drawing.Size(56, 20);
-            this.mnuInfantil.Text = "Infantil";
-            this.mnuInfantil.Click += new System.EventHandler(this.lblInfantil_Click);
-            // 
-            // toolStripContainer1
-            // 
-            // 
-            // toolStripContainer1.ContentPanel
-            // 
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(230, 34);
-            this.toolStripContainer1.Location = new System.Drawing.Point(0, 3);
-            this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(230, 34);
-            this.toolStripContainer1.TabIndex = 21;
-            this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // toolStripContainer1.TopToolStripPanel
-            // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.mnu);
             // 
             // FormPrincipal
             // 
@@ -519,18 +461,16 @@
             this.ResizeEnd += new System.EventHandler(this.FormPrincipal_ResizeEnd);
             this.pnl1.ResumeLayout(false);
             this.pnl1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgFacebook)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.grd)).EndInit();
-            this.pnlBusca.ResumeLayout(false);
-            this.pnlBusca.PerformLayout();
-            this.mnu.ResumeLayout(false);
-            this.mnu.PerformLayout();
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
+            this.mnu.ResumeLayout(false);
+            this.mnu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grd)).EndInit();
+            this.pnlBusca.ResumeLayout(false);
+            this.pnlBusca.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -544,8 +484,6 @@
         private System.Windows.Forms.Label lblJovens;
         private System.Windows.Forms.FlowLayoutPanel pnl2;
         private System.Windows.Forms.Panel pnlMarcador;
-        private System.Windows.Forms.LinkLabel lnkFacebook;
-        private System.Windows.Forms.PictureBox imgFacebook;
         private System.Windows.Forms.Label lblInfantil;
         private System.Windows.Forms.Button btnAbrirHASD;
         private System.Windows.Forms.TextBox txtBusca;
@@ -558,8 +496,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Album;
         private System.Windows.Forms.DataGridViewTextBoxColumn ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn Caminho;
-        private System.Windows.Forms.LinkLabel lnkSite;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.LinkLabel lnkConfig;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.MenuStrip mnu;

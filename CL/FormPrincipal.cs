@@ -208,134 +208,135 @@ namespace LouvorJA
             setPnl(lblDoxologia);
 
             addItem(Properties.Resources.CultoAbertura, @"Doxologia\Abertura.mp4");
-            addItem(Properties.Resources.infantil1, @"Doxologia\Adoração-Infantil-Entrada.mp4");
-            addItem(Properties.Resources.infantil2, @"Doxologia\Adoração-Infantil-Saída.mp4");
-            addItem(Properties.Resources.Ofertório, @"Doxologia\Ofertorio.mp4");
+            addItem(Properties.Resources.AdoracaoInfantilEntrada, @"Doxologia\Adoração-Infantil-Entrada.mp4");
+            addItem(Properties.Resources.AdoracaoInfantilSaida, @"Doxologia\Adoração-Infantil-Saída.mp4");
+            addItem(Properties.Resources.Ofertorio_exe, @"Doxologia\Ofertorio.mp4");
             addItem(Properties.Resources.Despedida, @"Doxologia\Despedida.mp4");
             addItem(Properties.Resources.Cronômetro, imgCronometro_Click);
             addItem(Properties.Resources.Sorteio, imgSorteio_Click);
-            addItem(Properties.Resources.Escola_Sabatina, @"Doxologia\EncerramentoDaLicao.exe");
-            //addItem(Properties.Resources.Escola_Sabatina, @"Outros\Hino-Desbravadores.mp4");
-            //addItem(Properties.Resources.Escola_Sabatina, @"Outros\Hino-Aventureiros.mp4");
+            // addItem(Properties.Resources.Escola_Sabatina, @"Doxologia\EncerramentoDaLicao.exe");
+            // addItem(Properties.Resources.Escola_Sabatina, @"Outros\Hino-Desbravadores.mp4");
+            // addItem(Properties.Resources.Escola_Sabatina, @"Outros\Hino-Aventureiros.mp4");
         }
         void jovens(Boolean inicial)
         {
             if(!inicial)
                 setPnl(lblJovens);
 
-            addItem(Properties.Resources.AcusticoNT, delegate { new FormAcusticoNT().Show(); });
-            addItem(Properties.Resources.CelebraSP2, delegate { new FormCelebraSP2().Show(); });
-            addItem(Properties.Resources.celebrasp, delegate { new FormCelebraSP().Show(); });
-            addItem(Properties.Resources.Salmos2, delegate { new FormSalmos2().Show(); });
-            addItem(Properties.Resources.diferente, "Diferente.exe");
-            addItem(Properties.Resources.Jesus_Luz_do_Mundo, "Jesus Luz do Mundo.exe");
-            addItem(Properties.Resources.Filhos_de_Israel, "Filhos de Israel.exe");
-            addItem(Properties.Resources.Salmos, "Salmos.exe");
-            addItem(Properties.Resources.Ministério_do_Louvor_Está_Escrito_Vol_2, "Ministério de Louvor.exe");
-            addItem(Properties.Resources.Ministério_do_Louvor_Está_Escrito_Vol_1, "Ministério de Louvor Vol.1.exe");
-            addItem(Properties.Resources.EuCreioPequeno, delegate { new FormEuCreio().Show(); });
-            addItem(Properties.Resources.Adoradores3, delegate { new FormAdoradores3().Show(); });
-            addItem(Properties.Resources.Adoradores2, "JA 2016.exe");
-            addItem(Properties.Resources.Adoradores, "Adoradores.exe");
-            addItem(Properties.Resources.JA2015, "JA 2015.exe");
-            addItem(Properties.Resources.JA2014, "JA 2014.exe");
-            addItem(Properties.Resources.JA2013, "JA 2013.exe");
-            addItem(Properties.Resources.JA2012, "JA 2012.exe");
-            addItem(Properties.Resources.JA2011, delegate { new FormJA2011().Show(); });
-            addItem(Properties.Resources.JA2010, "JA 2010.exe");
-            addItem(Properties.Resources.JA2009, "JA 2009.exe");
-            addItem(Properties.Resources.JA2008, "JA 2008.exe");
-            addItem(Properties.Resources.JA2007, "JA 2007.exe");
-            addItem(Properties.Resources.JA2006, "JA 2006.exe");
-            addItem(Properties.Resources.JA2005, "JA 2005.exe");
-            addItem(Properties.Resources.JA2004, "JA 2004.exe");
-            addItem(Properties.Resources.JA2003, "JA 2003.exe");
-            addItem(Properties.Resources.JA2002, "JA 2002.exe");
-            addItem(Properties.Resources.JA2001, "JA 2001.exe");
-            addItem(Properties.Resources.JA2000, "JA 2000.exe");
-            addItem(Properties.Resources.JA1999, "JA 1999.exe");
-            addItem(Properties.Resources.JA1998, "JA 1998.exe");
-            addItem(Properties.Resources.JA1997, "JA 1997.exe");
-            addItem(Properties.Resources.JA1996, "JA 1996.exe");
-            addItem(Properties.Resources.JA1995, "JA 1995.exe");
-            addItem(Properties.Resources.JA1994, "JA 1994.exe");
-            addItem(Properties.Resources.JA1993, "JA 1993.exe");
-            addItem(Properties.Resources.JA1992, "JA 1992.exe");
+            // addItem(Properties.Resources.AcusticoNT, delegate { new FormAcusticoNT().Show(); });
+            // addItem(Properties.Resources.CelebraSP2, delegate { new FormCelebraSP2().Show(); });
+            // addItem(Properties.Resources.CelebraSP1, delegate { new FormCelebraSP().Show(); });
+            // addItem(Properties.Resources.DanielLudtkeSalmos2, delegate { new FormSalmos2().Show(); });
+            addItem(Properties.Resources.DanielLudtkeDiferente, "Diferente.exe");
+            addItem(Properties.Resources.DanielLudtkeJesusLuz, "Jesus Luz do Mundo.exe");
+            addItem(Properties.Resources.DanielLudtkeFilhosDeIsrael, "Filhos de Israel.exe");
+            addItem(Properties.Resources.DanielLudtkeSalmos1, "Salmos.exe");
+            addItem(Properties.Resources.Ministerio_Louvor_Vol_2, "Ministério de Louvor.exe");
+            addItem(Properties.Resources.Ministerio_Louvor_Vol_1, "Ministério de Louvor Vol.1.exe");
+            // addItem(Properties.Resources.EuCreio, delegate { new FormEuCreio().Show(); });
+            // addItem(Properties.Resources.Adoradores3, delegate { new FormAdoradores3().Show(); });
+            addItem(Properties.Resources.ja_2016, "JA 2016.exe");
+            addItem(Properties.Resources.Adoradores1, "Adoradores.exe");
+            addItem(Properties.Resources.ja_2015, "JA 2015.exe");
+            addItem(Properties.Resources.ja_2014, "JA 2014.exe");
+            addItem(Properties.Resources.ja_2013, "JA 2013.exe");
+            addItem(Properties.Resources.ja_2012, "JA 2012.exe");
+            // addItem(Properties.Resources.ja_2011, delegate { new FormJA2011().Show(); });
+            addItem(Properties.Resources.ja_2010, "JA 2010.exe");
+            addItem(Properties.Resources.ja_2009, "JA 2009.exe");
+            addItem(Properties.Resources.ja_2008, "JA 2008.exe");
+            addItem(Properties.Resources.ja_2007, "JA 2007.exe");
+            addItem(Properties.Resources.ja_2006, "JA 2006.exe");
+            addItem(Properties.Resources.ja_2005, "JA 2005.exe");
+            addItem(Properties.Resources.ja_2004, "JA 2004.exe");
+            addItem(Properties.Resources.ja_2003, "JA 2003.exe");
+            addItem(Properties.Resources.ja_2002, "JA 2002.exe");
+            addItem(Properties.Resources.ja_2001, "JA 2001.exe");
+            addItem(Properties.Resources.ja_2000, "JA 2000.exe");
+            addItem(Properties.Resources.ja_1999, "JA 1999.exe");
+            addItem(Properties.Resources.ja_1998, "JA 1998.exe");
+            addItem(Properties.Resources.ja_1997, "JA 1997.exe");
+            addItem(Properties.Resources.ja_1996, "JA 1996.exe");
+            addItem(Properties.Resources.ja_1995, "JA 1995.exe");
+            addItem(Properties.Resources.ja_1994, "JA 1994.exe");
+            addItem(Properties.Resources.ja_1993, "JA 1993.exe");
+            addItem(Properties.Resources.ja_1992, "JA 1992.exe");
         }
         void coletaneas()
         {
             setPnl(lblColetaneas);
 
-            addItem(Properties.Resources.Ministério_Novo_Tempo, "Ministério de Louvor Novo Tempo.exe");
-            addItem(Properties.Resources.Novo_Sentido, "Novo Sentido.exe");
-            addItem(Properties.Resources.Nova_Voz_Creio_em_Ti, "Nova Voz.exe");
-            addItem(Properties.Resources.A_Esperança_é_Jesus_PG, "a_esperanca_e_jesus_pg.exe");
+            addItem(Properties.Resources.Ministerio_Louvor_NT, "Ministério de Louvor Novo Tempo.exe");
+            addItem(Properties.Resources.novo_sentido, "Novo Sentido.exe");
+            addItem(Properties.Resources.NovaVoz_CreioEmTi, "Nova Voz.exe");
+            addItem(Properties.Resources.AEsperancaEJesus, "a_esperanca_e_jesus_pg.exe");
             addItem(Properties.Resources.Amizade, "Amizade.exe");
-            addItem(Properties.Resources.Diga_ao_Mundo, "Diga ao Mundo.exe");
-            addItem(Properties.Resources.Restaurando_Vidas, "Restaurando Vidas.exe");
-            addItem(Properties.Resources.Escolhidos_para_Brilhar, "Escolhidos Para Brilhar.exe");
-            addItem(Properties.Resources.Vamos_Louvar, "Vamos Louvar.exe");
-            addItem(Properties.Resources.Louve_ao_Senhor, "Louve ao Senhor.exe");
-            addItem(Properties.Resources.Em_Comunhão, "Em Comunhão.exe");
-            addItem(Properties.Resources.E_Recebereis_Poder, "E Recebereis Poder.exe");
-            addItem(Properties.Resources.É_Só_Louvor, "É Só Louvor.exe");
-            addItem(Properties.Resources.Na_Trilha_da_Conquista, "Na Trilha da Conquista.exe");
-            addItem(Properties.Resources.Evangelismo_Integrado, "Evangelismo Integrado.exe");
-            addItem(Properties.Resources.É_Hora_de_Viver, "É Hora de Viver.exe");
-            addItem(Properties.Resources.Escolhido_por_Jesus, "Escolhidos por Jesus.exe");
-            addItem(Properties.Resources.Impacto_Esperança, "Impacto Esperança.exe");
-            addItem(Properties.Resources.Colheita_2006, "Colheita 2006.exe");
-            addItem(Properties.Resources.Superação, "Superação.exe");
-            addItem(Properties.Resources.QueroTeVer, "Quero Te Ver.exe");
-            addItem(Properties.Resources.Melhore_o_Mundo, @"Melhore o Mundo.exe");
-            addItem(Properties.Resources.Na_Presença_de_Deus, @"Na Presença de Deus.exe");
-            addItem(Properties.Resources.Pra_Ser_Feliz, @"Pra Ser Feliz.exe");
-            addItem(Properties.Resources.Mensageiros_da_Esperança, @"Mensageiros da Esperança.exe");
-            addItem(Properties.Resources.Amigos_da_Esperança, @"Amigos da Esperança.exe");
-            addItem(Properties.Resources.Cristo_Volte__Volte_Já, @"Cristo Volte, Volte Já.exe");
-            addItem(Properties.Resources.Família_por_Famílias, "Familia por Familias.exe");
-            addItem(Properties.Resources.Louvor_2005, "Louvor 2005.exe");
-            addItem(Properties.Resources.Campori_AAMAR, "Campori AAMAR.exe");
-            addItem(Properties.Resources.Campori_ACeAM, "Campori ACeAM.exe");
-            addItem(Properties.Resources.Desbravadores_Nova_Descoberta, "Nova_Descoberta.exe");
-            addItem(Properties.Resources.Ministério_da_Família_Vida_Plena, "Vida_Plena.exe");
-            addItem(Properties.Resources.Evangelizando_com_Esperança, "Evangelizando_com_Esperança.exe");
-            addItem(Properties.Resources.Amizade_é_pra_Sempre, "Amizade É Pra Sempre.exe");
+            addItem(Properties.Resources.diga_ao_mundo, "Diga ao Mundo.exe");
+            addItem(Properties.Resources.restaurando_vidas, "Restaurando Vidas.exe");
+            addItem(Properties.Resources.escolhidos_para_brilhar, "Escolhidos Para Brilhar.exe");
+            addItem(Properties.Resources.vamos_louvar_nosso_rei, "Vamos Louvar.exe");
+            addItem(Properties.Resources.louve_ao_senhor, "Louve ao Senhor.exe");
+            addItem(Properties.Resources.em_comunhao, "Em Comunhão.exe");
+            addItem(Properties.Resources.e_recebereis_poder, "E Recebereis Poder.exe");
+            addItem(Properties.Resources.e_so_louvor, "É Só Louvor.exe");
+            addItem(Properties.Resources.na_trilha_da_conquista, "Na Trilha da Conquista.exe");
+            addItem(Properties.Resources.evangelismo_integrado, "Evangelismo Integrado.exe");
+            addItem(Properties.Resources.e_hora_de_viver, "É Hora de Viver.exe");
+            addItem(Properties.Resources.escolhidos_por_jesus, "Escolhidos por Jesus.exe");
+            addItem(Properties.Resources.impacto_esperanca, "Impacto Esperança.exe");
+            addItem(Properties.Resources.Colheita2006, "Colheita 2006.exe");
+            addItem(Properties.Resources.Superacao, "Superação.exe");
+            addItem(Properties.Resources.quero_te_ver, "Quero Te Ver.exe");
+            addItem(Properties.Resources.melhore_o_mundo, @"Melhore o Mundo.exe");
+            addItem(Properties.Resources.na_presenca_de_deus, @"Na Presença de Deus.exe");
+            addItem(Properties.Resources.pra_ser_feliz, @"Pra Ser Feliz.exe");
+            addItem(Properties.Resources.mensageiros_da_esperanca, @"Mensageiros da Esperança.exe");
+            addItem(Properties.Resources.amigos_da_esperanca, @"Amigos da Esperança.exe");
+            addItem(Properties.Resources.CristoVolteVolteJa, @"Cristo Volte, Volte Já.exe");
+            addItem(Properties.Resources.familia_por_familias, "Familia por Familias.exe");
+            addItem(Properties.Resources.louvor_2005, "Louvor 2005.exe");
+            addItem(Properties.Resources.CamporiAamar, "Campori AAMAR.exe");
+            addItem(Properties.Resources.CamporiAceam, "Campori ACeAM.exe");
+            addItem(Properties.Resources.nova_descoberta, "Nova_Descoberta.exe");
+            addItem(Properties.Resources.vida_plena, "Vida_Plena.exe");
+            // addItem(Properties.Resources.Evangelizando_com_Esperança, "Evangelizando_com_Esperança.exe");
+            addItem(Properties.Resources.AmizadeEPraSempre, "Amizade É Pra Sempre.exe");
 
             addItem(Properties.Resources.Songs, "Songs.exe");
-            addItem(Properties.Resources.Ministério_da_Mulher, @"Ministério da Mulher.exe");
-            addItem(Properties.Resources.Escolhas, "Escolhas.exe");
-            addItem(Properties.Resources.Instrumental, "Instrumental.exe");
+            addItem(Properties.Resources.ministerio_da_mulher, @"Ministério da Mulher.exe");
+            // addItem(Properties.Resources.Escolhas, "Escolhas.exe");
+            addItem(Properties.Resources.instrumental, "Instrumental.exe");
         }
         void individuais()
         {
             setPnl(lblLouvor);
 
             #region Doxologia
-            addItem(Properties.Resources.ToqueDePoder, @"Doxologia\ToqueDePoder.exe");
+            addItem(Properties.Resources.ToqueDePoder_exe, @"Doxologia\ToqueDePoder.exe");
             addItem(Properties.Resources.Em_Paz_eu_Vou, @"Doxologia\Em Paz eu Vou.exe");
             #endregion
 
             #region Louvores
-            addItem(Properties.Resources.De_Volta_ao_Jardim_do_Éden, @"Outros\De Volta ao Jardim do Éden.exe");
+            addItem(Properties.Resources.DeVoltaAoJardimDoÉden, @"Outros\De Volta ao Jardim do Éden.exe");
             addItem(Properties.Resources.Desculpas, @"Outros\Desculpas.exe");
-            addItem(Properties.Resources.Vaso_de_Alabastro, @"Outros\Vaso de Alabastro.exe");
-            addItem(Properties.Resources.Cada_Passo, @"Outros\Cada passo.exe");
-            addItem(Properties.Resources.Doce_Como_o_Mel, @"Outros\Doce Como Mel.exe");
-            addItem(Properties.Resources.Quebrando_o_Silêncio, @"Outros\Quebrando o silêncio.exe");
+            addItem(Properties.Resources.Vaso_de_Alabastro_exe, @"Outros\Vaso de Alabastro.exe");
+            addItem(Properties.Resources.CadaPasso, @"Outros\Cada passo.exe");
+            addItem(Properties.Resources.Doce_Como_Mel_exe, @"Outros\Doce Como Mel.exe");
+            addItem(Properties.Resources.Quebrando_o_silêncio_exe, @"Outros\Quebrando o silêncio.exe");
 
-            addItem(Properties.Resources.Pais_de_Esperança, @"Outros\Pais de Esperança.exe");
-            addItem(Properties.Resources.Nos_Braços_de_Jesus, @"Outros\Nos braços de Jesus.exe");
-            addItem(Properties.Resources.Família, @"Outros\Família.exe");
+            addItem(Properties.Resources.Pais_de_Esperança_exe, @"Outros\Pais de Esperança.exe");
+            addItem(Properties.Resources.Nos_braços_de_Jesus_exe, @"Outros\Nos braços de Jesus.exe");
+            addItem(Properties.Resources.Família_exe, @"Outros\Família.exe");
 
-            addItem(Properties.Resources.Quando_Me_Chamar, @"Outros\Quando me chamar.exe");
-            addItem(Properties.Resources.Shekinah, @"Outros\Shekinah.exe");
-            addItem(Properties.Resources.Reina_em_Mim, @"Outros\Reina em Mim.exe");
-            addItem(Properties.Resources.Jovens_Por_Uma_Paixão, @"Outros\Jovens Por Uma Paixão.exe");
-            addItem(Properties.Resources.Vim_Para_Adorar_te, @"Outros\Vim para Adorar-Te.exe");
-            addItem(Properties.Resources.Amigos_Vamos_Ser, @"Outros\Amigos Vamos Ser.exe");
+            addItem(Properties.Resources.Quando_me_chamar_exe, @"Outros\Quando me chamar.exe");
+            addItem(Properties.Resources.Shekinah_exe, @"Outros\Shekinah.exe");
+            addItem(Properties.Resources.Reina_em_Mim_exe, @"Outros\Reina em Mim.exe");
+            addItem(Properties.Resources.Jovens_Por_Uma_Paixão_exe, @"Outros\Jovens Por Uma Paixão.exe");
+            addItem(Properties.Resources.Vim_para_Adorar_Te_exe, @"Outros\Vim para Adorar-Te.exe");
+            addItem(Properties.Resources.Amigos_Vamos_Ser_exe, @"Outros\Amigos Vamos Ser.exe");
             addItem(Properties.Resources.Te_Agradeço, @"Outros\Te Agradeço.exe");
-            addItem(Properties.Resources.Unidos_na_Esperança, @"Outros\Unidos na Esperança.exe");
+            addItem(Properties.Resources.Unidos_na_Esperança_exe, @"Outros\Unidos na Esperança.exe");
+            /*
             addItem(Properties.Resources.Toque_Minhas_Mãos, @"Outros\Toque Minhas Mãos.exe");
             addItem(Properties.Resources.Gente_Como_Jesus, @"Outros\Gente como Jesus.exe");
             addItem(Properties.Resources.Amigos_da_Esperança, @"Outros\Amigos da Esperança.exe");
@@ -353,6 +354,7 @@ namespace LouvorJA
             addItem(Properties.Resources.Quebrantado, @"Outros\Quebrantado.exe");
             addItem(Properties.Resources.Quem_Irá, @"Outros\Quem Irá.exe");
             addItem(Properties.Resources.Primeiro_Deus, @"Outros\Primeiro-Deus.mp4");
+            */
             #endregion
         }
         void infantil()
@@ -388,12 +390,12 @@ namespace LouvorJA
             addItem(Properties.Resources.TCHIBUM, @"Infantil\TCHIBUM.mp4");
             addItem(Properties.Resources.Zaqueu, @"Infantil\Zaqueu.mp4");
 
-            addItem(Properties.Resources.Cantando_com_Jesus_1, @"Cantando com Jesus 1.exe");
-            addItem(Properties.Resources.Cantando_com_Jesus_2, @"Cantando com Jesus 2.exe");
-            addItem(Properties.Resources.Ministério_da_Criança_I, "Ministério da Criança 1.exe");
-            addItem(Properties.Resources.Ministério_da_Criança_II, "Louvor Infantil II.exe");
-            addItem(Properties.Resources.Prisma_Teen, "Prisma Teen.exe");
-            addItem(Properties.Resources.AdoraçãoInfantil, @"Doxologia\AdoracaoInfantil.exe");
+            addItem(Properties.Resources.infantil_cantando1, @"Cantando com Jesus 1.exe");
+            addItem(Properties.Resources.infantil_cantando2, @"Cantando com Jesus 2.exe");
+            addItem(Properties.Resources.infantil_ministerio_da_crianca1, "Ministério da Criança 1.exe");
+            addItem(Properties.Resources.infantil_louvorinfantil2, "Louvor Infantil II.exe");
+            addItem(Properties.Resources.infantil_prisma_teen, "Prisma Teen.exe");
+            addItem(Properties.Resources.AdoracaoInfantil, @"Doxologia\AdoracaoInfantil.exe");
         }
         #endregion
 
@@ -428,23 +430,10 @@ namespace LouvorJA
         }
         void mouseEnter(object sender, EventArgs e)
         {
-            /*
-            item.BorderStyle = BorderStyle.None;
-            if(sender is PictureBox)
-            { 
-                item = ((PictureBox)sender);
-                item.BorderStyle = BorderStyle.FixedSingle;
-            }*/
             Cursor = Cursors.Hand;
         }
         void mouseLeave(object sender, EventArgs e)
         {
-            /*
-            if (sender is PictureBox)
-            {
-                ((PictureBox)sender).BorderStyle = BorderStyle.None;
-            }
-            */
             Cursor = Cursors.Default;
         }
         void setPnl(Label lbl)
@@ -559,8 +548,6 @@ namespace LouvorJA
                 return;
             Cursor = Cursors.AppStarting;
             var caminho = grd.SelectedRows[0].Cells["caminho"].Value.ToString();
-            if (cboFiltro.SelectedIndex == 3)
-                caminho = @"HASDPPS\1"+ grd.SelectedRows[0].Cells["id"].Value.ToString()+".pps";
             obj.abrir(caminho);
             txtBusca.Text = "";
             Cursor = Cursors.Default;

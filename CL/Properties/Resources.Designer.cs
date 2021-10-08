@@ -19,7 +19,7 @@ namespace LouvorJA.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,16 +63,6 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap A_Esperança_é_Jesus_PG {
-            get {
-                object obj = ResourceManager.GetObject("A_Esperança_é_Jesus_PG", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap A_vida_é_tão_boa {
             get {
                 object obj = ResourceManager.GetObject("A_vida_é_tão_boa", resourceCulture);
@@ -103,9 +93,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AdoraçãoInfantil {
+        internal static System.Drawing.Bitmap AdoracaoInfantil {
             get {
-                object obj = ResourceManager.GetObject("AdoraçãoInfantil", resourceCulture);
+                object obj = ResourceManager.GetObject("AdoracaoInfantil", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +103,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Adoradores {
+        internal static System.Drawing.Bitmap AdoracaoInfantilEntrada {
             get {
-                object obj = ResourceManager.GetObject("Adoradores", resourceCulture);
+                object obj = ResourceManager.GetObject("AdoracaoInfantilEntrada", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -123,9 +113,19 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Adoradores2 {
+        internal static System.Drawing.Bitmap AdoracaoInfantilSaida {
             get {
-                object obj = ResourceManager.GetObject("Adoradores2", resourceCulture);
+                object obj = ResourceManager.GetObject("AdoracaoInfantilSaida", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Adoradores1 {
+            get {
+                object obj = ResourceManager.GetObject("Adoradores1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,9 +143,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Adoradores3Menu {
+        internal static System.Drawing.Bitmap Adoradores4 {
             get {
-                object obj = ResourceManager.GetObject("Adoradores3Menu", resourceCulture);
+                object obj = ResourceManager.GetObject("Adoradores4", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -153,9 +153,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Amigo_Não_Saia_sem_Cristo {
+        internal static System.Drawing.Bitmap AEsperancaEJesus {
             get {
-                object obj = ResourceManager.GetObject("Amigo_Não_Saia_sem_Cristo", resourceCulture);
+                object obj = ResourceManager.GetObject("AEsperancaEJesus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -163,9 +163,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Amigos_da_Esperança {
+        internal static System.Drawing.Bitmap AmigoNaoSaiaSemCristo {
             get {
-                object obj = ResourceManager.GetObject("Amigos_da_Esperança", resourceCulture);
+                object obj = ResourceManager.GetObject("AmigoNaoSaiaSemCristo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -173,9 +173,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Amigos_Vamos_Ser {
+        internal static System.Drawing.Bitmap amigos_da_esperanca {
             get {
-                object obj = ResourceManager.GetObject("Amigos_Vamos_Ser", resourceCulture);
+                object obj = ResourceManager.GetObject("amigos_da_esperanca", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +183,19 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AmigosDaEsperancaMenu {
+        internal static System.Drawing.Bitmap Amigos_Vamos_Ser_exe {
             get {
-                object obj = ResourceManager.GetObject("AmigosDaEsperancaMenu", resourceCulture);
+                object obj = ResourceManager.GetObject("Amigos_Vamos_Ser_exe", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AmigosDaEsperanca {
+            get {
+                object obj = ResourceManager.GetObject("AmigosDaEsperanca", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +213,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Amizade_é_pra_Sempre {
+        internal static System.Drawing.Bitmap AmizadeEPraSempre {
             get {
-                object obj = ResourceManager.GetObject("Amizade_é_pra_Sempre", resourceCulture);
+                object obj = ResourceManager.GetObject("AmizadeEPraSempre", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,9 +223,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ao_Orarmos_Senhor {
+        internal static System.Drawing.Bitmap AoOrarmosSenhor {
             get {
-                object obj = ResourceManager.GetObject("Ao_Orarmos_Senhor", resourceCulture);
+                object obj = ResourceManager.GetObject("AoOrarmosSenhor", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -226,6 +236,16 @@ namespace LouvorJA.Properties {
         internal static System.Drawing.Bitmap Armadura_do_Cristão {
             get {
                 object obj = ResourceManager.GetObject("Armadura_do_Cristão", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AteQueEleVenha {
+            get {
+                object obj = ResourceManager.GetObject("AteQueEleVenha", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -263,9 +283,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Cada_Passo {
+        internal static System.Drawing.Bitmap CadaPasso {
             get {
-                object obj = ResourceManager.GetObject("Cada_Passo", resourceCulture);
+                object obj = ResourceManager.GetObject("CadaPasso", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -273,9 +293,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Campori_AAMAR {
+        internal static System.Drawing.Bitmap CamporiAamar {
             get {
-                object obj = ResourceManager.GetObject("Campori_AAMAR", resourceCulture);
+                object obj = ResourceManager.GetObject("CamporiAamar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -283,9 +303,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Campori_ACeAM {
+        internal static System.Drawing.Bitmap CamporiAceam {
             get {
-                object obj = ResourceManager.GetObject("Campori_ACeAM", resourceCulture);
+                object obj = ResourceManager.GetObject("CamporiAceam", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -293,29 +313,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Cantando_com_Jesus_1 {
+        internal static System.Drawing.Bitmap CelebraSP1 {
             get {
-                object obj = ResourceManager.GetObject("Cantando_com_Jesus_1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Cantando_com_Jesus_2 {
-            get {
-                object obj = ResourceManager.GetObject("Cantando_com_Jesus_2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap celebrasp {
-            get {
-                object obj = ResourceManager.GetObject("celebrasp", resourceCulture);
+                object obj = ResourceManager.GetObject("CelebraSP1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -333,19 +333,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap CelebraSP2Menu {
+        internal static System.Drawing.Bitmap CelebraSP3 {
             get {
-                object obj = ResourceManager.GetObject("CelebraSP2Menu", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CelebraSPMenu {
-            get {
-                object obj = ResourceManager.GetObject("CelebraSPMenu", resourceCulture);
+                object obj = ResourceManager.GetObject("CelebraSP3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -363,9 +353,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Colheita_2006 {
+        internal static System.Drawing.Bitmap Colheita2006 {
             get {
-                object obj = ResourceManager.GetObject("Colheita_2006", resourceCulture);
+                object obj = ResourceManager.GetObject("Colheita2006", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -373,9 +363,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap config {
+        internal static System.Drawing.Bitmap Config {
             get {
-                object obj = ResourceManager.GetObject("config", resourceCulture);
+                object obj = ResourceManager.GetObject("Config", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -383,9 +373,19 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Cristo_Volte__Volte_Já {
+        internal static System.Drawing.Bitmap Corinhos {
             get {
-                object obj = ResourceManager.GetObject("Cristo_Volte__Volte_Já", resourceCulture);
+                object obj = ResourceManager.GetObject("Corinhos", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CristoVolteVolteJa {
+            get {
+                object obj = ResourceManager.GetObject("CristoVolteVolteJa", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -443,9 +443,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap De_Volta_ao_Jardim_do_Éden {
+        internal static System.Drawing.Bitmap DanielLudtkeDiferente {
             get {
-                object obj = ResourceManager.GetObject("De_Volta_ao_Jardim_do_Éden", resourceCulture);
+                object obj = ResourceManager.GetObject("DanielLudtkeDiferente", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -453,9 +453,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Deixai_Vir_a_Mim_os_Pequeninos {
+        internal static System.Drawing.Bitmap DanielLudtkeFilhosDeIsrael {
             get {
-                object obj = ResourceManager.GetObject("Deixai_Vir_a_Mim_os_Pequeninos", resourceCulture);
+                object obj = ResourceManager.GetObject("DanielLudtkeFilhosDeIsrael", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -463,9 +463,39 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Desbravadores_Nova_Descoberta {
+        internal static System.Drawing.Bitmap DanielLudtkeJesusLuz {
             get {
-                object obj = ResourceManager.GetObject("Desbravadores_Nova_Descoberta", resourceCulture);
+                object obj = ResourceManager.GetObject("DanielLudtkeJesusLuz", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DanielLudtkeSalmos1 {
+            get {
+                object obj = ResourceManager.GetObject("DanielLudtkeSalmos1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DanielLudtkeSalmos2 {
+            get {
+                object obj = ResourceManager.GetObject("DanielLudtkeSalmos2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DeixaiVirAMimOsPequeninos {
+            get {
+                object obj = ResourceManager.GetObject("DeixaiVirAMimOsPequeninos", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -493,9 +523,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Deus_de_Israel {
+        internal static System.Drawing.Bitmap Deus_de_Israel_exe {
             get {
-                object obj = ResourceManager.GetObject("Deus_de_Israel", resourceCulture);
+                object obj = ResourceManager.GetObject("Deus_de_Israel_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -503,9 +533,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Deus_Está_Presente {
+        internal static System.Drawing.Bitmap Deus_Está_Presente_exe {
             get {
-                object obj = ResourceManager.GetObject("Deus_Está_Presente", resourceCulture);
+                object obj = ResourceManager.GetObject("Deus_Está_Presente_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -523,9 +553,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap diferente {
+        internal static System.Drawing.Bitmap DeVoltaAoJardimDoÉden {
             get {
-                object obj = ResourceManager.GetObject("diferente", resourceCulture);
+                object obj = ResourceManager.GetObject("DeVoltaAoJardimDoÉden", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -533,9 +563,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Diga_ao_Mundo {
+        internal static System.Drawing.Bitmap diga_ao_mundo {
             get {
-                object obj = ResourceManager.GetObject("Diga_ao_Mundo", resourceCulture);
+                object obj = ResourceManager.GetObject("diga_ao_mundo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -543,9 +573,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Doce_Como_o_Mel {
+        internal static System.Drawing.Bitmap Doce_Como_Mel_exe {
             get {
-                object obj = ResourceManager.GetObject("Doce_Como_o_Mel", resourceCulture);
+                object obj = ResourceManager.GetObject("Doce_Como_Mel_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -553,9 +583,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap É_Hora_de_Viver {
+        internal static System.Drawing.Bitmap e_hora_de_viver {
             get {
-                object obj = ResourceManager.GetObject("É_Hora_de_Viver", resourceCulture);
+                object obj = ResourceManager.GetObject("e_hora_de_viver", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -563,9 +593,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap E_Recebereis_Poder {
+        internal static System.Drawing.Bitmap e_recebereis_poder {
             get {
-                object obj = ResourceManager.GetObject("E_Recebereis_Poder", resourceCulture);
+                object obj = ResourceManager.GetObject("e_recebereis_poder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -573,9 +603,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap É_Só_Louvor {
+        internal static System.Drawing.Bitmap e_so_louvor {
             get {
-                object obj = ResourceManager.GetObject("É_Só_Louvor", resourceCulture);
+                object obj = ResourceManager.GetObject("e_so_louvor", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -583,9 +613,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ele_Virá {
+        internal static System.Drawing.Bitmap Ele_Virá_exe {
             get {
-                object obj = ResourceManager.GetObject("Ele_Virá", resourceCulture);
+                object obj = ResourceManager.GetObject("Ele_Virá_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -593,9 +623,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Em_Comunhão {
+        internal static System.Drawing.Bitmap em_comunhao {
             get {
-                object obj = ResourceManager.GetObject("Em_Comunhão", resourceCulture);
+                object obj = ResourceManager.GetObject("em_comunhao", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -613,9 +643,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Escola_Sabatina {
+        internal static System.Drawing.Bitmap escolhidos_para_brilhar {
             get {
-                object obj = ResourceManager.GetObject("Escola_Sabatina", resourceCulture);
+                object obj = ResourceManager.GetObject("escolhidos_para_brilhar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -623,29 +653,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Escolhas {
+        internal static System.Drawing.Bitmap escolhidos_por_jesus {
             get {
-                object obj = ResourceManager.GetObject("Escolhas", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Escolhido_por_Jesus {
-            get {
-                object obj = ResourceManager.GetObject("Escolhido_por_Jesus", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Escolhidos_para_Brilhar {
-            get {
-                object obj = ResourceManager.GetObject("Escolhidos_para_Brilhar", resourceCulture);
+                object obj = ResourceManager.GetObject("escolhidos_por_jesus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -663,9 +673,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Eu_creio {
+        internal static System.Drawing.Bitmap Eu_Tenho_Que_Orar_exe {
             get {
-                object obj = ResourceManager.GetObject("Eu_creio", resourceCulture);
+                object obj = ResourceManager.GetObject("Eu_Tenho_Que_Orar_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -673,9 +683,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Eu_Tenho_Que_Orar {
+        internal static System.Drawing.Bitmap evangelismo_com_esperanca {
             get {
-                object obj = ResourceManager.GetObject("Eu_Tenho_Que_Orar", resourceCulture);
+                object obj = ResourceManager.GetObject("evangelismo_com_esperanca", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -683,9 +693,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap EuCreioPequeno {
+        internal static System.Drawing.Bitmap evangelismo_integrado {
             get {
-                object obj = ResourceManager.GetObject("EuCreioPequeno", resourceCulture);
+                object obj = ResourceManager.GetObject("evangelismo_integrado", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -693,9 +703,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Evangelismo_Integrado {
+        internal static System.Drawing.Bitmap Família_exe {
             get {
-                object obj = ResourceManager.GetObject("Evangelismo_Integrado", resourceCulture);
+                object obj = ResourceManager.GetObject("Família_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -703,59 +713,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap EvangelismoEmLouvor2012 {
+        internal static System.Drawing.Bitmap familia_por_familias {
             get {
-                object obj = ResourceManager.GetObject("EvangelismoEmLouvor2012", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Evangelizando_com_Esperança {
-            get {
-                object obj = ResourceManager.GetObject("Evangelizando_com_Esperança", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Facebook {
-            get {
-                object obj = ResourceManager.GetObject("Facebook", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Família {
-            get {
-                object obj = ResourceManager.GetObject("Família", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Família_por_Famílias {
-            get {
-                object obj = ResourceManager.GetObject("Família_por_Famílias", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Filhos_de_Israel {
-            get {
-                object obj = ResourceManager.GetObject("Filhos_de_Israel", resourceCulture);
+                object obj = ResourceManager.GetObject("familia_por_familias", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -773,9 +733,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Gente_Como_Jesus {
+        internal static System.Drawing.Bitmap Gente_como_Jesus_exe {
             get {
-                object obj = ResourceManager.GetObject("Gente_Como_Jesus", resourceCulture);
+                object obj = ResourceManager.GetObject("Gente_como_Jesus_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -786,16 +746,6 @@ namespace LouvorJA.Properties {
         internal static System.Drawing.Bitmap Gigante_Davi {
             get {
                 object obj = ResourceManager.GetObject("Gigante_Davi", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap HASD {
-            get {
-                object obj = ResourceManager.GetObject("HASD", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -823,9 +773,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Impacto_Esperança {
+        internal static System.Drawing.Bitmap impacto_esperanca {
             get {
-                object obj = ResourceManager.GetObject("Impacto_Esperança", resourceCulture);
+                object obj = ResourceManager.GetObject("impacto_esperanca", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -833,9 +783,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap infantil1 {
+        internal static System.Drawing.Bitmap infantil_cantando1 {
             get {
-                object obj = ResourceManager.GetObject("infantil1", resourceCulture);
+                object obj = ResourceManager.GetObject("infantil_cantando1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -843,9 +793,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap infantil2 {
+        internal static System.Drawing.Bitmap infantil_cantando2 {
             get {
-                object obj = ResourceManager.GetObject("infantil2", resourceCulture);
+                object obj = ResourceManager.GetObject("infantil_cantando2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -853,9 +803,39 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Instrumental {
+        internal static System.Drawing.Bitmap infantil_louvorinfantil2 {
             get {
-                object obj = ResourceManager.GetObject("Instrumental", resourceCulture);
+                object obj = ResourceManager.GetObject("infantil_louvorinfantil2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap infantil_ministerio_da_crianca1 {
+            get {
+                object obj = ResourceManager.GetObject("infantil_ministerio_da_crianca1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap infantil_prisma_teen {
+            get {
+                object obj = ResourceManager.GetObject("infantil_prisma_teen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap instrumental {
+            get {
+                object obj = ResourceManager.GetObject("instrumental", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -883,9 +863,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1992 {
+        internal static System.Drawing.Bitmap ja_1992 {
             get {
-                object obj = ResourceManager.GetObject("JA1992", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1992", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -893,9 +873,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1993 {
+        internal static System.Drawing.Bitmap ja_1993 {
             get {
-                object obj = ResourceManager.GetObject("JA1993", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1993", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -903,9 +883,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1994 {
+        internal static System.Drawing.Bitmap ja_1994 {
             get {
-                object obj = ResourceManager.GetObject("JA1994", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1994", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -913,9 +893,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1995 {
+        internal static System.Drawing.Bitmap ja_1995 {
             get {
-                object obj = ResourceManager.GetObject("JA1995", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1995", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -923,9 +903,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1996 {
+        internal static System.Drawing.Bitmap ja_1996 {
             get {
-                object obj = ResourceManager.GetObject("JA1996", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1996", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -933,9 +913,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1997 {
+        internal static System.Drawing.Bitmap ja_1997 {
             get {
-                object obj = ResourceManager.GetObject("JA1997", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1997", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -943,9 +923,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1998 {
+        internal static System.Drawing.Bitmap ja_1998 {
             get {
-                object obj = ResourceManager.GetObject("JA1998", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1998", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -953,9 +933,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA1999 {
+        internal static System.Drawing.Bitmap ja_1999 {
             get {
-                object obj = ResourceManager.GetObject("JA1999", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_1999", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -963,9 +943,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2000 {
+        internal static System.Drawing.Bitmap ja_2000 {
             get {
-                object obj = ResourceManager.GetObject("JA2000", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2000", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -973,9 +953,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2001 {
+        internal static System.Drawing.Bitmap ja_2001 {
             get {
-                object obj = ResourceManager.GetObject("JA2001", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2001", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -983,9 +963,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2002 {
+        internal static System.Drawing.Bitmap ja_2002 {
             get {
-                object obj = ResourceManager.GetObject("JA2002", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2002", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -993,9 +973,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2003 {
+        internal static System.Drawing.Bitmap ja_2003 {
             get {
-                object obj = ResourceManager.GetObject("JA2003", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2003", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1003,9 +983,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2004 {
+        internal static System.Drawing.Bitmap ja_2004 {
             get {
-                object obj = ResourceManager.GetObject("JA2004", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2004", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1013,9 +993,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2005 {
+        internal static System.Drawing.Bitmap ja_2005 {
             get {
-                object obj = ResourceManager.GetObject("JA2005", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2005", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1023,9 +1003,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2006 {
+        internal static System.Drawing.Bitmap ja_2006 {
             get {
-                object obj = ResourceManager.GetObject("JA2006", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2006", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1033,9 +1013,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2007 {
+        internal static System.Drawing.Bitmap ja_2007 {
             get {
-                object obj = ResourceManager.GetObject("JA2007", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2007", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1043,9 +1023,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2008 {
+        internal static System.Drawing.Bitmap ja_2008 {
             get {
-                object obj = ResourceManager.GetObject("JA2008", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2008", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1053,9 +1033,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2009 {
+        internal static System.Drawing.Bitmap ja_2009 {
             get {
-                object obj = ResourceManager.GetObject("JA2009", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2009", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1063,9 +1043,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2010 {
+        internal static System.Drawing.Bitmap ja_2010 {
             get {
-                object obj = ResourceManager.GetObject("JA2010", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2010", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1073,9 +1053,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2011 {
+        internal static System.Drawing.Bitmap ja_2011 {
             get {
-                object obj = ResourceManager.GetObject("JA2011", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2011", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1083,9 +1063,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2012 {
+        internal static System.Drawing.Bitmap ja_2012 {
             get {
-                object obj = ResourceManager.GetObject("JA2012", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2012", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1093,9 +1073,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2013 {
+        internal static System.Drawing.Bitmap ja_2013 {
             get {
-                object obj = ResourceManager.GetObject("JA2013", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2013", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1103,9 +1083,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2014 {
+        internal static System.Drawing.Bitmap ja_2014 {
             get {
-                object obj = ResourceManager.GetObject("JA2014", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2014", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1113,9 +1093,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap JA2015 {
+        internal static System.Drawing.Bitmap ja_2015 {
             get {
-                object obj = ResourceManager.GetObject("JA2015", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2015", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1123,9 +1103,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Jesus_é_Meu_Capitão {
+        internal static System.Drawing.Bitmap ja_2016 {
             get {
-                object obj = ResourceManager.GetObject("Jesus_é_Meu_Capitão", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2016", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1133,9 +1113,29 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Jesus_Luz_do_Mundo {
+        internal static System.Drawing.Bitmap ja_2017 {
             get {
-                object obj = ResourceManager.GetObject("Jesus_Luz_do_Mundo", resourceCulture);
+                object obj = ResourceManager.GetObject("ja_2017", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ja_2019 {
+            get {
+                object obj = ResourceManager.GetObject("ja_2019", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ja_2020 {
+            get {
+                object obj = ResourceManager.GetObject("ja_2020", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1153,9 +1153,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Jovens_Por_Uma_Paixão {
+        internal static System.Drawing.Bitmap Jovens_Por_Uma_Paixão_exe {
             get {
-                object obj = ResourceManager.GetObject("Jovens_Por_Uma_Paixão", resourceCulture);
+                object obj = ResourceManager.GetObject("Jovens_Por_Uma_Paixão_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1163,9 +1163,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Louve_ao_Senhor {
+        internal static System.Drawing.Bitmap louve_ao_senhor {
             get {
-                object obj = ResourceManager.GetObject("Louve_ao_Senhor", resourceCulture);
+                object obj = ResourceManager.GetObject("louve_ao_senhor", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1173,9 +1173,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Louvor_2005 {
+        internal static System.Drawing.Bitmap louvor_2005 {
             get {
-                object obj = ResourceManager.GetObject("Louvor_2005", resourceCulture);
+                object obj = ResourceManager.GetObject("louvor_2005", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1193,9 +1193,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Melhore_o_Mundo {
+        internal static System.Drawing.Bitmap melhore_o_mundo {
             get {
-                object obj = ResourceManager.GetObject("Melhore_o_Mundo", resourceCulture);
+                object obj = ResourceManager.GetObject("melhore_o_mundo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1203,9 +1203,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Mensageiros_da_Esperança {
+        internal static System.Drawing.Bitmap mensageiros_da_esperanca {
             get {
-                object obj = ResourceManager.GetObject("Mensageiros_da_Esperança", resourceCulture);
+                object obj = ResourceManager.GetObject("mensageiros_da_esperanca", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1213,9 +1213,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Meu_FIlho_Vem {
+        internal static System.Drawing.Bitmap Meu_Filho_Vem_exe {
             get {
-                object obj = ResourceManager.GetObject("Meu_FIlho_Vem", resourceCulture);
+                object obj = ResourceManager.GetObject("Meu_Filho_Vem_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1223,9 +1223,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Meu_Universo {
+        internal static System.Drawing.Bitmap Meu_Universo_exe {
             get {
-                object obj = ResourceManager.GetObject("Meu_Universo", resourceCulture);
+                object obj = ResourceManager.GetObject("Meu_Universo_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1243,9 +1243,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Minha_Permissão {
+        internal static System.Drawing.Bitmap Minha_Permissão_exe {
             get {
-                object obj = ResourceManager.GetObject("Minha_Permissão", resourceCulture);
+                object obj = ResourceManager.GetObject("Minha_Permissão_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1263,9 +1263,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ministério_da_Criança_I {
+        internal static System.Drawing.Bitmap ministerio_da_mulher {
             get {
-                object obj = ResourceManager.GetObject("Ministério_da_Criança_I", resourceCulture);
+                object obj = ResourceManager.GetObject("ministerio_da_mulher", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1273,9 +1273,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ministério_da_Criança_II {
+        internal static System.Drawing.Bitmap Ministerio_Louvor_NT {
             get {
-                object obj = ResourceManager.GetObject("Ministério_da_Criança_II", resourceCulture);
+                object obj = ResourceManager.GetObject("Ministerio_Louvor_NT", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1283,9 +1283,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ministério_da_Família_Vida_Plena {
+        internal static System.Drawing.Bitmap Ministerio_Louvor_Vol_1 {
             get {
-                object obj = ResourceManager.GetObject("Ministério_da_Família_Vida_Plena", resourceCulture);
+                object obj = ResourceManager.GetObject("Ministerio_Louvor_Vol_1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1293,39 +1293,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ministério_da_Mulher {
+        internal static System.Drawing.Bitmap Ministerio_Louvor_Vol_2 {
             get {
-                object obj = ResourceManager.GetObject("Ministério_da_Mulher", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Ministério_do_Louvor_Está_Escrito_Vol_1 {
-            get {
-                object obj = ResourceManager.GetObject("Ministério_do_Louvor_Está_Escrito_Vol_1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Ministério_do_Louvor_Está_Escrito_Vol_2 {
-            get {
-                object obj = ResourceManager.GetObject("Ministério_do_Louvor_Está_Escrito_Vol_2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Ministério_Novo_Tempo {
-            get {
-                object obj = ResourceManager.GetObject("Ministério_Novo_Tempo", resourceCulture);
+                object obj = ResourceManager.GetObject("Ministerio_Louvor_Vol_2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1343,9 +1313,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Na_Contramão_do_Mundo {
+        internal static System.Drawing.Bitmap Na_Contramão_do_Mundo_exe {
             get {
-                object obj = ResourceManager.GetObject("Na_Contramão_do_Mundo", resourceCulture);
+                object obj = ResourceManager.GetObject("Na_Contramão_do_Mundo_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1353,9 +1323,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Na_Presença_de_Deus {
+        internal static System.Drawing.Bitmap na_presenca_de_deus {
             get {
-                object obj = ResourceManager.GetObject("Na_Presença_de_Deus", resourceCulture);
+                object obj = ResourceManager.GetObject("na_presenca_de_deus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1363,9 +1333,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Na_Trilha_da_Conquista {
+        internal static System.Drawing.Bitmap na_trilha_da_conquista {
             get {
-                object obj = ResourceManager.GetObject("Na_Trilha_da_Conquista", resourceCulture);
+                object obj = ResourceManager.GetObject("na_trilha_da_conquista", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1383,9 +1353,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Nos_Átrios_de_Deus {
+        internal static System.Drawing.Bitmap Nos_Átrios_de_Deus_exe {
             get {
-                object obj = ResourceManager.GetObject("Nos_Átrios_de_Deus", resourceCulture);
+                object obj = ResourceManager.GetObject("Nos_Átrios_de_Deus_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1393,9 +1363,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Nos_Braços_de_Jesus {
+        internal static System.Drawing.Bitmap Nos_braços_de_Jesus_exe {
             get {
-                object obj = ResourceManager.GetObject("Nos_Braços_de_Jesus", resourceCulture);
+                object obj = ResourceManager.GetObject("Nos_braços_de_Jesus_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1403,9 +1373,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Nova_Voz_Creio_em_Ti {
+        internal static System.Drawing.Bitmap nova_descoberta {
             get {
-                object obj = ResourceManager.GetObject("Nova_Voz_Creio_em_Ti", resourceCulture);
+                object obj = ResourceManager.GetObject("nova_descoberta", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1413,9 +1383,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Nova_Voz_Uma_Geração {
+        internal static System.Drawing.Bitmap NovaVoz_CreioEmTi {
             get {
-                object obj = ResourceManager.GetObject("Nova_Voz_Uma_Geração", resourceCulture);
+                object obj = ResourceManager.GetObject("NovaVoz_CreioEmTi", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1423,19 +1393,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Novo_Sentido {
+        internal static System.Drawing.Bitmap novo_sentido {
             get {
-                object obj = ResourceManager.GetObject("Novo_Sentido", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Nuvens {
-            get {
-                object obj = ResourceManager.GetObject("Nuvens", resourceCulture);
+                object obj = ResourceManager.GetObject("novo_sentido", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1473,9 +1433,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap O_Senhor_Está_Aqui {
+        internal static System.Drawing.Bitmap O_Senhor_Está_Aqui_exe {
             get {
-                object obj = ResourceManager.GetObject("O_Senhor_Está_Aqui", resourceCulture);
+                object obj = ResourceManager.GetObject("O_Senhor_Está_Aqui_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1483,9 +1443,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Ofertório {
+        internal static System.Drawing.Bitmap Ofertorio_exe {
             get {
-                object obj = ResourceManager.GetObject("Ofertório", resourceCulture);
+                object obj = ResourceManager.GetObject("Ofertorio_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1493,9 +1453,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Oh_Adorai {
+        internal static System.Drawing.Bitmap Oh__Adorai_exe {
             get {
-                object obj = ResourceManager.GetObject("Oh_Adorai", resourceCulture);
+                object obj = ResourceManager.GetObject("Oh__Adorai_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1513,9 +1473,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Os_Sonhos_de_Deus {
+        internal static System.Drawing.Bitmap Os_sonhos_de_Deus_exe {
             get {
-                object obj = ResourceManager.GetObject("Os_Sonhos_de_Deus", resourceCulture);
+                object obj = ResourceManager.GetObject("Os_sonhos_de_Deus_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1533,19 +1493,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Pais_de_Esperança {
+        internal static System.Drawing.Bitmap Pais_de_Esperança_exe {
             get {
-                object obj = ResourceManager.GetObject("Pais_de_Esperança", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Pedido_de_Oração {
-            get {
-                object obj = ResourceManager.GetObject("Pedido_de_Oração", resourceCulture);
+                object obj = ResourceManager.GetObject("Pais_de_Esperança_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1563,9 +1513,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Permaneça_em_Mim {
+        internal static System.Drawing.Bitmap Permaneça_em_Mim_exe {
             get {
-                object obj = ResourceManager.GetObject("Permaneça_em_Mim", resourceCulture);
+                object obj = ResourceManager.GetObject("Permaneça_em_Mim_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1573,9 +1523,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Pra_Ser_Feliz {
+        internal static System.Drawing.Bitmap pra_ser_feliz {
             get {
-                object obj = ResourceManager.GetObject("Pra_Ser_Feliz", resourceCulture);
+                object obj = ResourceManager.GetObject("pra_ser_feliz", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1583,9 +1533,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Primeiro_Deus {
+        internal static System.Drawing.Bitmap Primeiro_Deus_mp4 {
             get {
-                object obj = ResourceManager.GetObject("Primeiro_Deus", resourceCulture);
+                object obj = ResourceManager.GetObject("Primeiro_Deus_mp4", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1593,9 +1543,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Prisma_Teen {
+        internal static System.Drawing.Bitmap Provérbios_15_13_exe {
             get {
-                object obj = ResourceManager.GetObject("Prisma_Teen", resourceCulture);
+                object obj = ResourceManager.GetObject("Provérbios_15_13_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1603,9 +1553,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Provérbios_15 {
+        internal static System.Drawing.Bitmap Quando_me_chamar_exe {
             get {
-                object obj = ResourceManager.GetObject("Provérbios_15", resourceCulture);
+                object obj = ResourceManager.GetObject("Quando_me_chamar_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1613,9 +1563,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Quando_Me_Chamar {
+        internal static System.Drawing.Bitmap Quebrando_o_silêncio_exe {
             get {
-                object obj = ResourceManager.GetObject("Quando_Me_Chamar", resourceCulture);
+                object obj = ResourceManager.GetObject("Quebrando_o_silêncio_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1623,9 +1573,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Quebrando_o_Silêncio {
+        internal static System.Drawing.Bitmap Quebrantado_exe {
             get {
-                object obj = ResourceManager.GetObject("Quebrando_o_Silêncio", resourceCulture);
+                object obj = ResourceManager.GetObject("Quebrantado_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1633,9 +1583,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Quebrantado {
+        internal static System.Drawing.Bitmap Quem_Irá_exe {
             get {
-                object obj = ResourceManager.GetObject("Quebrantado", resourceCulture);
+                object obj = ResourceManager.GetObject("Quem_Irá_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1643,9 +1593,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Quem_Irá {
+        internal static System.Drawing.Bitmap Quero_Ofertar_exe {
             get {
-                object obj = ResourceManager.GetObject("Quem_Irá", resourceCulture);
+                object obj = ResourceManager.GetObject("Quero_Ofertar_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1653,9 +1603,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Quero_Ofertar {
+        internal static System.Drawing.Bitmap quero_te_ver {
             get {
-                object obj = ResourceManager.GetObject("Quero_Ofertar", resourceCulture);
+                object obj = ResourceManager.GetObject("quero_te_ver", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1663,9 +1613,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap QueroTeVer {
+        internal static System.Drawing.Bitmap Reina_em_Mim_exe {
             get {
-                object obj = ResourceManager.GetObject("QueroTeVer", resourceCulture);
+                object obj = ResourceManager.GetObject("Reina_em_Mim_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1673,39 +1623,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Reina_em_Mim {
+        internal static System.Drawing.Bitmap restaurando_vidas {
             get {
-                object obj = ResourceManager.GetObject("Reina_em_Mim", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Restaurando_Vidas {
-            get {
-                object obj = ResourceManager.GetObject("Restaurando_Vidas", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Salmos {
-            get {
-                object obj = ResourceManager.GetObject("Salmos", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Salmos2 {
-            get {
-                object obj = ResourceManager.GetObject("Salmos2", resourceCulture);
+                object obj = ResourceManager.GetObject("restaurando_vidas", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1723,9 +1643,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Shekinah {
+        internal static System.Drawing.Bitmap Shekinah_exe {
             get {
-                object obj = ResourceManager.GetObject("Shekinah", resourceCulture);
+                object obj = ResourceManager.GetObject("Shekinah_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1733,9 +1653,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Sinto_a_Presença_do_Senhor {
+        internal static System.Drawing.Bitmap Sinto_a_Presença_exe {
             get {
-                object obj = ResourceManager.GetObject("Sinto_a_Presença_do_Senhor", resourceCulture);
+                object obj = ResourceManager.GetObject("Sinto_a_Presença_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1763,9 +1683,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Superação {
+        internal static System.Drawing.Bitmap Superacao {
             get {
-                object obj = ResourceManager.GetObject("Superação", resourceCulture);
+                object obj = ResourceManager.GetObject("Superacao", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1793,9 +1713,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Tempo_de_Ser_Feliz {
+        internal static System.Drawing.Bitmap Tempo_Ser_Feliz_exe {
             get {
-                object obj = ResourceManager.GetObject("Tempo_de_Ser_Feliz", resourceCulture);
+                object obj = ResourceManager.GetObject("Tempo_Ser_Feliz_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1803,9 +1723,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Toma_Meu_Coração {
+        internal static System.Drawing.Bitmap Toma_meu_coração_exe {
             get {
-                object obj = ResourceManager.GetObject("Toma_Meu_Coração", resourceCulture);
+                object obj = ResourceManager.GetObject("Toma_meu_coração_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1813,9 +1733,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Toque_Minhas_Mãos {
+        internal static System.Drawing.Bitmap ToqueDePoder_exe {
             get {
-                object obj = ResourceManager.GetObject("Toque_Minhas_Mãos", resourceCulture);
+                object obj = ResourceManager.GetObject("ToqueDePoder_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1823,9 +1743,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ToqueDePoder {
+        internal static System.Drawing.Bitmap Um_Milagre_se_Realizará_exe {
             get {
-                object obj = ResourceManager.GetObject("ToqueDePoder", resourceCulture);
+                object obj = ResourceManager.GetObject("Um_Milagre_se_Realizará_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1833,9 +1753,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Um_Dia_de_Esperança {
+        internal static System.Drawing.Bitmap Unidos_na_Esperança_exe {
             get {
-                object obj = ResourceManager.GetObject("Um_Dia_de_Esperança", resourceCulture);
+                object obj = ResourceManager.GetObject("Unidos_na_Esperança_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1843,9 +1763,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Um_Milagre_se_Realizará {
+        internal static System.Drawing.Bitmap vamos_louvar_nosso_rei {
             get {
-                object obj = ResourceManager.GetObject("Um_Milagre_se_Realizará", resourceCulture);
+                object obj = ResourceManager.GetObject("vamos_louvar_nosso_rei", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1853,9 +1773,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Unidos_na_Esperança {
+        internal static System.Drawing.Bitmap Vaso_de_Alabastro_exe {
             get {
-                object obj = ResourceManager.GetObject("Unidos_na_Esperança", resourceCulture);
+                object obj = ResourceManager.GetObject("Vaso_de_Alabastro_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1863,9 +1783,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Vamos_Louvar {
+        internal static System.Drawing.Bitmap Vem__Espírito_Santo_exe {
             get {
-                object obj = ResourceManager.GetObject("Vamos_Louvar", resourceCulture);
+                object obj = ResourceManager.GetObject("Vem__Espírito_Santo_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1873,9 +1793,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Vaso_de_Alabastro {
+        internal static System.Drawing.Bitmap Venha_Espírito_Santo_exe {
             get {
-                object obj = ResourceManager.GetObject("Vaso_de_Alabastro", resourceCulture);
+                object obj = ResourceManager.GetObject("Venha_Espírito_Santo_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1883,9 +1803,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Vem_Espírito_Santo {
+        internal static System.Drawing.Bitmap vida_plena {
             get {
-                object obj = ResourceManager.GetObject("Vem_Espírito_Santo", resourceCulture);
+                object obj = ResourceManager.GetObject("vida_plena", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1893,9 +1813,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Venha_Espírito_Santo {
+        internal static System.Drawing.Bitmap Vim_para_Adorar_Te_exe {
             get {
-                object obj = ResourceManager.GetObject("Venha_Espírito_Santo", resourceCulture);
+                object obj = ResourceManager.GetObject("Vim_para_Adorar_Te_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1903,19 +1823,9 @@ namespace LouvorJA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Vim_Para_Adorar_te {
+        internal static System.Drawing.Bitmap Vinde__Meninos_exe {
             get {
-                object obj = ResourceManager.GetObject("Vim_Para_Adorar_te", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Vinde_Meninos {
-            get {
-                object obj = ResourceManager.GetObject("Vinde_Meninos", resourceCulture);
+                object obj = ResourceManager.GetObject("Vinde__Meninos_exe", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

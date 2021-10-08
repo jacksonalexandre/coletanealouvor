@@ -49,13 +49,13 @@ namespace LouvorJA
             }
             lblQtdFaltando.Text = lstNaoEncontradosFaltando.Count.ToString();
             lnkFaltando.Visible = lstNaoEncontradosFaltando.Count > 0;
-            Console.WriteLine("Arquivos > Encontrados: " + lstEncontradosFaltando.Count + " Não: " + lstNaoEncontradosFaltando.Count);
+            Console.WriteLine("Faltando: " + lstNaoEncontradosFaltando.Count);
             lstNaoEncontradosFaltando.ForEach(i => Console.WriteLine(i));
 
             //2ª verificação
             foreach (String a in lstArquivosFisicos)
             {
-                if (a.Contains("Dados.mdb") || a.Contains("Coletânea de Louvor.") || a.Contains("Coletanea-de-Louvor") || a.Contains("HASDPPS"))
+                if (a.Contains("Dados.mdb") || a.Contains("Coletânea de Louvor.") || a.Contains("Coletanea-de-Louvor"))
                     continue;
                 if (dt.Compute("count(caminho)", "caminho='" + a.Substring(path.Length + 1) + "'").ToString() != "0")
                     lstEncontradosSobrando.Add(a);
@@ -64,7 +64,7 @@ namespace LouvorJA
             }
             lblQtdSobrando.Text = lstNaoEncontradosSobrando.Count.ToString();
             lnkSobrando.Visible = lstNaoEncontradosSobrando.Count > 0;
-            Console.WriteLine("Access > Encontrados: " + lstEncontradosSobrando.Count + " Não: " + lstNaoEncontradosSobrando.Count);
+            Console.WriteLine("Sobrando: " + lstNaoEncontradosSobrando.Count);
             lstNaoEncontradosSobrando.ForEach(i => Console.WriteLine(i));
         }
 
