@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace LouvorJA
 {
@@ -214,34 +215,31 @@ namespace LouvorJA
             addItem(Properties.Resources.Despedida, @"Doxologia\Despedida.mp4");
             addItem(Properties.Resources.Cronômetro, imgCronometro_Click);
             addItem(Properties.Resources.Sorteio, imgSorteio_Click);
-            // addItem(Properties.Resources.Escola_Sabatina, @"Doxologia\EncerramentoDaLicao.exe");
-            // addItem(Properties.Resources.Escola_Sabatina, @"Outros\Hino-Desbravadores.mp4");
-            // addItem(Properties.Resources.Escola_Sabatina, @"Outros\Hino-Aventureiros.mp4");
         }
         void jovens(Boolean inicial)
         {
             if(!inicial)
                 setPnl(lblJovens);
 
-            // addItem(Properties.Resources.AcusticoNT, delegate { new FormAcusticoNT().Show(); });
-            // addItem(Properties.Resources.CelebraSP2, delegate { new FormCelebraSP2().Show(); });
-            // addItem(Properties.Resources.CelebraSP1, delegate { new FormCelebraSP().Show(); });
-            // addItem(Properties.Resources.DanielLudtkeSalmos2, delegate { new FormSalmos2().Show(); });
+            addItemMenu(Properties.Resources.AcusticoNT, "Acústico NT");
+            addItemMenu(Properties.Resources.CelebraSP2, "Celebra SP 2");
+            addItemMenu(Properties.Resources.CelebraSP1, "Celebra SP 1");
+            addItemMenu(Properties.Resources.DanielLudtkeSalmos2, "Salmos 2");
+            // addItemMenu(Properties.Resources.EuCreio, "Eu Creio");
             addItem(Properties.Resources.DanielLudtkeDiferente, "Diferente.exe");
             addItem(Properties.Resources.DanielLudtkeJesusLuz, "Jesus Luz do Mundo.exe");
             addItem(Properties.Resources.DanielLudtkeFilhosDeIsrael, "Filhos de Israel.exe");
             addItem(Properties.Resources.DanielLudtkeSalmos1, "Salmos.exe");
             addItem(Properties.Resources.Ministerio_Louvor_Vol_2, "Ministério de Louvor.exe");
             addItem(Properties.Resources.Ministerio_Louvor_Vol_1, "Ministério de Louvor Vol.1.exe");
-            // addItem(Properties.Resources.EuCreio, delegate { new FormEuCreio().Show(); });
-            // addItem(Properties.Resources.Adoradores3, delegate { new FormAdoradores3().Show(); });
+            addItemMenu(Properties.Resources.Adoradores3, "Adoradores 3");
             addItem(Properties.Resources.ja_2016, "JA 2016.exe");
             addItem(Properties.Resources.Adoradores1, "Adoradores.exe");
             addItem(Properties.Resources.ja_2015, "JA 2015.exe");
             addItem(Properties.Resources.ja_2014, "JA 2014.exe");
             addItem(Properties.Resources.ja_2013, "JA 2013.exe");
             addItem(Properties.Resources.ja_2012, "JA 2012.exe");
-            // addItem(Properties.Resources.ja_2011, delegate { new FormJA2011().Show(); });
+            addItemMenu(Properties.Resources.ja_2011, "JA 2011");
             addItem(Properties.Resources.ja_2010, "JA 2010.exe");
             addItem(Properties.Resources.ja_2009, "JA 2009.exe");
             addItem(Properties.Resources.ja_2008, "JA 2008.exe");
@@ -299,7 +297,7 @@ namespace LouvorJA
             addItem(Properties.Resources.CamporiAceam, "Campori ACeAM.exe");
             addItem(Properties.Resources.nova_descoberta, "Nova_Descoberta.exe");
             addItem(Properties.Resources.vida_plena, "Vida_Plena.exe");
-            // addItem(Properties.Resources.Evangelizando_com_Esperança, "Evangelizando_com_Esperança.exe");
+            addItem(Properties.Resources.evangelismo_com_esperanca, "Evangelizando_com_Esperança.exe");
             addItem(Properties.Resources.AmizadeEPraSempre, "Amizade É Pra Sempre.exe");
 
             addItem(Properties.Resources.Songs, "Songs.exe");
@@ -406,6 +404,10 @@ namespace LouvorJA
             txtBusca.SelectAll();
             jovens(true);
         }
+        void addItemMenu(Bitmap imagem, String album)
+        {
+            addItem(imagem, delegate { txtBusca.Text = album; principal(); });
+        }
         void addItem(Bitmap imagem, String arquivo)
         {
             addItem(imagem, delegate { obj.abrir(arquivo); });
@@ -447,27 +449,25 @@ namespace LouvorJA
         }
         Int32 getHino()
         {
-            if (String.IsNullOrEmpty(txtBusca.Text))
+            try {
+                if (Regex.IsMatch(txtBusca.Text, @"^\d+$")) {
+                    Int32 hino = Convert.ToInt32(txtBusca.Text);
+                    return hino;
+                }
                 return 0;
-
-            try
-            {
-                Int32 hino = Convert.ToInt32(txtBusca.Text);
-                return hino;
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 return 0;
             }
         }
-        String removeAcentos(String str)
+        String opcoesAcentos(String str)
         {
             if (String.IsNullOrEmpty(str))
                 return str;
 
-            str = str.ToLower();
-            String lst1 = "áéíóúàèìòùäëïöüãõâêîôûç";
-            String lst2 = "aeiouaeiouaeiouaoaeiouc";
+            // str = str.ToLower();
+            String lst1 = "áéíóúàèìòùäëïöüãõâêîôûçÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÃÕÂÊÎÔÛÇ";
+            String lst2 = "aeiouaeiouaeiouaoaeioucAEIOUAEIOUAEIOUAOAEIOUC";
             return replaceAll(str, lst1.ToCharArray().ToList(), lst2.ToCharArray().ToList());
         }
         String replaceAll(String str, List<Char> oldChars, List<Char> newChars)
@@ -476,7 +476,9 @@ namespace LouvorJA
                 return str;
             var builder = new StringBuilder(str);
             foreach (var c in oldChars)
-                builder.Replace(c, newChars[oldChars.FindIndex(cc => cc == c)]);
+                builder.Replace(c.ToString(), "[" + c + "," + newChars[oldChars.FindIndex(cc => cc == c)] + "]");
+            foreach (var c in newChars)
+                builder.Replace(c.ToString(), "[" + c + "," + oldChars[newChars.FindIndex(cc => cc == c)] + "]");
             return builder.ToString();
         }
         void busca()
@@ -505,13 +507,14 @@ namespace LouvorJA
             principal();
 
             //var where = "replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(";
-            var where = "(titulo ";
+            var where = "((titulo) ";
             //where += "'á', 'a'), 'ã', 'a'), 'â', 'a'), 'é', 'e'), 'ê', 'e'), 'í', 'i'), 'ó', 'o'), 'õ', 'o'), 'ô', 'o'), 'ú', 'u'), 'ç', 'c') ";
             where += "LIKE ";
-            //where += "'%" + removeAcentos(hino) + "%' ";
+            // where += "'%" + opcoesAcentos(busca) + "%' ";
             where += "'%" + busca + "%' ";
             if (cboFiltro.SelectedIndex != 0)
                 where += "or letra like '%" + busca + "%' ";
+            where += "or album like '%" + busca + "%' ";
             var numero = getHino();
             if (busca.Length <= 4 && numero != 0)
                 where += "or (id=" + numero + ") ";
@@ -521,20 +524,16 @@ namespace LouvorJA
 
             var dt = new DataTable();
 
-            //Console.WriteLine(where);
-
             var adapter = new OleDbDataAdapter("select * from dados where " + where, "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=dados.mdb");
             if (!String.IsNullOrEmpty(busca))
                 adapter.Fill(dt);
 
             var lst2 = new List<Hino>();
-            foreach (Hino h in lst)
-            {
+            foreach (Hino h in lst) {
                 h.Favorito = true;
                 lst2.Add(h);
             }
-            foreach (DataRow r in dt.Rows)
-            {
+            foreach (DataRow r in dt.Rows) {
                 if(!lst.Any(o => o.ID == r["id"].ToString()))
                     lst2.Add(new Hino() { ID = r["id"].ToString(), Titulo = r["titulo"].ToString(), Caminho = r["caminho"].ToString(), Album = r["album"].ToString() });
             }
