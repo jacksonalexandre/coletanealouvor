@@ -1,11 +1,16 @@
-import type { LiveState } from "@/lib/types";
+import type { LiveState, PlayerState } from "@/lib/types";
 
 export type ChannelMessage =
-  | { type: "state"; state: LiveState }
+  /** Quem chega pede o estado atual. */
   | { type: "hello" }
   | { type: "display-open" }
   | { type: "display-closed" }
-  | { type: "command"; action: "next" | "prev" | "blank" };
+  /** Controle -> projeção. */
+  | { type: "state"; state: LiveState }
+  /** Projeção -> controle. */
+  | { type: "player"; state: PlayerState }
+  /** Teclado da janela de projeção. */
+  | { type: "command"; action: "next" | "prev" | "blank" | "toggle" };
 
 const NAME = "coletanea-live";
 
@@ -24,7 +29,7 @@ export function createChannel(onMessage: (message: ChannelMessage) => void) {
     };
   }
 
-  const key = `coletanea:channel`;
+  const key = "coletanea:channel";
   const listener = (event: StorageEvent) => {
     if (event.key !== key || !event.newValue) return;
     onMessage(JSON.parse(event.newValue).message as ChannelMessage);

@@ -1,108 +1,198 @@
 import { create } from "zustand";
-import { buildSlides, defaultStyle, type SlideMode } from "@/lib/slides";
-import { loadCatalog, loadLyrics, local } from "@/lib/storage";
-import type { Catalog, SetlistItem, SlideStyle, Song } from "@/lib/types";
+import { loadHymnal, loadVideoMap, local } from "@/lib/storage";
+import { parseVideoId } from "@/lib/youtube";
+import type { Hymn, PlayerState, SetlistItem, VideoMap } from "@/lib/types";
+
+const emptyPlayer: PlayerState = {
+  ready: false,
+  activated: false,
+  playing: false,
+  buffering: false,
+  ended: false,
+  currentTime: 0,
+  duration: 0,
+  error: null,
+  updatedAt: 0,
+};
 
 type State = {
-  catalog: Catalog | null;
-  lyrics: Record<string, string>;
+  hymns: Hymn[];
   loading: boolean;
   error: string | null;
 
+  videos: VideoMap;
+
   setlist: SetlistItem[];
   activeUid: string | null;
+  hymnId: number | null;
 
-  songId: number | null;
-  slides: string[];
-  slideIndex: number;
+  /** O que o operador quer que aconteça na projeção. */
+  playing: boolean;
   blank: boolean;
-  live: boolean;
+  volume: number;
+  seek: { time: number; nonce: number } | null;
 
-  maxLines: number;
-  slideMode: SlideMode;
-  style: SlideStyle;
-  screenKey: string | null;
+  /** O que a janela de projeção informa de volta. */
+  player: PlayerState;
   displayOpen: boolean;
+  screenKey: string | null;
 };
 
 type Actions = {
   boot: () => Promise<void>;
-  song: (id: number | null) => Song | null;
-  lyricOf: (id: number) => string;
+  hymn: (id: number | null) => Hymn | null;
+  videoOf: (id: number | null) => string | null;
 
-  openSong: (id: number, uid?: string | null) => void;
+  openHymn: (id: number, uid?: string | null) => void;
+  stepHymn: (delta: number) => void;
+
+  play: () => void;
+  pause: () => void;
+  toggle: () => void;
+  seekTo: (time: number) => void;
+  setVolume: (volume: number) => void;
+  setBlank: (blank: boolean) => void;
+
+  setVideo: (hymnId: number, input: string) => boolean;
+  clearVideo: (hymnId: number) => void;
+  exportVideos: () => void;
+
   addToSetlist: (id: number) => void;
   removeFromSetlist: (uid: string) => void;
   reorderSetlist: (items: SetlistItem[]) => void;
   clearSetlist: () => void;
-  stepSong: (delta: number) => void;
 
-  goTo: (index: number) => void;
-  step: (delta: number) => void;
-  setBlank: (blank: boolean) => void;
-  setLive: (live: boolean) => void;
-  setStyle: (patch: Partial<SlideStyle>) => void;
-  setMaxLines: (lines: number) => void;
-  setSlideMode: (mode: SlideMode) => void;
-  setScreenKey: (key: string | null) => void;
+  setPlayer: (state: PlayerState) => void;
   setDisplayOpen: (open: boolean) => void;
-  rebuild: () => void;
+  setScreenKey: (key: string | null) => void;
 };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 export const useApp = create<State & Actions>((set, get) => ({
-  catalog: null,
-  lyrics: {},
+  hymns: [],
   loading: true,
   error: null,
 
+  videos: {},
+
   setlist: local.get<SetlistItem[]>("setlist", []),
   activeUid: null,
+  hymnId: null,
 
-  songId: null,
-  slides: [],
-  slideIndex: 0,
+  playing: false,
   blank: false,
-  live: false,
+  volume: local.get("volume", 1),
+  seek: null,
 
-  maxLines: local.get("maxLines", 4),
-  slideMode: local.get<SlideMode>("slideMode", "phrase"),
-  style: { ...defaultStyle, ...local.get<Partial<SlideStyle>>("style", {}) },
-  screenKey: local.get<string | null>("screenKey", null),
+  player: emptyPlayer,
   displayOpen: false,
+  screenKey: local.get<string | null>("screenKey", null),
 
   async boot() {
     try {
-      const [catalog, lyrics] = await Promise.all([
-        loadCatalog((fresh) => set({ catalog: fresh })),
-        loadLyrics(),
+      const [hymnal, videos] = await Promise.all([
+        loadHymnal((fresh) => set({ hymns: fresh.hymns })),
+        loadVideoMap(),
       ]);
-      set({ catalog, lyrics, loading: false });
+      set({ hymns: hymnal.hymns, videos, loading: false });
     } catch (error) {
-      set({ loading: false, error: error instanceof Error ? error.message : "Falha ao carregar o acervo" });
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : "Falha ao carregar o hinário",
+      });
     }
   },
 
-  song(id) {
+  hymn(id) {
     if (id == null) return null;
-    return get().catalog?.songs.find((song) => song.id === id) ?? null;
+    return get().hymns.find((hymn) => hymn.id === id) ?? null;
   },
 
-  lyricOf(id) {
-    return get().lyrics[String(id)] ?? "";
+  videoOf(id) {
+    if (id == null) return null;
+    return get().videos[String(id)] ?? null;
   },
 
-  openSong(id, itemUid = null) {
-    const slides = buildSlides(get().lyricOf(id), {
-      maxLines: get().maxLines,
-      mode: get().slideMode,
+  openHymn(id, itemUid = null) {
+    // Trocar de hino sempre começa parado: o operador decide quando entra.
+    set({
+      hymnId: id,
+      activeUid: itemUid,
+      playing: false,
+      blank: false,
+      seek: null,
+      player: { ...emptyPlayer, activated: get().player.activated },
     });
-    set({ songId: id, slides, slideIndex: 0, blank: false, activeUid: itemUid });
+  },
+
+  stepHymn(delta) {
+    const { setlist, activeUid } = get();
+    if (setlist.length === 0) return;
+    const current = setlist.findIndex((item) => item.uid === activeUid);
+    const next = setlist[Math.min(Math.max(current + delta, 0), setlist.length - 1)];
+    if (!next || next.uid === activeUid) return;
+    get().openHymn(next.hymnId, next.uid);
+  },
+
+  play() {
+    if (!get().videoOf(get().hymnId)) return;
+    set({ playing: true, blank: false });
+  },
+
+  pause() {
+    set({ playing: false });
+  },
+
+  toggle() {
+    if (get().playing) get().pause();
+    else get().play();
+  },
+
+  seekTo(time) {
+    set({ seek: { time: Math.max(0, time), nonce: Date.now() } });
+  },
+
+  setVolume(volume) {
+    local.set("volume", volume);
+    set({ volume });
+  },
+
+  setBlank(blank) {
+    set({ blank });
+  },
+
+  setVideo(hymnId, input) {
+    const videoId = parseVideoId(input);
+    if (!videoId) return false;
+    const videos = { ...get().videos, [String(hymnId)]: videoId };
+    local.set("videos", { ...local.get<VideoMap>("videos", {}), [String(hymnId)]: videoId });
+    set({ videos });
+    return true;
+  },
+
+  clearVideo(hymnId) {
+    const videos = { ...get().videos };
+    delete videos[String(hymnId)];
+    const stored = { ...local.get<VideoMap>("videos", {}) };
+    delete stored[String(hymnId)];
+    local.set("videos", stored);
+    set({ videos, playing: false });
+  },
+
+  /** Baixa o mapa completo para virar public/data/videos.json no projeto. */
+  exportVideos() {
+    const blob = new Blob([JSON.stringify(get().videos, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "videos.json";
+    link.click();
+    URL.revokeObjectURL(url);
   },
 
   addToSetlist(id) {
-    const setlist = [...get().setlist, { uid: uid(), songId: id }];
+    const setlist = [...get().setlist, { uid: uid(), hymnId: id }];
     local.set("setlist", setlist);
     set({ setlist });
   },
@@ -123,79 +213,17 @@ export const useApp = create<State & Actions>((set, get) => ({
     set({ setlist: [], activeUid: null });
   },
 
-  stepSong(delta) {
-    const { setlist, activeUid } = get();
-    if (setlist.length === 0) return;
-    const current = setlist.findIndex((item) => item.uid === activeUid);
-    const next = setlist[Math.min(Math.max(current + delta, 0), setlist.length - 1)];
-    if (!next || next.uid === activeUid) return;
-    get().openSong(next.songId, next.uid);
+  setPlayer(state) {
+    // O fim do vídeo volta o botão para "tocar", sem mexer na tela.
+    set({ player: state, playing: state.ended ? false : get().playing });
   },
 
-  goTo(index) {
-    const { slides } = get();
-    set({ slideIndex: Math.min(Math.max(index, 0), Math.max(slides.length - 1, 0)), blank: false });
-  },
-
-  step(delta) {
-    const { slideIndex, slides, setlist, activeUid } = get();
-    const target = slideIndex + delta;
-    if (target >= 0 && target < slides.length) {
-      set({ slideIndex: target, blank: false });
-      return;
-    }
-    // Passou do fim (ou do início): encadeia com a música vizinha do roteiro.
-    if (setlist.length === 0 || activeUid == null) return;
-    const current = setlist.findIndex((item) => item.uid === activeUid);
-    const neighbour = setlist[current + Math.sign(delta)];
-    if (!neighbour) return;
-    get().openSong(neighbour.songId, neighbour.uid);
-    if (delta < 0) {
-      const slidesOfPrevious = get().slides;
-      set({ slideIndex: Math.max(slidesOfPrevious.length - 1, 0) });
-    }
-  },
-
-  setBlank(blank) {
-    set({ blank });
-  },
-
-  setLive(live) {
-    set({ live });
-  },
-
-  setStyle(patch) {
-    const style = { ...get().style, ...patch };
-    local.set("style", style);
-    set({ style });
-  },
-
-  setMaxLines(lines) {
-    local.set("maxLines", lines);
-    set({ maxLines: lines });
-    get().rebuild();
-  },
-
-  setSlideMode(mode) {
-    local.set("slideMode", mode);
-    set({ slideMode: mode });
-    get().rebuild();
-  },
-
-  /** Recalcula os slides da música aberta mantendo a posição aproximada. */
-  rebuild() {
-    const { songId, maxLines, slideMode, slideIndex } = get();
-    if (songId == null) return;
-    const slides = buildSlides(get().lyricOf(songId), { maxLines, mode: slideMode });
-    set({ slides, slideIndex: Math.min(slideIndex, slides.length - 1) });
+  setDisplayOpen(open) {
+    set({ displayOpen: open, player: open ? get().player : emptyPlayer });
   },
 
   setScreenKey(key) {
     local.set("screenKey", key);
     set({ screenKey: key });
-  },
-
-  setDisplayOpen(open) {
-    set({ displayOpen: open });
   },
 }));

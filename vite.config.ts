@@ -14,7 +14,7 @@ export default defineConfig({
       manifest: {
         name: "Coletânea de Louvor",
         short_name: "Coletânea",
-        description: "Projeção de letras e hinos com controle em tela separada",
+        description: "Hinário Adventista projetado em tela separada, com o vídeo de cada hino",
         lang: "pt-BR",
         start_url: "/",
         scope: "/",

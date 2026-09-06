@@ -52,7 +52,7 @@ export function Setlist() {
 
       {setlist.length === 0 ? (
         <p className="px-4 py-6 text-sm text-ink-400">
-          Adicione músicas pelo <span className="text-ink-200">+</span> da lista para montar a ordem do
+          Adicione hinos pelo <span className="text-ink-200">+</span> da busca para montar a ordem do
           culto.
         </p>
       ) : (
@@ -79,8 +79,8 @@ export function Setlist() {
 }
 
 function Row({ item, index, active }: { item: SetlistItem; index: number; active: boolean }) {
-  const song = useApp((state) => state.song(item.songId));
-  const openSong = useApp((state) => state.openSong);
+  const hymn = useApp((state) => state.hymn(item.hymnId));
+  const openHymn = useApp((state) => state.openHymn);
   const remove = useApp((state) => state.removeFromSetlist);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.uid,
@@ -106,10 +106,11 @@ function Row({ item, index, active }: { item: SetlistItem; index: number; active
       </button>
       <span className="w-5 text-center text-xs text-ink-400">{index + 1}</span>
       <button
-        onClick={() => openSong(item.songId, item.uid)}
+        onClick={() => openHymn(item.hymnId, item.uid)}
         className="min-w-0 flex-1 truncate text-left text-sm text-ink-200"
       >
-        {song?.title ?? "Música removida"}
+        <span className="mr-2 tabular-nums text-brand-400">{hymn?.number}</span>
+        {hymn?.title ?? "Hino removido"}
       </button>
       <Button
         variant="ghost"

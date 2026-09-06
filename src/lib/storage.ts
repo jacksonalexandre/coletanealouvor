@@ -1,5 +1,5 @@
 import { openDB, type IDBPDatabase } from "idb";
-import type { Catalog } from "@/lib/types";
+import type { Hymnal, VideoMap } from "@/lib/types";
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
 
@@ -31,8 +31,8 @@ async function write(key: string, value: unknown) {
 }
 
 /**
- * Carrega um JSON do acervo servindo primeiro o que está em IndexedDB e
- * revalidando em segundo plano — a primeira pintura não espera a rede.
+ * Carrega um JSON servindo primeiro o que está em IndexedDB e revalidando em
+ * segundo plano — a busca abre sem esperar a rede.
  */
 async function cachedJson<T>(url: string, key: string, onFresh?: (value: T) => void): Promise<T> {
   const cached = await read<{ etag: string; value: T }>(key);
@@ -59,12 +59,23 @@ async function cachedJson<T>(url: string, key: string, onFresh?: (value: T) => v
   return revalidate;
 }
 
-export function loadCatalog(onFresh?: (catalog: Catalog) => void) {
-  return cachedJson<Catalog>("/data/catalog.json", "catalog", onFresh);
+export function loadHymnal(onFresh?: (hymnal: Hymnal) => void) {
+  return cachedJson<Hymnal>("/data/hymnal.json", "hymnal", onFresh);
 }
 
-export function loadLyrics() {
-  return cachedJson<Record<string, string>>("/data/lyrics.json", "lyrics");
+/**
+ * Mapa hino -> vídeo. O arquivo do projeto é a base; o que o operador cadastra
+ * na mão fica por cima, no navegador dele.
+ */
+export async function loadVideoMap(): Promise<VideoMap> {
+  let base: VideoMap = {};
+  try {
+    const response = await fetch("/data/videos.json");
+    if (response.ok) base = (await response.json()) as VideoMap;
+  } catch {
+    // Sem arquivo de vídeos ainda: vale só o que o operador cadastrar.
+  }
+  return { ...base, ...local.get<VideoMap>("videos", {}) };
 }
 
 const PREFIX = "coletanea:";

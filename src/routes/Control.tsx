@@ -1,92 +1,79 @@
 import { useEffect, useState } from "react";
 import { ListMusic, Radio, Search } from "lucide-react";
-import { LivePanel } from "@/components/LivePanel";
+import { HymnSearch } from "@/components/HymnSearch";
 import { Setlist } from "@/components/Setlist";
-import { SlideStrip } from "@/components/SlideStrip";
-import { SongBrowser } from "@/components/SongBrowser";
-import { StylePanel } from "@/components/StylePanel";
 import { TopBar } from "@/components/TopBar";
-import { useLiveBroadcast } from "@/lib/useLive";
+import { Transport } from "@/components/Transport";
+import { useControlLink } from "@/lib/useLive";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 
 type Tab = "buscar" | "roteiro" | "ao-vivo";
 
 export default function Control() {
-  useLiveBroadcast();
+  useControlLink();
   useShortcuts();
 
   const loading = useApp((state) => state.loading);
   const error = useApp((state) => state.error);
   const boot = useApp((state) => state.boot);
-  const title = useApp((state) => state.song(state.songId)?.title);
   const [tab, setTab] = useState<Tab>("buscar");
-  const [settings, setSettings] = useState(false);
 
   useEffect(() => {
     void boot();
   }, [boot]);
 
-  if (loading) return <Splash message="Carregando acervo…" />;
-  if (error) return <Splash message={`Não foi possível carregar o acervo: ${error}`} />;
+  if (loading) return <Splash message="Carregando o hinário…" />;
+  if (error) return <Splash message={`Não foi possível carregar o hinário: ${error}`} />;
 
   return (
     <div className="flex h-dvh flex-col bg-ink-950">
-      <TopBar settingsOpen={settings} onToggleSettings={() => setSettings((open) => !open)} />
+      <TopBar />
 
-      {/* Desktop: três colunas. Mobile: uma coluna por aba. */}
-      <main className="grid min-h-0 flex-1 lg:grid-cols-[320px_1fr_360px]">
+      {/* Desktop: busca, roteiro e comando lado a lado. Mobile: uma aba por vez. */}
+      <main className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_280px_360px]">
         <section
           className={cn(
-            "min-h-0 flex-col border-ink-800 lg:flex lg:border-r",
-            tab === "buscar" ? "flex" : "hidden",
+            "min-h-0 border-ink-800 lg:border-r",
+            tab === "buscar" ? "block" : "hidden lg:block",
           )}
         >
-          <div className="min-h-0 flex-1 lg:h-1/2">
-            <SongBrowser />
-          </div>
-          <div className="hidden min-h-0 border-t border-ink-800 lg:block lg:h-1/2">
-            <Setlist />
-          </div>
+          <HymnSearch />
         </section>
 
         <section
           className={cn(
-            "min-h-0 flex-col lg:flex",
-            tab === "roteiro" ? "flex" : "hidden lg:flex",
+            "min-h-0 border-ink-800 lg:border-r",
+            tab === "roteiro" ? "block" : "hidden lg:block",
           )}
         >
-          <div className="hidden items-baseline gap-2 border-b border-ink-800 px-4 py-2 lg:flex">
-            <h2 className="truncate text-sm text-ink-200">{title ?? "Nenhuma música aberta"}</h2>
-          </div>
-          {/* No mobile a aba "roteiro" mostra a ordem do culto; no desktop, os slides. */}
-          <div className="min-h-0 flex-1 lg:hidden">
-            <Setlist />
-          </div>
-          <div className="hidden min-h-0 flex-1 lg:block">
-            <SlideStrip />
-          </div>
+          <Setlist />
         </section>
 
-        <section
-          className={cn(
-            "min-h-0 border-ink-800 lg:block lg:border-l",
-            tab === "ao-vivo" ? "block" : "hidden lg:block",
-          )}
-        >
-          <div className="flex h-full min-h-0 flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              <LivePanel />
-            </div>
-            {settings && <StylePanel />}
-          </div>
+        <section className={cn("min-h-0", tab === "ao-vivo" ? "block" : "hidden lg:block")}>
+          <Transport />
         </section>
       </main>
 
       <nav className="flex border-t border-ink-800 bg-ink-900 lg:hidden">
-        <TabButton icon={<Search className="size-5" />} label="Buscar" active={tab === "buscar"} onClick={() => setTab("buscar")} />
-        <TabButton icon={<ListMusic className="size-5" />} label="Roteiro" active={tab === "roteiro"} onClick={() => setTab("roteiro")} />
-        <TabButton icon={<Radio className="size-5" />} label="Ao vivo" active={tab === "ao-vivo"} onClick={() => setTab("ao-vivo")} />
+        <TabButton
+          icon={<Search className="size-5" />}
+          label="Buscar"
+          active={tab === "buscar"}
+          onClick={() => setTab("buscar")}
+        />
+        <TabButton
+          icon={<ListMusic className="size-5" />}
+          label="Roteiro"
+          active={tab === "roteiro"}
+          onClick={() => setTab("roteiro")}
+        />
+        <TabButton
+          icon={<Radio className="size-5" />}
+          label="Ao vivo"
+          active={tab === "ao-vivo"}
+          onClick={() => setTab("ao-vivo")}
+        />
       </nav>
     </div>
   );
@@ -134,24 +121,15 @@ function useShortcuts() {
       const store = useApp.getState();
       const key = event.key.toLowerCase();
 
-      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+      if (event.key === " ") {
         event.preventDefault();
-        store.step(1);
-      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
-        event.preventDefault();
-        store.step(-1);
+        store.toggle();
+      } else if (event.key === "ArrowRight" || event.key === "PageDown" || key === "n") {
+        store.stepHymn(1);
+      } else if (event.key === "ArrowLeft" || event.key === "PageUp" || key === "p") {
+        store.stepHymn(-1);
       } else if (key === "b") {
         store.setBlank(!store.blank);
-      } else if (key === "l") {
-        store.setLive(!store.live);
-      } else if (key === "n") {
-        store.stepSong(1);
-      } else if (key === "p") {
-        store.stepSong(-1);
-      } else if (event.key === "Home") {
-        store.goTo(0);
-      } else if (event.key === "End") {
-        store.goTo(store.slides.length - 1);
       }
     };
 

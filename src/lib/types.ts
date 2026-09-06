@@ -1,66 +1,53 @@
-export type AlbumRef = { albumId: number; track: number | null };
-
-export type Song = {
+export type Hymn = {
+  /** Identificador estável; o número se repete nas variações A/B. */
   id: number;
+  number: number;
   title: string;
+  /** Título sem acento e em minúsculas, para a busca. */
   search: string;
-  duration: number | null;
-  instrumental: boolean;
-  hymnNumber: number | null;
-  albums: AlbumRef[];
 };
 
-export type Album = {
-  id: number;
-  name: string;
-  subtitle: string | null;
-  color: string | null;
-  cover: string | null;
-  order: number;
-  categoryId: number | null;
-};
-
-export type Category = {
-  id: number;
-  name: string;
-  slug: string;
-  order: number;
-  albumIds: number[];
-};
-
-export type Catalog = {
-  version: number;
+export type Hymnal = {
   generatedAt: string;
   language: string;
-  categories: Category[];
-  albums: Album[];
-  songs: Song[];
+  hymns: Hymn[];
 };
+
+/** Mapa id do hino -> id do vídeo no YouTube. */
+export type VideoMap = Record<string, string>;
 
 /** Um item do roteiro do culto. */
 export type SetlistItem = {
-  /** Identificador local do item; a mesma música pode entrar duas vezes. */
+  /** Identificador local do item; o mesmo hino pode entrar duas vezes. */
   uid: string;
-  songId: number;
+  hymnId: number;
 };
 
-export type SlideStyle = {
-  fontScale: number;
-  uppercase: boolean;
-  align: "center" | "left";
-  showTitle: boolean;
-  background: "black" | "deep" | "gradient";
-};
-
-/** Estado espelhado do controle para a tela de projeção. */
+/** O que o controle manda para a janela de projeção. */
 export type LiveState = {
-  songId: number | null;
+  videoId: string | null;
   title: string;
-  slides: string[];
-  slideIndex: number;
+  /** Tela preta por cima do vídeo, sem parar a reprodução. */
   blank: boolean;
-  style: SlideStyle;
-  message: string | null;
-  clock: boolean;
+  /** Reprodução desejada pelo operador. */
+  playing: boolean;
+  volume: number;
+  /** Pedido de busca na linha do tempo; o nonce faz repetir o mesmo segundo. */
+  seek: { time: number; nonce: number } | null;
+  updatedAt: number;
+};
+
+/** O que a janela de projeção responde sobre o player. */
+export type PlayerState = {
+  /** O player do YouTube carregou. */
+  ready: boolean;
+  /** O operador já liberou o som com um clique na janela de projeção. */
+  activated: boolean;
+  playing: boolean;
+  buffering: boolean;
+  ended: boolean;
+  currentTime: number;
+  duration: number;
+  error: string | null;
   updatedAt: number;
 };

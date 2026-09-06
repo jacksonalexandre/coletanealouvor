@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { MonitorPlay, MonitorX, Settings2 } from "lucide-react";
+import { MonitorPlay, MonitorX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listScreens, openDisplayWindow, supportsScreenPlacement, type ScreenInfo } from "@/lib/screens";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 
-type Props = { onToggleSettings: () => void; settingsOpen: boolean };
-
-export function TopBar({ onToggleSettings, settingsOpen }: Props) {
+export function TopBar() {
   const displayOpen = useApp((state) => state.displayOpen);
   const setDisplayOpen = useApp((state) => state.setDisplayOpen);
   const screenKey = useApp((state) => state.screenKey);
@@ -91,15 +89,6 @@ export function TopBar({ onToggleSettings, settingsOpen }: Props) {
           Abrir projeção
         </Button>
       )}
-
-      <Button
-        variant={settingsOpen ? "secondary" : "ghost"}
-        size="icon"
-        onClick={onToggleSettings}
-        aria-label="Ajustes de exibição"
-      >
-        <Settings2 className="size-4" />
-      </Button>
 
       {hint && <p className="w-full text-xs text-amber-400">{hint}</p>}
     </header>
