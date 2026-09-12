@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ListMusic, Radio, Search } from "lucide-react";
+import { BookOpen, ListMusic, Radio, Search } from "lucide-react";
 import { BibleSearch } from "@/components/BibleSearch";
 import { HymnSearch } from "@/components/HymnSearch";
 import { Setlist } from "@/components/Setlist";
@@ -9,7 +9,7 @@ import { useControlLink } from "@/lib/useLive";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 
-type Tab = "buscar" | "roteiro" | "ao-vivo";
+type Tab = "hinos" | "biblia" | "roteiro" | "ao-vivo";
 
 export default function Control() {
   useControlLink();
@@ -18,8 +18,7 @@ export default function Control() {
   const loading = useApp((state) => state.loading);
   const error = useApp((state) => state.error);
   const boot = useApp((state) => state.boot);
-  const [tab, setTab] = useState<Tab>("buscar");
-  const [source, setSource] = useState<"hinos" | "biblia">("hinos");
+  const [tab, setTab] = useState<Tab>("hinos");
 
   useEffect(() => {
     void boot();
@@ -32,19 +31,18 @@ export default function Control() {
     <div className="flex h-dvh flex-col bg-ink-950">
       <TopBar />
 
-      {/* Desktop: busca, roteiro e comando lado a lado. Mobile: uma aba por vez. */}
-      <main className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_280px_360px]">
+      {/* Desktop: hinos, bíblia, programação e comando lado a lado. Mobile: uma aba por vez. */}
+      <main className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_280px_360px]">
         <section
-          className={cn(
-            "flex min-h-0 flex-col border-ink-800 lg:border-r",
-            tab === "buscar" ? "flex" : "hidden lg:flex",
-          )}
+          className={cn("min-h-0 border-ink-800 lg:border-r", tab === "hinos" ? "block" : "hidden lg:block")}
         >
-          <div className="flex gap-1 border-b border-ink-800 p-2">
-            <SourceButton label="Hinos" active={source === "hinos"} onClick={() => setSource("hinos")} />
-            <SourceButton label="Bíblia" active={source === "biblia"} onClick={() => setSource("biblia")} />
-          </div>
-          <div className="min-h-0 flex-1">{source === "hinos" ? <HymnSearch /> : <BibleSearch />}</div>
+          <HymnSearch />
+        </section>
+
+        <section
+          className={cn("min-h-0 border-ink-800 lg:border-r", tab === "biblia" ? "block" : "hidden lg:block")}
+        >
+          <BibleSearch />
         </section>
 
         <section
@@ -64,13 +62,19 @@ export default function Control() {
       <nav className="flex border-t border-ink-800 bg-ink-900 lg:hidden">
         <TabButton
           icon={<Search className="size-5" />}
-          label="Buscar"
-          active={tab === "buscar"}
-          onClick={() => setTab("buscar")}
+          label="Hinos"
+          active={tab === "hinos"}
+          onClick={() => setTab("hinos")}
+        />
+        <TabButton
+          icon={<BookOpen className="size-5" />}
+          label="Bíblia"
+          active={tab === "biblia"}
+          onClick={() => setTab("biblia")}
         />
         <TabButton
           icon={<ListMusic className="size-5" />}
-          label="Roteiro"
+          label="Programação"
           active={tab === "roteiro"}
           onClick={() => setTab("roteiro")}
         />
@@ -105,28 +109,6 @@ function TabButton({
       )}
     >
       {icon}
-      {label}
-    </button>
-  );
-}
-
-function SourceButton({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "flex-1 rounded-lg py-1.5 text-xs font-medium",
-        active ? "bg-ink-700 text-ink-100" : "text-ink-400 hover:text-ink-200",
-      )}
-    >
       {label}
     </button>
   );

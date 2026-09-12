@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { passageReference, passageVerses } from "@/lib/bible";
 import { createChannel, type ChannelMessage } from "@/lib/channel";
+import { DEFAULT_PASSAGE_STYLE } from "@/lib/passageStyle";
 import { useApp } from "@/store/useApp";
 import type { LiveState } from "@/lib/types";
 
@@ -12,19 +13,22 @@ export const emptyLive: LiveState = {
   volume: 1,
   seek: null,
   passage: null,
+  passageStyle: DEFAULT_PASSAGE_STYLE,
   updatedAt: 0,
 };
 
 /** Lado do controle: publica o desejo do operador e ouve o player de volta. */
 export function useControlLink() {
-  const hymn = useApp((state) => state.hymn(state.hymnId));
-  const videoId = useApp((state) => state.videoOf(state.hymnId));
+  // O que está no ar é liveHymnId, não o que o operador tem selecionado/olhando agora.
+  const hymn = useApp((state) => state.hymn(state.liveHymnId));
+  const videoId = useApp((state) => state.videoOf(state.liveHymnId));
   const blank = useApp((state) => state.blank);
   const playing = useApp((state) => state.playing);
   const volume = useApp((state) => state.volume);
   const seek = useApp((state) => state.seek);
   const passage = useApp((state) => state.passage);
   const bible = useApp((state) => state.bible);
+  const passageStyle = useApp((state) => state.passageStyle);
 
   const setPlayer = useApp((state) => state.setPlayer);
   const setDisplayOpen = useApp((state) => state.setDisplayOpen);
@@ -42,15 +46,16 @@ export function useControlLink() {
   const state = useMemo<LiveState>(
     () => ({
       videoId,
-      title: hymn ? `${hymn.number}. ${hymn.title}` : "",
+      title: hymn ? `${hymn.title} (${hymn.number})` : "",
       blank,
       playing,
       volume,
       seek,
       passage: passageLive,
+      passageStyle,
       updatedAt: Date.now(),
     }),
-    [videoId, hymn, blank, playing, volume, seek, passageLive],
+    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle],
   );
 
   const stateRef = useRef(state);

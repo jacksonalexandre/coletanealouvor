@@ -1,3 +1,5 @@
+import type { PassageStyle } from "@/lib/passageStyle";
+
 export type Hymn = {
   /** Identificador estável; o número se repete nas variações A/B. */
   id: number;
@@ -79,6 +81,8 @@ export type LiveState = {
   seek: { time: number; nonce: number } | null;
   /** Passagem bíblica em cartaz; substitui o vídeo na tela enquanto ativa. */
   passage: { reference: string; verses: { number: number; text: string }[] } | null;
+  /** Aparência da passagem na projeção (fonte, fundo, cor da letra). */
+  passageStyle: PassageStyle;
   updatedAt: number;
 };
 

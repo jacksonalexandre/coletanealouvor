@@ -56,7 +56,7 @@ export function Setlist() {
       <header className="flex flex-col gap-2 px-3 py-2">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold tracking-wider text-ink-400 uppercase">
-            Roteiro · {setlist.length}
+            Programação · {setlist.length}
           </h2>
           {setlist.length > 0 && (
             <Button variant="ghost" size="sm" onClick={clear}>
@@ -177,14 +177,20 @@ function HymnRow({
 }) {
   const hymn = useApp((state) => state.hymn(item.hymnId));
   const openHymn = useApp((state) => state.openHymn);
+  const play = useApp((state) => state.play);
 
   return (
     <button
       onClick={() => openHymn(item.hymnId, item.uid)}
+      onDoubleClick={() => {
+        openHymn(item.hymnId, item.uid);
+        void play();
+      }}
+      title="Duplo clique: abre a projeção e já toca"
       className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
     >
-      <span className="mr-2 tabular-nums text-brand-400">{hymn?.number}</span>
       {hymn?.title ?? "Hino removido"}
+      {hymn && <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>}
     </button>
   );
 }
@@ -203,7 +209,8 @@ function PassageRow({
 
   return (
     <button
-      onClick={() => openPassage(ref, itemUid)}
+      onDoubleClick={() => openPassage(ref, itemUid)}
+      title="Duplo clique: projeta a passagem"
       className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
     >
       <BookOpen className="mr-2 inline size-3.5 shrink-0 text-brand-400" />

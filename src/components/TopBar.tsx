@@ -2,48 +2,34 @@ import { useEffect, useState } from "react";
 import { MonitorPlay, MonitorX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@/assets/logo.png";
-import { listScreens, openDisplayWindow, supportsScreenPlacement, type ScreenInfo } from "@/lib/screens";
+import { listScreens, supportsScreenPlacement, type ScreenInfo } from "@/lib/screens";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 
 export function TopBar() {
   const displayOpen = useApp((state) => state.displayOpen);
-  const setDisplayOpen = useApp((state) => state.setDisplayOpen);
+  const displayWindow = useApp((state) => state.displayWindow);
+  const openDisplay = useApp((state) => state.openDisplay);
+  const closeDisplay = useApp((state) => state.closeDisplay);
   const screenKey = useApp((state) => state.screenKey);
   const setScreenKey = useApp((state) => state.setScreenKey);
   const [screens, setScreens] = useState<ScreenInfo[]>([]);
-  const [child, setChild] = useState<Window | null>(null);
   const [hint, setHint] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!child) return;
+    if (!displayWindow) return;
     const timer = window.setInterval(() => {
-      if (child.closed) {
-        setChild(null);
-        setDisplayOpen(false);
-      }
+      if (displayWindow.closed) closeDisplay();
     }, 1000);
     return () => clearInterval(timer);
-  }, [child, setDisplayOpen]);
+  }, [displayWindow, closeDisplay]);
 
   const open = async () => {
     // A permissão de gerenciamento de janelas só é concedida dentro de um gesto
     // do usuário, por isso pedimos as telas aqui e não na carga da página.
     if (supportsScreenPlacement()) setScreens(await listScreens());
-    const opened = await openDisplayWindow(screenKey);
-    if (!opened) {
-      setHint("O navegador bloqueou a janela. Libere pop-ups para este site.");
-      return;
-    }
-    setHint(null);
-    setChild(opened.window);
-    setDisplayOpen(true);
-  };
-
-  const close = () => {
-    child?.close();
-    setChild(null);
-    setDisplayOpen(false);
+    const ok = await openDisplay();
+    setHint(ok ? null : "O navegador bloqueou a janela. Libere pop-ups para este site.");
   };
 
   return (
@@ -82,8 +68,8 @@ export function TopBar() {
         {displayOpen ? "Projeção conectada" : "Projeção fechada"}
       </span>
 
-      {displayOpen && child ? (
-        <Button variant="outline" onClick={close}>
+      {displayOpen && displayWindow ? (
+        <Button variant="outline" onClick={closeDisplay}>
           <MonitorX className="size-4" />
           Fechar projeção
         </Button>

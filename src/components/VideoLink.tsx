@@ -46,7 +46,7 @@ export function VideoLink({ hymnId, videoId }: Props) {
           rel="noreferrer"
           className="min-w-0 flex-1 truncate hover:text-ink-200"
         >
-          {videoId}
+          Vídeo cadastrado
         </a>
         <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>
           Trocar

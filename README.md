@@ -25,12 +25,16 @@ npm run preview
 
 | Rota | Papel |
 | --- | --- |
-| `/` | Controle: busca, roteiro do culto, comandos do vídeo |
-| `/projecao` | Projeção: só o vídeo, sem nenhum controle visível |
+| `/` | Controle: hinos, Bíblia, programação do culto e comandos do vídeo, em colunas (uma aba por vez no celular) |
+| `/projecao` | Projeção: vídeo ou passagem bíblica, sem nenhum controle visível |
 
 O roteiro aceita hinos, passagens bíblicas e etapas da programação sem vídeo (ex: "Oração", "Sermão"). Os botões **+ Escola Sabatina** e **+ Culto de Sábado**, no topo do roteiro, já carregam a ordem padrão dessas programações; dá pra editar o texto de cada etapa clicando nela, digitar etapas avulsas no campo abaixo dos modelos e arrastar os hinos da busca para os pontos certos. Navegação por teclado e o `stepHymn` pulam as etapas sem hino, indo direto de um hino para o outro.
 
 O botão **Abrir projeção** abre `/projecao` em uma janela separada. Em Chrome/Edge no desktop, a [Window Management API](https://developer.mozilla.org/docs/Web/API/Window_Management_API) posiciona a janela direto na tela do projetor; nos demais navegadores a janela abre normal e o operador arrasta para a segunda tela.
+
+Não precisa abrir a projeção antes: apertar **Tocar** (ou duplo clique num hino, na busca ou no roteiro) abre a projeção sozinho se ainda estiver fechada, e já toca.
+
+Clicar (uma vez) num hino ou passagem só seleciona, pro painel mostrar o hino/editar o link do vídeo — não mexe no que já está na tela. Só entra no ar de verdade com **Tocar**, duplo clique, `→`/`←` (próximo/anterior) ou o botão **Projetar** da Bíblia; enquanto isso, o painel mostra "Selecionado" em vez de "No ar" e avisa o que continua em cartaz. Isso vale pra tudo: buscar outro hino, trocar a tradução da Bíblia, editar o link de um vídeo — nada disso derruba o que já está projetado.
 
 A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O controle publica o que quer (vídeo, tocar/pausar, volume, posição, tela apagada) e a projeção devolve o estado real do player.
 
@@ -77,7 +81,9 @@ O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_p
 
 O script confere se cada livro trouxe o número certo de capítulos e descarta o que passar disso (a fonte já teve nota de rodapé mal separada virando capítulo fantasma — o próprio projeto de origem mantém uma worklist desses casos). `--only ara,arc` gera só as versões pedidas.
 
-Na aba **Bíblia** do painel de busca: escolha a tradução, o livro, o capítulo e clique num versículo (shift-clique estende o intervalo); **Projetar** manda a passagem pra tela e **+** acrescenta ao roteiro. Trocar de tradução atualiza a projeção na hora, mesmo com uma passagem já em cartaz. A passagem some o vídeo da projeção enquanto está em cartaz; **Encerrar passagem** ou abrir outro hino volta ao normal.
+Na coluna **Bíblia** (aba própria no celular): escolha o livro (em colunas, ordem ajustável na engrenagem), o capítulo e o(s) versículo(s) — capítulo e versículo são grades só de número, pra selecionar rápido; shift-clique estende o intervalo e o texto escolhido aparece embaixo da grade antes de confirmar. **Projetar** manda a passagem pra tela e **+** acrescenta ao roteiro. Passagem não tem som, então a projeção mostra direto, sem pedir o clique de ativação (esse clique continua valendo pra vídeo). A passagem some o vídeo da projeção enquanto está em cartaz; **Encerrar passagem** ou abrir outro hino volta ao normal.
+
+O ícone de engrenagem (mesma linha da busca, e também no cabeçalho do capítulo/versículo) reúne toda a configuração: tradução (ARA/ARC/NTLH/NVI — troca atualiza a projeção na hora, mesmo com passagem em cartaz), ordem dos livros (ordem da Bíblia ou A-Z) e a aparência da passagem na projeção (tamanho da fonte, cor de fundo e da letra). Fica salvo no navegador.
 
 Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
 
@@ -90,6 +96,7 @@ scripts/import-bible.mjs    Gera o texto da Bíblia
 scripts/playlists.json      Playlists do YouTube usadas na importação
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
+src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeção
 src/lib/channel.ts          Canal controle <-> projeção
 src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção

@@ -11,7 +11,14 @@ export function HymnSearch() {
   const videos = useApp((state) => state.videos);
   const hymnId = useApp((state) => state.hymnId);
   const openHymn = useApp((state) => state.openHymn);
+  const play = useApp((state) => state.play);
   const addToSetlist = useApp((state) => state.addToSetlist);
+
+  /** Duplo clique já abre a projeção (se preciso) e toca, sem passar pelo "Tocar". */
+  const openAndPlay = (id: number) => {
+    openHymn(id);
+    void play();
+  };
 
   const [term, setTerm] = useState("");
   const deferred = useDeferredValue(term);
@@ -19,7 +26,10 @@ export function HymnSearch() {
 
   const results = useMemo(() => {
     const query = normalize(deferred).trim();
-    if (!query) return hymns;
+    if (!query) {
+      // Sem busca: ordem alfabética pelo título, o número é só um detalhe.
+      return [...hymns].sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
+    }
 
     const number = /^\d+$/.test(query) ? Number(query) : null;
     const parts = query.split(/\s+/);
@@ -30,14 +40,14 @@ export function HymnSearch() {
         return parts.every((part) => hymn.search.includes(part));
       })
       .sort((a, b) => {
-        // Número exato primeiro, depois quem começa com o termo buscado.
+        // Número exato primeiro, depois quem começa com o termo buscado, depois alfabética.
         if (number != null) {
           const exact = (hymn: typeof a) => (hymn.number === number ? 0 : 1);
           if (exact(a) !== exact(b)) return exact(a) - exact(b);
         }
         const starts = (hymn: typeof a) => (hymn.search.startsWith(query) ? 0 : 1);
         if (starts(a) !== starts(b)) return starts(a) - starts(b);
-        return a.number - b.number;
+        return a.title.localeCompare(b.title, "pt-BR");
       });
   }, [hymns, deferred]);
 
@@ -90,12 +100,12 @@ export function HymnSearch() {
               >
                 <button
                   onClick={() => openHymn(hymn.id)}
-                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                  onDoubleClick={() => openAndPlay(hymn.id)}
+                  title="Duplo clique: abre a projeção e já toca"
+                  className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="w-9 shrink-0 text-right text-sm tabular-nums text-brand-400">
-                    {hymn.number}
-                  </span>
                   <span className="min-w-0 flex-1 truncate text-sm text-ink-200">{hymn.title}</span>
+                  <span className="shrink-0 text-xs tabular-nums text-ink-500">{hymn.number}</span>
                   {hasVideo ? (
                     <Video className="size-3.5 shrink-0 text-ink-600" />
                   ) : (

@@ -264,14 +264,25 @@ export default function Display() {
       </div>
 
       {live.passage && !live.blank && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 bg-black px-20 text-center">
-          <p className="text-2xl font-semibold tracking-wide text-brand-400 uppercase">
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-20 text-center"
+          style={{ background: live.passageStyle.background, color: live.passageStyle.color }}
+        >
+          <p
+            className="font-semibold tracking-wide uppercase opacity-75"
+            style={{ fontSize: `${live.passageStyle.fontSize * 0.6}rem` }}
+          >
             {live.passage.reference}
           </p>
-          <div className="max-w-5xl space-y-4 text-4xl leading-relaxed text-ink-50">
+          <div
+            className="max-w-5xl space-y-4 leading-relaxed"
+            style={{ fontSize: `${live.passageStyle.fontSize}rem` }}
+          >
             {live.passage.verses.map((verse) => (
               <p key={verse.number}>
-                <span className="mr-3 align-top text-xl text-brand-400">{verse.number}</span>
+                <span className="mr-3 align-top opacity-70" style={{ fontSize: "0.5em" }}>
+                  {verse.number}
+                </span>
                 {verse.text}
               </p>
             ))}
@@ -286,7 +297,8 @@ export default function Display() {
         }`}
       />
 
-      {!activated && (
+      {/* Passagem não tem som: mostra direto, sem pedir o clique de ativação. */}
+      {!activated && !live.passage && (
         <button
           onClick={activate}
           className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black text-ink-200"

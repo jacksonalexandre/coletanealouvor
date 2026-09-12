@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { clampPassage, findBook } from "@/lib/bible";
 import { type BibleVersionId, DEFAULT_BIBLE_VERSION, isBibleVersion } from "@/lib/bibleVersions";
+import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
+import { openDisplayWindow } from "@/lib/screens";
 import { loadBible, loadHymnal, loadVideoMap, local } from "@/lib/storage";
 import { parseVideoId } from "@/lib/youtube";
 import type {
@@ -37,10 +39,18 @@ type State = {
   bibleLoading: boolean;
 
   setlist: SetlistItem[];
+  /** Uid do item do roteiro em cartaz na projeção agora (hino ou passagem). */
   activeUid: string | null;
+  /** Hino selecionado no painel (busca/roteiro) — só o que está em cartaz de verdade. */
   hymnId: number | null;
+  /** Uid do item do roteiro correspondente ao hino selecionado, se veio de lá. */
+  hymnUid: string | null;
+  /** Hino em cartaz na projeção agora; só muda com uma ação explícita (Tocar, duplo clique, próximo/anterior). */
+  liveHymnId: number | null;
   /** Passagem em cartaz na projeção; excludente com o vídeo do hino. */
   passage: PassageRef | null;
+  /** Aparência da passagem na projeção (fonte, fundo, cor da letra). */
+  passageStyle: PassageStyle;
 
   /** O que o operador quer que aconteça na projeção. */
   playing: boolean;
@@ -51,6 +61,8 @@ type State = {
   /** O que a janela de projeção informa de volta. */
   player: PlayerState;
   displayOpen: boolean;
+  /** Referência à janela de projeção aberta por nós; null se nunca abrimos ou se já fechou. */
+  displayWindow: Window | null;
   screenKey: string | null;
 };
 
@@ -62,13 +74,16 @@ type Actions = {
   setBibleVersion: (version: BibleVersionId) => Promise<void>;
 
   openHymn: (id: number, uid?: string | null) => void;
+  /** Põe no ar o hino selecionado agora (sem tocar); usado por Tocar/duplo clique/próximo. */
+  commitLive: () => void;
   stepHymn: (delta: number) => void;
 
   openPassage: (ref: PassageRef, uid?: string | null) => void;
   closePassage: () => void;
   movePassageVerses: (delta: number) => void;
+  setPassageStyle: (patch: Partial<PassageStyle>) => void;
 
-  play: () => void;
+  play: () => Promise<void>;
   pause: () => void;
   toggle: () => void;
   seekTo: (time: number) => void;
@@ -90,6 +105,9 @@ type Actions = {
 
   setPlayer: (state: PlayerState) => void;
   setDisplayOpen: (open: boolean) => void;
+  /** Abre a janela de projeção (ou reaproveita a já aberta). false se o navegador bloqueou. */
+  openDisplay: () => Promise<boolean>;
+  closeDisplay: () => void;
   setScreenKey: (key: string | null) => void;
 };
 
@@ -135,7 +153,10 @@ export const useApp = create<State & Actions>((set, get) => ({
   setlist: normalizeSetlist(local.get<unknown[]>("setlist", [])),
   activeUid: null,
   hymnId: null,
+  hymnUid: null,
+  liveHymnId: null,
   passage: null,
+  passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
 
   playing: false,
   blank: false,
@@ -144,6 +165,7 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   player: emptyPlayer,
   displayOpen: false,
+  displayWindow: null,
   screenKey: local.get<string | null>("screenKey", null),
 
   async boot() {
@@ -195,10 +217,16 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   openHymn(id, itemUid = null) {
-    // Trocar de hino sempre começa parado: o operador decide quando entra.
+    // Só seleciona (busca/roteiro): olhar um hino não pode mexer no que já está no ar.
+    // O ar só muda com commitLive (Tocar, duplo clique, próximo/anterior).
+    set({ hymnId: id, hymnUid: itemUid });
+  },
+
+  commitLive() {
+    // Põe no ar o hino selecionado agora; começa parado, o operador decide quando toca.
     set({
-      hymnId: id,
-      activeUid: itemUid,
+      liveHymnId: get().hymnId,
+      activeUid: get().hymnUid,
       passage: null,
       playing: false,
       blank: false,
@@ -209,7 +237,8 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   stepHymn(delta) {
     // Etapas da programação sem hino (ex: "Oração") não têm o que projetar, então
-    // navegar pelo teclado pula direto para o próximo/anterior hino da lista.
+    // navegar pelo teclado pula direto para o próximo/anterior hino da lista, sempre no ar
+    // (é um controle de show, não uma busca).
     const hymnItems = get().setlist.filter(
       (item): item is Extract<SetlistItem, { type: "hymn" }> => item.type === "hymn",
     );
@@ -219,13 +248,16 @@ export const useApp = create<State & Actions>((set, get) => ({
     const next = hymnItems[Math.min(Math.max(current + delta, 0), hymnItems.length - 1)];
     if (!next || next.uid === activeUid) return;
     get().openHymn(next.hymnId, next.uid);
+    get().commitLive();
   },
 
   openPassage(ref, itemUid = null) {
     // Passagem substitui o vídeo na tela; o hino fica pausado até o operador voltar a ele.
+    // Já é uma ação explícita de "botar no ar" (botão Projetar / duplo clique no roteiro).
     set({
       passage: clampPassage(get().bible, ref) ?? ref,
       activeUid: itemUid,
+      liveHymnId: null,
       playing: false,
       blank: false,
     });
@@ -245,8 +277,17 @@ export const useApp = create<State & Actions>((set, get) => ({
     set({ passage: { ...passage, verseStart, verseEnd: verseStart + span } });
   },
 
-  play() {
+  setPassageStyle(patch) {
+    const passageStyle = { ...get().passageStyle, ...patch };
+    local.set("passageStyle", passageStyle);
+    set({ passageStyle });
+  },
+
+  async play() {
     if (!get().videoOf(get().hymnId)) return;
+    get().commitLive();
+    // Tocar sem projeção aberta não mostra nada; abrimos por conta do operador.
+    if (!get().displayOpen) await get().openDisplay();
     set({ playing: true, blank: false });
   },
 
@@ -287,7 +328,9 @@ export const useApp = create<State & Actions>((set, get) => ({
     const stored = { ...local.get<VideoMap>("videos", {}) };
     delete stored[String(hymnId)];
     local.set("videos", stored);
-    set({ videos, playing: false });
+    // Só para a projeção se o hino editado for o que está no ar; mexer no link de
+    // outro hino não pode interromper o que já está tocando.
+    set({ videos, playing: hymnId === get().liveHymnId ? false : get().playing });
   },
 
   /** Baixa o mapa completo para virar public/data/videos.json no projeto. */
@@ -361,7 +404,24 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   setDisplayOpen(open) {
+    // Só o sinalizador do canal; a referência da janela é responsabilidade de
+    // openDisplay/closeDisplay (o canal pode soltar "fechou" sem a janela ter fechado
+    // de verdade — remontagem em StrictMode, por exemplo).
     set({ displayOpen: open, player: open ? get().player : emptyPlayer });
+  },
+
+  async openDisplay() {
+    // A permissão de gerenciamento de janelas só é concedida dentro de um gesto
+    // do usuário, por isso isto só deve rodar a partir de um clique/tecla real.
+    const opened = await openDisplayWindow(get().screenKey);
+    if (!opened) return false;
+    set({ displayWindow: opened.window, displayOpen: true });
+    return true;
+  },
+
+  closeDisplay() {
+    get().displayWindow?.close();
+    set({ displayWindow: null, displayOpen: false, player: emptyPlayer });
   },
 
   setScreenKey(key) {

@@ -21,6 +21,8 @@ import { useApp } from "@/store/useApp";
 export function Transport() {
   const hymn = useApp((state) => state.hymn(state.hymnId));
   const videoId = useApp((state) => state.videoOf(state.hymnId));
+  const liveHymnId = useApp((state) => state.liveHymnId);
+  const liveHymn = useApp((state) => state.hymn(state.liveHymnId));
   const playing = useApp((state) => state.playing);
   const blank = useApp((state) => state.blank);
   const volume = useApp((state) => state.volume);
@@ -65,18 +67,21 @@ export function Transport() {
 
   const duration = player.duration || 0;
   const position = scrubbing ?? player.currentTime;
+  const isLive = hymn.id === liveHymnId;
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 p-3">
       <div>
-        <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">No ar</span>
+        <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">
+          {isLive ? "No ar" : "Selecionado"}
+        </span>
         <div
           className={cn(
             "mt-1 aspect-video overflow-hidden rounded-xl border bg-black",
-            playing && !blank ? "border-brand-500/70" : "border-ink-700",
+            isLive && playing && !blank ? "border-brand-500/70" : "border-ink-700",
           )}
         >
-          {videoId && !blank ? (
+          {videoId && !(isLive && blank) ? (
             <img
               src={thumbnailUrl(videoId)}
               alt=""
@@ -85,14 +90,19 @@ export function Transport() {
             />
           ) : (
             <div className="flex size-full items-center justify-center text-xs text-ink-600">
-              {blank ? "Tela apagada" : "Sem vídeo"}
+              {isLive && blank ? "Tela apagada" : "Sem vídeo"}
             </div>
           )}
         </div>
         <p className="mt-2 text-sm text-ink-200">
-          <span className="mr-2 tabular-nums text-brand-400">{hymn.number}</span>
           {hymn.title}
+          <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>
         </p>
+        {!isLive && liveHymn && (
+          <p className="mt-1 text-xs text-ink-400">
+            No ar agora: <span className="text-ink-300">{liveHymn.title}</span>
+          </p>
+        )}
         <Status displayOpen={displayOpen} activated={player.activated} error={player.error} />
       </div>
 
@@ -122,7 +132,13 @@ export function Transport() {
           <Button variant="secondary" size="lg" onClick={() => stepHymn(-1)} title="Hino anterior (P)">
             <ChevronLeft className="size-5" />
           </Button>
-          <Button size="lg" className="flex-1" onClick={toggle} disabled={!videoId} title="Espaço">
+          <Button
+            size="lg"
+            className="flex-1"
+            onClick={toggle}
+            disabled={!playing && !videoId}
+            title="Espaço"
+          >
             {player.buffering ? (
               <Loader2 className="size-5 animate-spin" />
             ) : playing ? (
