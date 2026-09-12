@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ListMusic, Radio, Search } from "lucide-react";
+import { BibleSearch } from "@/components/BibleSearch";
 import { HymnSearch } from "@/components/HymnSearch";
 import { Setlist } from "@/components/Setlist";
 import { TopBar } from "@/components/TopBar";
@@ -18,6 +19,7 @@ export default function Control() {
   const error = useApp((state) => state.error);
   const boot = useApp((state) => state.boot);
   const [tab, setTab] = useState<Tab>("buscar");
+  const [source, setSource] = useState<"hinos" | "biblia">("hinos");
 
   useEffect(() => {
     void boot();
@@ -34,11 +36,15 @@ export default function Control() {
       <main className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_280px_360px]">
         <section
           className={cn(
-            "min-h-0 border-ink-800 lg:border-r",
-            tab === "buscar" ? "block" : "hidden lg:block",
+            "flex min-h-0 flex-col border-ink-800 lg:border-r",
+            tab === "buscar" ? "flex" : "hidden lg:flex",
           )}
         >
-          <HymnSearch />
+          <div className="flex gap-1 border-b border-ink-800 p-2">
+            <SourceButton label="Hinos" active={source === "hinos"} onClick={() => setSource("hinos")} />
+            <SourceButton label="Bíblia" active={source === "biblia"} onClick={() => setSource("biblia")} />
+          </div>
+          <div className="min-h-0 flex-1">{source === "hinos" ? <HymnSearch /> : <BibleSearch />}</div>
         </section>
 
         <section
@@ -104,6 +110,28 @@ function TabButton({
   );
 }
 
+function SourceButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex-1 rounded-lg py-1.5 text-xs font-medium",
+        active ? "bg-ink-700 text-ink-100" : "text-ink-400 hover:text-ink-200",
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
 function Splash({ message }: { message: string }) {
   return (
     <div className="flex h-dvh items-center justify-center px-6 text-center text-sm text-ink-400">
@@ -125,9 +153,11 @@ function useShortcuts() {
         event.preventDefault();
         store.toggle();
       } else if (event.key === "ArrowRight" || event.key === "PageDown" || key === "n") {
-        store.stepHymn(1);
+        if (store.passage) store.movePassageVerses(1);
+        else store.stepHymn(1);
       } else if (event.key === "ArrowLeft" || event.key === "PageUp" || key === "p") {
-        store.stepHymn(-1);
+        if (store.passage) store.movePassageVerses(-1);
+        else store.stepHymn(-1);
       } else if (key === "b") {
         store.setBlank(!store.blank);
       }

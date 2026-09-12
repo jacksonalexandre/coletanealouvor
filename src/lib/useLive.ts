@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
+import { passageReference, passageVerses } from "@/lib/bible";
 import { createChannel, type ChannelMessage } from "@/lib/channel";
 import { useApp } from "@/store/useApp";
 import type { LiveState } from "@/lib/types";
@@ -10,6 +11,7 @@ export const emptyLive: LiveState = {
   playing: false,
   volume: 1,
   seek: null,
+  passage: null,
   updatedAt: 0,
 };
 
@@ -21,11 +23,21 @@ export function useControlLink() {
   const playing = useApp((state) => state.playing);
   const volume = useApp((state) => state.volume);
   const seek = useApp((state) => state.seek);
+  const passage = useApp((state) => state.passage);
+  const bible = useApp((state) => state.bible);
 
   const setPlayer = useApp((state) => state.setPlayer);
   const setDisplayOpen = useApp((state) => state.setDisplayOpen);
 
   const channelRef = useRef<ReturnType<typeof createChannel> | null>(null);
+
+  const passageLive = useMemo(
+    () =>
+      passage && bible.length
+        ? { reference: passageReference(bible, passage), verses: passageVerses(bible, passage) }
+        : null,
+    [passage, bible],
+  );
 
   const state = useMemo<LiveState>(
     () => ({
@@ -35,9 +47,10 @@ export function useControlLink() {
       playing,
       volume,
       seek,
+      passage: passageLive,
       updatedAt: Date.now(),
     }),
-    [videoId, hymn, blank, playing, volume, seek],
+    [videoId, hymn, blank, playing, volume, seek, passageLive],
   );
 
   const stateRef = useRef(state);
@@ -53,8 +66,14 @@ export function useControlLink() {
       if (message.type === "player") setPlayer(message.state);
       if (message.type === "command") {
         const store = useApp.getState();
-        if (message.action === "next") store.stepHymn(1);
-        if (message.action === "prev") store.stepHymn(-1);
+        if (message.action === "next") {
+          if (store.passage) store.movePassageVerses(1);
+          else store.stepHymn(1);
+        }
+        if (message.action === "prev") {
+          if (store.passage) store.movePassageVerses(-1);
+          else store.stepHymn(-1);
+        }
         if (message.action === "blank") store.setBlank(!store.blank);
         if (message.action === "toggle") store.toggle();
       }

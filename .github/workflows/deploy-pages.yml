@@ -35,6 +35,9 @@ jobs:
       # sem vídeo em vez de travar o deploy.
       - run: npm run import:videos || true
 
+      # Texto da Bíblia (ARA, ARC, NTLH, NVI) para a busca de passagens.
+      - run: npm run import:bible
+
       - name: Build (GitHub Pages serve em /<repo>/)
         run: npm run build
         env:

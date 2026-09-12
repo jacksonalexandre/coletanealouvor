@@ -16,7 +16,32 @@ export type Hymnal = {
 /** Mapa id do hino -> id do vídeo no YouTube. */
 export type VideoMap = Record<string, string>;
 
-/** Um item do roteiro do culto: um hino ou uma etapa da programação (ex: "Oração"). */
+/** Um livro da Bíblia, com o texto de cada capítulo dividido em versículos. */
+export type BibleBook = {
+  abbrev: string;
+  name: string;
+  /** Nome sem acento e em minúsculas, para a busca. */
+  search: string;
+  testament: "at" | "nt";
+  /** chapters[capítulo - 1][versículo - 1] */
+  chapters: string[][];
+};
+
+export type Bible = {
+  generatedAt: string;
+  version: string;
+  books: BibleBook[];
+};
+
+/** Recorte de versículos escolhido para projetar (ex: João 3:16-18). */
+export type PassageRef = {
+  book: string;
+  chapter: number;
+  verseStart: number;
+  verseEnd: number;
+};
+
+/** Um item do roteiro do culto: um hino, uma passagem bíblica ou uma etapa da programação. */
 export type SetlistItem =
   | {
       /** Identificador local do item; o mesmo hino pode entrar duas vezes. */
@@ -24,6 +49,10 @@ export type SetlistItem =
       type: "hymn";
       hymnId: number;
     }
+  | ({
+      uid: string;
+      type: "passage";
+    } & PassageRef)
   | {
       uid: string;
       type: "label";
@@ -48,6 +77,8 @@ export type LiveState = {
   volume: number;
   /** Pedido de busca na linha do tempo; o nonce faz repetir o mesmo segundo. */
   seek: { time: number; nonce: number } | null;
+  /** Passagem bíblica em cartaz; substitui o vídeo na tela enquanto ativa. */
+  passage: { reference: string; verses: { number: number; text: string }[] } | null;
   updatedAt: number;
 };
 

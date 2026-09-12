@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { VideoLink } from "@/components/VideoLink";
+import { passageReference, passageVerses } from "@/lib/bible";
 import { cn, formatDuration } from "@/lib/utils";
 import { thumbnailUrl } from "@/lib/youtube";
 import { useApp } from "@/store/useApp";
@@ -25,14 +26,34 @@ export function Transport() {
   const volume = useApp((state) => state.volume);
   const player = useApp((state) => state.player);
   const displayOpen = useApp((state) => state.displayOpen);
+  const passage = useApp((state) => state.passage);
+  const bible = useApp((state) => state.bible);
 
   const toggle = useApp((state) => state.toggle);
   const seekTo = useApp((state) => state.seekTo);
   const setVolume = useApp((state) => state.setVolume);
   const setBlank = useApp((state) => state.setBlank);
   const stepHymn = useApp((state) => state.stepHymn);
+  const movePassageVerses = useApp((state) => state.movePassageVerses);
+  const closePassage = useApp((state) => state.closePassage);
 
   const [scrubbing, setScrubbing] = useState<number | null>(null);
+
+  if (passage && bible.length) {
+    return (
+      <PassageTransport
+        reference={passageReference(bible, passage)}
+        verses={passageVerses(bible, passage)}
+        blank={blank}
+        displayOpen={displayOpen}
+        activated={player.activated}
+        onPrev={() => movePassageVerses(-1)}
+        onNext={() => movePassageVerses(1)}
+        onBlank={() => setBlank(!blank)}
+        onClose={closePassage}
+      />
+    );
+  }
 
   if (!hymn) {
     return (
@@ -137,6 +158,65 @@ export function Transport() {
             />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PassageTransport({
+  reference,
+  verses,
+  blank,
+  displayOpen,
+  activated,
+  onPrev,
+  onNext,
+  onBlank,
+  onClose,
+}: {
+  reference: string;
+  verses: { number: number; text: string }[];
+  blank: boolean;
+  displayOpen: boolean;
+  activated: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  onBlank: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="flex h-full min-h-0 flex-col gap-3 p-3">
+      <div>
+        <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">No ar</span>
+        <div className="mt-1 max-h-64 space-y-2 overflow-y-auto rounded-xl border border-brand-500/70 bg-ink-900 p-3">
+          <p className="text-sm font-semibold text-brand-400">{reference}</p>
+          {verses.map((verse) => (
+            <p key={verse.number} className="text-sm text-ink-200">
+              <span className="mr-2 tabular-nums text-brand-400">{verse.number}</span>
+              {verse.text}
+            </p>
+          ))}
+        </div>
+        <Status displayOpen={displayOpen} activated={activated} error={null} />
+      </div>
+
+      <div className="mt-auto space-y-3">
+        <div className="flex gap-2">
+          <Button variant="secondary" size="lg" onClick={onPrev} title="Versículo anterior (P)">
+            <ChevronLeft className="size-5" />
+          </Button>
+          <Button variant="secondary" size="lg" className="flex-1" onClick={onClose}>
+            Encerrar passagem
+          </Button>
+          <Button variant="secondary" size="lg" onClick={onNext} title="Próximo versículo (N)">
+            <ChevronRight className="size-5" />
+          </Button>
+        </div>
+
+        <Button variant={blank ? "danger" : "outline"} className="w-full" onClick={onBlank} title="Tecla B">
+          <EyeOff className="size-4" />
+          {blank ? "Tela apagada" : "Apagar tela"}
+        </Button>
       </div>
     </div>
   );

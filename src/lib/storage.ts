@@ -1,5 +1,6 @@
 import { openDB, type IDBPDatabase } from "idb";
-import type { Hymnal, VideoMap } from "@/lib/types";
+import type { BibleVersionId } from "@/lib/bibleVersions";
+import type { Bible, Hymnal, VideoMap } from "@/lib/types";
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
 
@@ -64,6 +65,10 @@ const dataUrl = (file: string) => `${import.meta.env.BASE_URL}data/${file}`;
 
 export function loadHymnal(onFresh?: (hymnal: Hymnal) => void) {
   return cachedJson<Hymnal>(dataUrl("hymnal.json"), "hymnal", onFresh);
+}
+
+export function loadBible(version: BibleVersionId, onFresh?: (bible: Bible) => void) {
+  return cachedJson<Bible>(dataUrl(`biblia-${version}.json`), `biblia:${version}`, onFresh);
 }
 
 /**

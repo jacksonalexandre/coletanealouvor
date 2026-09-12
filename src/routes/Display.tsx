@@ -255,7 +255,7 @@ export default function Display() {
     report({ activated: true });
   };
 
-  const covered = live.blank || !live.videoId;
+  const covered = live.blank || (!live.videoId && !live.passage);
 
   return (
     <div className="relative h-dvh w-screen overflow-hidden bg-black" onDoubleClick={toggleFullscreen}>
@@ -263,7 +263,23 @@ export default function Display() {
         <div ref={mountRef} className="size-full" />
       </div>
 
-      {/* Tela preta por cima: o vídeo continua rodando por baixo. */}
+      {live.passage && !live.blank && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 bg-black px-20 text-center">
+          <p className="text-2xl font-semibold tracking-wide text-brand-400 uppercase">
+            {live.passage.reference}
+          </p>
+          <div className="max-w-5xl space-y-4 text-4xl leading-relaxed text-ink-50">
+            {live.passage.verses.map((verse) => (
+              <p key={verse.number}>
+                <span className="mr-3 align-top text-xl text-brand-400">{verse.number}</span>
+                {verse.text}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tela preta por cima: vídeo/passagem continuam por baixo. */}
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-200 ${
           covered ? "opacity-100" : "pointer-events-none opacity-0"

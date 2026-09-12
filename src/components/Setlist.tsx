@@ -15,9 +15,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, ListPlus, Trash2 } from "lucide-react";
+import { BookOpen, GripVertical, ListPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { passageReference } from "@/lib/bible";
 import { SETLIST_TEMPLATES } from "@/lib/templates";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
@@ -151,7 +152,9 @@ function Row({ item, index, active }: { item: SetlistItem; index: number; active
         <GripVertical className="size-4" />
       </button>
       <span className="w-5 text-center text-xs text-ink-400">{index + 1}</span>
-      {item.type === "hymn" ? <HymnRow item={item} active={active} /> : <LabelRow item={item} />}
+      {item.type === "hymn" && <HymnRow item={item} active={active} />}
+      {item.type === "passage" && <PassageRow item={item} active={active} />}
+      {item.type === "label" && <LabelRow item={item} />}
       <Button
         variant="ghost"
         size="icon"
@@ -182,6 +185,29 @@ function HymnRow({
     >
       <span className="mr-2 tabular-nums text-brand-400">{hymn?.number}</span>
       {hymn?.title ?? "Hino removido"}
+    </button>
+  );
+}
+
+function PassageRow({
+  item,
+  active,
+}: {
+  item: Extract<SetlistItem, { type: "passage" }>;
+  active: boolean;
+}) {
+  const bible = useApp((state) => state.bible);
+  const openPassage = useApp((state) => state.openPassage);
+  const { uid: itemUid, type: _type, ...ref } = item;
+  void _type;
+
+  return (
+    <button
+      onClick={() => openPassage(ref, itemUid)}
+      className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
+    >
+      <BookOpen className="mr-2 inline size-3.5 shrink-0 text-brand-400" />
+      {bible.length ? passageReference(bible, ref) : "Passagem"}
     </button>
   );
 }

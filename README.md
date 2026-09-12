@@ -10,6 +10,7 @@ O escopo é deliberadamente pequeno: buscar o hino pelo título ou número, mont
 npm install
 npm run import:hymnal   # gera public/data/hymnal.json (uma vez)
 npm run import:videos   # gera public/data/videos.json a partir das playlists
+npm run import:bible    # gera public/data/biblia.json (uma vez)
 npm run dev             # http://localhost:5173
 ```
 
@@ -27,7 +28,7 @@ npm run preview
 | `/` | Controle: busca, roteiro do culto, comandos do vídeo |
 | `/projecao` | Projeção: só o vídeo, sem nenhum controle visível |
 
-O roteiro aceita hinos e etapas da programação sem vídeo (ex: "Oração", "Sermão"). Os botões **+ Escola Sabatina** e **+ Culto de Sábado**, no topo do roteiro, já carregam a ordem padrão dessas programações; dá pra editar o texto de cada etapa clicando nela, digitar etapas avulsas no campo abaixo dos modelos e arrastar os hinos da busca para os pontos certos. Navegação por teclado e o `stepHymn` pulam as etapas sem hino, indo direto de um hino para o outro.
+O roteiro aceita hinos, passagens bíblicas e etapas da programação sem vídeo (ex: "Oração", "Sermão"). Os botões **+ Escola Sabatina** e **+ Culto de Sábado**, no topo do roteiro, já carregam a ordem padrão dessas programações; dá pra editar o texto de cada etapa clicando nela, digitar etapas avulsas no campo abaixo dos modelos e arrastar os hinos da busca para os pontos certos. Navegação por teclado e o `stepHymn` pulam as etapas sem hino, indo direto de um hino para o outro.
 
 O botão **Abrir projeção** abre `/projecao` em uma janela separada. Em Chrome/Edge no desktop, a [Window Management API](https://developer.mozilla.org/docs/Web/API/Window_Management_API) posiciona a janela direto na tela do projetor; nos demais navegadores a janela abre normal e o operador arrasta para a segunda tela.
 
@@ -40,8 +41,8 @@ A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O 
 | Tecla | Ação |
 | --- | --- |
 | `espaço` | Tocar / pausar |
-| `→` `N` | Próximo hino do roteiro |
-| `←` `P` | Hino anterior do roteiro |
+| `→` `N` | Próximo hino do roteiro (ou próximo versículo, com uma passagem em cartaz) |
+| `←` `P` | Hino anterior do roteiro (ou versículo anterior) |
 | `B` | Apagar a tela (o vídeo continua rodando por baixo) |
 | `F` (na projeção) | Tela cheia |
 
@@ -63,12 +64,32 @@ O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_p
 
 `npm run import:hymnal` grava `public/data/hymnal.json` (~50 KB): id, número e título dos 601 hinos (1 a 600 — o 587 tem as variações A e B). Nada além disso; a busca funciona offline depois da primeira carga, guardada em IndexedDB.
 
+## Passagens bíblicas
+
+`npm run import:bible` grava `public/data/biblia-<versão>.json` (~4 MB cada) com quatro traduções, a partir dos releases de [damarals/biblias](https://github.com/damarals/biblias):
+
+| Sigla | Tradução |
+| --- | --- |
+| ARA | Almeida Revista e Atualizada |
+| ARC | Almeida Revista e Corrigida |
+| NTLH | Nova Tradução na Linguagem de Hoje |
+| NVI | Nova Versão Internacional |
+
+O script confere se cada livro trouxe o número certo de capítulos e descarta o que passar disso (a fonte já teve nota de rodapé mal separada virando capítulo fantasma — o próprio projeto de origem mantém uma worklist desses casos). `--only ara,arc` gera só as versões pedidas.
+
+Na aba **Bíblia** do painel de busca: escolha a tradução, o livro, o capítulo e clique num versículo (shift-clique estende o intervalo); **Projetar** manda a passagem pra tela e **+** acrescenta ao roteiro. Trocar de tradução atualiza a projeção na hora, mesmo com uma passagem já em cartaz. A passagem some o vídeo da projeção enquanto está em cartaz; **Encerrar passagem** ou abrir outro hino volta ao normal.
+
+Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
+
 ## Estrutura
 
 ```
 scripts/import-hymnal.mjs   Gera o índice do hinário
 scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
+scripts/import-bible.mjs    Gera o texto da Bíblia
 scripts/playlists.json      Playlists do YouTube usadas na importação
+src/lib/bible.ts            Recorte e referência de passagens bíblicas
+src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
 src/lib/channel.ts          Canal controle <-> projeção
 src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
