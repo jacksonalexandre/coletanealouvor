@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MonitorPlay, MonitorX } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoUrl from "@/assets/logo.png";
 import { listScreens, openDisplayWindow, supportsScreenPlacement, type ScreenInfo } from "@/lib/screens";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
@@ -47,8 +48,11 @@ export function TopBar() {
 
   return (
     <header className="flex flex-wrap items-center gap-2 border-b border-ink-800 bg-ink-900 px-3 py-2">
-      <h1 className="mr-auto text-sm font-semibold text-ink-200">
-        Coletânea <span className="text-brand-400">de Louvor</span>
+      <h1 className="mr-auto flex items-center gap-2 text-sm font-semibold text-ink-200">
+        <img src={logoUrl} alt="" className="h-7 w-auto" />
+        <span>
+          Coletânea <span className="text-brand-400">de Louvor</span>
+        </span>
       </h1>
 
       {screens.length > 1 && (
