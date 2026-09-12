@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -14,18 +15,24 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Trash2 } from "lucide-react";
+import { GripVertical, ListPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { SETLIST_TEMPLATES } from "@/lib/templates";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 import type { SetlistItem } from "@/lib/types";
 
-/** Roteiro do culto: ordem das músicas, arrastável. */
+/** Roteiro do culto: programação e hinos, em uma lista só, arrastável. */
 export function Setlist() {
   const setlist = useApp((state) => state.setlist);
   const activeUid = useApp((state) => state.activeUid);
   const reorder = useApp((state) => state.reorderSetlist);
   const clear = useApp((state) => state.clearSetlist);
+  const loadTemplate = useApp((state) => state.loadSetlistTemplate);
+  const addLabel = useApp((state) => state.addLabelToSetlist);
+
+  const [labelInput, setLabelInput] = useState("");
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -37,23 +44,64 @@ export function Setlist() {
     reorder(arrayMove(setlist, from, to));
   };
 
+  const submitLabel = () => {
+    if (!labelInput.trim()) return;
+    addLabel(labelInput);
+    setLabelInput("");
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex items-center justify-between px-3 py-2">
-        <h2 className="text-xs font-semibold tracking-wider text-ink-400 uppercase">
-          Roteiro · {setlist.length}
-        </h2>
-        {setlist.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={clear}>
-            Limpar
+      <header className="flex flex-col gap-2 px-3 py-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-semibold tracking-wider text-ink-400 uppercase">
+            Roteiro · {setlist.length}
+          </h2>
+          {setlist.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={clear}>
+              Limpar
+            </Button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          {SETLIST_TEMPLATES.map((template) => (
+            <button
+              key={template.id}
+              onClick={() => loadTemplate(template)}
+              className="rounded-full border border-ink-700 px-2.5 py-1 text-[11px] text-ink-300 hover:border-brand-600/60 hover:text-ink-100"
+              title={`Acrescentar a programação de ${template.name} ao roteiro`}
+            >
+              + {template.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-1.5">
+          <Input
+            value={labelInput}
+            onChange={(event) => setLabelInput(event.target.value)}
+            onKeyDown={(event) => event.key === "Enter" && submitLabel()}
+            placeholder="Etapa da programação (ex: Boas-vindas)"
+            className="h-8 text-xs"
+          />
+          <Button
+            variant="secondary"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={submitLabel}
+            disabled={!labelInput.trim()}
+            aria-label="Adicionar etapa ao roteiro"
+          >
+            <ListPlus className="size-4" />
           </Button>
-        )}
+        </div>
       </header>
 
       {setlist.length === 0 ? (
         <p className="px-4 py-6 text-sm text-ink-400">
-          Adicione hinos pelo <span className="text-ink-200">+</span> da busca para montar a ordem do
-          culto.
+          Adicione hinos pelo <span className="text-ink-200">+</span> da busca, carregue um modelo de
+          programação ou digite uma etapa acima para montar a ordem do culto.
         </p>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
@@ -79,8 +127,6 @@ export function Setlist() {
 }
 
 function Row({ item, index, active }: { item: SetlistItem; index: number; active: boolean }) {
-  const hymn = useApp((state) => state.hymn(item.hymnId));
-  const openHymn = useApp((state) => state.openHymn);
   const remove = useApp((state) => state.removeFromSetlist);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.uid,
@@ -105,13 +151,7 @@ function Row({ item, index, active }: { item: SetlistItem; index: number; active
         <GripVertical className="size-4" />
       </button>
       <span className="w-5 text-center text-xs text-ink-400">{index + 1}</span>
-      <button
-        onClick={() => openHymn(item.hymnId, item.uid)}
-        className="min-w-0 flex-1 truncate text-left text-sm text-ink-200"
-      >
-        <span className="mr-2 tabular-nums text-brand-400">{hymn?.number}</span>
-        {hymn?.title ?? "Hino removido"}
-      </button>
+      {item.type === "hymn" ? <HymnRow item={item} active={active} /> : <LabelRow item={item} />}
       <Button
         variant="ghost"
         size="icon"
@@ -122,5 +162,68 @@ function Row({ item, index, active }: { item: SetlistItem; index: number; active
         <Trash2 className="size-4" />
       </Button>
     </div>
+  );
+}
+
+function HymnRow({
+  item,
+  active,
+}: {
+  item: Extract<SetlistItem, { type: "hymn" }>;
+  active: boolean;
+}) {
+  const hymn = useApp((state) => state.hymn(item.hymnId));
+  const openHymn = useApp((state) => state.openHymn);
+
+  return (
+    <button
+      onClick={() => openHymn(item.hymnId, item.uid)}
+      className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
+    >
+      <span className="mr-2 tabular-nums text-brand-400">{hymn?.number}</span>
+      {hymn?.title ?? "Hino removido"}
+    </button>
+  );
+}
+
+/** Etapa da programação sem hino (ex: "Oração inicial"); o texto pode ser editado no lugar. */
+function LabelRow({ item }: { item: Extract<SetlistItem, { type: "label" }> }) {
+  const rename = useApp((state) => state.renameSetlistLabel);
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(item.text);
+
+  const commit = () => {
+    setEditing(false);
+    if (value.trim() && value.trim() !== item.text) rename(item.uid, value);
+    else setValue(item.text);
+  };
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") commit();
+          if (event.key === "Escape") {
+            setValue(item.text);
+            setEditing(false);
+          }
+        }}
+        className="min-w-0 flex-1 rounded bg-ink-800 px-1 text-sm text-ink-100 outline-none ring-1 ring-brand-600/50"
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setEditing(true)}
+      className="min-w-0 flex-1 truncate text-left text-sm text-ink-400 italic"
+      title="Clique para editar"
+    >
+      {item.text}
+    </button>
   );
 }

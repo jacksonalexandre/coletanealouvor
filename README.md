@@ -27,6 +27,8 @@ npm run preview
 | `/` | Controle: busca, roteiro do culto, comandos do vídeo |
 | `/projecao` | Projeção: só o vídeo, sem nenhum controle visível |
 
+O roteiro aceita hinos e etapas da programação sem vídeo (ex: "Oração", "Sermão"). Os botões **+ Escola Sabatina** e **+ Culto de Sábado**, no topo do roteiro, já carregam a ordem padrão dessas programações; dá pra editar o texto de cada etapa clicando nela, digitar etapas avulsas no campo abaixo dos modelos e arrastar os hinos da busca para os pontos certos. Navegação por teclado e o `stepHymn` pulam as etapas sem hino, indo direto de um hino para o outro.
+
 O botão **Abrir projeção** abre `/projecao` em uma janela separada. Em Chrome/Edge no desktop, a [Window Management API](https://developer.mozilla.org/docs/Web/API/Window_Management_API) posiciona a janela direto na tela do projetor; nos demais navegadores a janela abre normal e o operador arrasta para a segunda tela.
 
 A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O controle publica o que quer (vídeo, tocar/pausar, volume, posição, tela apagada) e a projeção devolve o estado real do player.
@@ -68,6 +70,7 @@ scripts/import-hymnal.mjs   Gera o índice do hinário
 scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
 scripts/playlists.json      Playlists do YouTube usadas na importação
 src/lib/channel.ts          Canal controle <-> projeção
+src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
 src/lib/storage.ts          Cache do índice (IndexedDB), mapa de vídeos, preferências
 src/lib/youtube.ts          Leitura de link do YouTube
@@ -86,3 +89,5 @@ Chrome ou Edge dão o posicionamento automático das telas. Brave funciona e blo
 ## Deploy
 
 Qualquer host estático serve. É preciso apontar todas as rotas para `index.html` (SPA); `public/_redirects` já cobre Netlify. Para Vercel, um `vercel.json` com rewrite de `/(.*)` para `/index.html`; para Nginx, `try_files $uri /index.html`.
+
+**GitHub Pages:** `.github/workflows/deploy-pages.yml` builda e publica a cada push em `master` (ative uma vez em Settings → Pages → Source: GitHub Actions). Como um Pages de projeto serve em `/<repo>/` em vez da raiz, o build usa `BASE_PATH=/<repo>/`; localmente isso não é necessário (`npm run build` sem a variável já serve da raiz, para Netlify/Vercel/Nginx).

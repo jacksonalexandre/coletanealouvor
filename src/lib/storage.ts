@@ -59,8 +59,11 @@ async function cachedJson<T>(url: string, key: string, onFresh?: (value: T) => v
   return revalidate;
 }
 
+/** Caminho absoluto dos dados estáticos, respeitando o base path do deploy (ex: GitHub Pages). */
+const dataUrl = (file: string) => `${import.meta.env.BASE_URL}data/${file}`;
+
 export function loadHymnal(onFresh?: (hymnal: Hymnal) => void) {
-  return cachedJson<Hymnal>("/data/hymnal.json", "hymnal", onFresh);
+  return cachedJson<Hymnal>(dataUrl("hymnal.json"), "hymnal", onFresh);
 }
 
 /**
@@ -70,7 +73,7 @@ export function loadHymnal(onFresh?: (hymnal: Hymnal) => void) {
 export async function loadVideoMap(): Promise<VideoMap> {
   let base: VideoMap = {};
   try {
-    const response = await fetch("/data/videos.json");
+    const response = await fetch(dataUrl("videos.json"));
     if (response.ok) base = (await response.json()) as VideoMap;
   } catch {
     // Sem arquivo de vídeos ainda: vale só o que o operador cadastrar.

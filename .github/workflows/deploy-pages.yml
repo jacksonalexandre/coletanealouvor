@@ -1,0 +1,60 @@
+name: Deploy no GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Gera o índice do hinário; sem ele a busca não tem o que mostrar.
+      - run: npm run import:hymnal
+
+      # Mapa hino -> vídeo: lê playlists públicas do YouTube, então é melhor
+      # esforço (o layout da página pode mudar). Sem ele, os hinos aparecem
+      # sem vídeo em vez de travar o deploy.
+      - run: npm run import:videos || true
+
+      - name: Build (GitHub Pages serve em /<repo>/)
+        run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      # GitHub Pages não tem um "_redirects" como a Netlify: para abrir
+      # /projecao direto (ou dar F5 nela) sem 404, o 404.html vira uma cópia
+      # do index.html e o roteador do lado do cliente resolve a rota real.
+      - run: cp dist/index.html dist/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

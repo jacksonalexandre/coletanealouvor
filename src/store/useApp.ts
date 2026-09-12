@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { loadHymnal, loadVideoMap, local } from "@/lib/storage";
 import { parseVideoId } from "@/lib/youtube";
-import type { Hymn, PlayerState, SetlistItem, VideoMap } from "@/lib/types";
+import type { Hymn, PlayerState, SetlistItem, SetlistTemplate, VideoMap } from "@/lib/types";
 
 const emptyPlayer: PlayerState = {
   ready: false,
@@ -58,6 +58,9 @@ type Actions = {
   exportVideos: () => void;
 
   addToSetlist: (id: number) => void;
+  addLabelToSetlist: (text: string) => void;
+  renameSetlistLabel: (uid: string, text: string) => void;
+  loadSetlistTemplate: (template: SetlistTemplate) => void;
   removeFromSetlist: (uid: string) => void;
   reorderSetlist: (items: SetlistItem[]) => void;
   clearSetlist: () => void;
@@ -69,6 +72,20 @@ type Actions = {
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+/** Formato antigo do roteiro guardava só hinos, sem o campo "type". */
+function normalizeSetlist(raw: unknown): SetlistItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item): SetlistItem[] => {
+    if (!item || typeof item !== "object" || typeof item.uid !== "string") return [];
+    if (item.type === "hymn" && typeof item.hymnId === "number") return [item as SetlistItem];
+    if (item.type === "label" && typeof item.text === "string") return [item as SetlistItem];
+    if (item.type == null && typeof item.hymnId === "number") {
+      return [{ uid: item.uid, type: "hymn", hymnId: item.hymnId }];
+    }
+    return [];
+  });
+}
+
 export const useApp = create<State & Actions>((set, get) => ({
   hymns: [],
   loading: true,
@@ -76,7 +93,7 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   videos: {},
 
-  setlist: local.get<SetlistItem[]>("setlist", []),
+  setlist: normalizeSetlist(local.get<unknown[]>("setlist", [])),
   activeUid: null,
   hymnId: null,
 
@@ -127,10 +144,15 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   stepHymn(delta) {
-    const { setlist, activeUid } = get();
-    if (setlist.length === 0) return;
-    const current = setlist.findIndex((item) => item.uid === activeUid);
-    const next = setlist[Math.min(Math.max(current + delta, 0), setlist.length - 1)];
+    // Etapas da programação sem hino (ex: "Oração") não têm o que projetar, então
+    // navegar pelo teclado pula direto para o próximo/anterior hino da lista.
+    const hymnItems = get().setlist.filter(
+      (item): item is Extract<SetlistItem, { type: "hymn" }> => item.type === "hymn",
+    );
+    if (hymnItems.length === 0) return;
+    const { activeUid } = get();
+    const current = hymnItems.findIndex((item) => item.uid === activeUid);
+    const next = hymnItems[Math.min(Math.max(current + delta, 0), hymnItems.length - 1)];
     if (!next || next.uid === activeUid) return;
     get().openHymn(next.hymnId, next.uid);
   },
@@ -192,7 +214,33 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   addToSetlist(id) {
-    const setlist = [...get().setlist, { uid: uid(), hymnId: id }];
+    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "hymn", hymnId: id }];
+    local.set("setlist", setlist);
+    set({ setlist });
+  },
+
+  addLabelToSetlist(text) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "label", text: trimmed }];
+    local.set("setlist", setlist);
+    set({ setlist });
+  },
+
+  renameSetlistLabel(itemUid, text) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const setlist = get().setlist.map((item): SetlistItem =>
+      item.uid === itemUid && item.type === "label" ? { ...item, text: trimmed } : item,
+    );
+    local.set("setlist", setlist);
+    set({ setlist });
+  },
+
+  /** Acrescenta as etapas do modelo (culto de sábado, escola sabatina, ...) ao roteiro atual. */
+  loadSetlistTemplate(template) {
+    const items: SetlistItem[] = template.items.map((text) => ({ uid: uid(), type: "label", text }));
+    const setlist = [...get().setlist, ...items];
     local.set("setlist", setlist);
     set({ setlist });
   },
