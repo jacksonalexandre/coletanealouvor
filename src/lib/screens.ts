@@ -79,7 +79,7 @@ export async function openDisplayWindow(savedKey?: string | null): Promise<Displ
     ? `popup=yes,left=${screen.left},top=${screen.top},width=${screen.width},height=${screen.height}`
     : "popup=yes,width=1280,height=720";
 
-  const child = window.open("/projecao", "coletanea-projecao", features);
+  const child = window.open(`${import.meta.env.BASE_URL}projecao`, "coletanea-projecao", features);
   if (!child) return null;
 
   child.focus();

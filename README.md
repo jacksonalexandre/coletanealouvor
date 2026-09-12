@@ -89,3 +89,5 @@ Chrome ou Edge dão o posicionamento automático das telas. Brave funciona e blo
 ## Deploy
 
 Qualquer host estático serve. É preciso apontar todas as rotas para `index.html` (SPA); `public/_redirects` já cobre Netlify. Para Vercel, um `vercel.json` com rewrite de `/(.*)` para `/index.html`; para Nginx, `try_files $uri /index.html`.
+
+**GitHub Pages:** `.github/workflows/deploy-pages.yml` builda e publica a cada push em `master` (ative uma vez em Settings → Pages → Source: GitHub Actions). Como um Pages de projeto serve em `/<repo>/` em vez da raiz, o build usa `BASE_PATH=/<repo>/`; localmente isso não é necessário (`npm run build` sem a variável já serve da raiz, para Netlify/Vercel/Nginx).
