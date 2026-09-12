@@ -16,11 +16,25 @@ export type Hymnal = {
 /** Mapa id do hino -> id do vídeo no YouTube. */
 export type VideoMap = Record<string, string>;
 
-/** Um item do roteiro do culto. */
-export type SetlistItem = {
-  /** Identificador local do item; o mesmo hino pode entrar duas vezes. */
-  uid: string;
-  hymnId: number;
+/** Um item do roteiro do culto: um hino ou uma etapa da programação (ex: "Oração"). */
+export type SetlistItem =
+  | {
+      /** Identificador local do item; o mesmo hino pode entrar duas vezes. */
+      uid: string;
+      type: "hymn";
+      hymnId: number;
+    }
+  | {
+      uid: string;
+      type: "label";
+      text: string;
+    };
+
+/** Modelo pronto de programação (culto de sábado, escola sabatina) para montar o roteiro. */
+export type SetlistTemplate = {
+  id: string;
+  name: string;
+  items: string[];
 };
 
 /** O que o controle manda para a janela de projeção. */
