@@ -10,6 +10,7 @@ import type {
   Hymn,
   PassageRef,
   PlayerState,
+  SavedServicePlan,
   SetlistItem,
   SetlistTemplate,
   VideoMap,
@@ -37,8 +38,15 @@ type State = {
   bible: BibleBook[];
   bibleVersion: BibleVersionId;
   bibleLoading: boolean;
+  bibleError: string | null;
 
   setlist: SetlistItem[];
+  savedPlans: SavedServicePlan[];
+  currentPlanId: string | null;
+  planName: string;
+  planDate: string;
+  planDirty: boolean;
+  undoSetlist: SetlistItem[] | null;
   /** Uid do item do roteiro em cartaz na projeção agora (hino ou passagem). */
   activeUid: string | null;
   /** Hino selecionado no painel (busca/roteiro) — só o que está em cartaz de verdade. */
@@ -76,6 +84,7 @@ type Actions = {
   openHymn: (id: number, uid?: string | null) => void;
   /** Põe no ar o hino selecionado agora (sem tocar); usado por Tocar/duplo clique/próximo. */
   commitLive: () => void;
+  putOnAir: () => Promise<void>;
   stepHymn: (delta: number) => void;
 
   openPassage: (ref: PassageRef, uid?: string | null) => void;
@@ -98,10 +107,19 @@ type Actions = {
   addPassageToSetlist: (ref: PassageRef) => void;
   addLabelToSetlist: (text: string) => void;
   renameSetlistLabel: (uid: string, text: string) => void;
+  setSetlistItemNote: (uid: string, note: string) => void;
+  duplicateSetlistItem: (uid: string) => void;
   loadSetlistTemplate: (template: SetlistTemplate) => void;
   removeFromSetlist: (uid: string) => void;
   reorderSetlist: (items: SetlistItem[]) => void;
   clearSetlist: () => void;
+  undoSetlistChange: () => void;
+
+  setPlanDetails: (name: string, date: string) => void;
+  saveServicePlan: () => boolean;
+  loadServicePlan: (id: string) => void;
+  duplicateServicePlan: (id: string) => void;
+  deleteServicePlan: (id: string) => void;
 
   setPlayer: (state: PlayerState) => void;
   setDisplayOpen: (open: boolean) => void;
@@ -112,14 +130,21 @@ type Actions = {
 };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
+const itemNote = (item: { note?: unknown }) =>
+  typeof item.note === "string" && item.note.trim() ? { note: item.note } : {};
+const copyItems = (items: SetlistItem[]) => items.map((item) => ({ ...item, uid: uid() }));
 
 /** Formato antigo do roteiro guardava só hinos, sem o campo "type". */
 function normalizeSetlist(raw: unknown): SetlistItem[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((item): SetlistItem[] => {
     if (!item || typeof item !== "object" || typeof item.uid !== "string") return [];
-    if (item.type === "hymn" && typeof item.hymnId === "number") return [item as SetlistItem];
-    if (item.type === "label" && typeof item.text === "string") return [item as SetlistItem];
+    if (item.type === "hymn" && typeof item.hymnId === "number") {
+      return [{ uid: item.uid, type: "hymn", hymnId: item.hymnId, ...itemNote(item) }];
+    }
+    if (item.type === "label" && typeof item.text === "string") {
+      return [{ uid: item.uid, type: "label", text: item.text, ...itemNote(item) }];
+    }
     if (
       item.type === "passage" &&
       typeof item.book === "string" &&
@@ -127,7 +152,17 @@ function normalizeSetlist(raw: unknown): SetlistItem[] {
       typeof item.verseStart === "number" &&
       typeof item.verseEnd === "number"
     ) {
-      return [item as SetlistItem];
+      return [
+        {
+          uid: item.uid,
+          type: "passage",
+          book: item.book,
+          chapter: item.chapter,
+          verseStart: item.verseStart,
+          verseEnd: item.verseEnd,
+          ...itemNote(item),
+        },
+      ];
     }
     if (item.type == null && typeof item.hymnId === "number") {
       return [{ uid: item.uid, type: "hymn", hymnId: item.hymnId }];
@@ -135,6 +170,52 @@ function normalizeSetlist(raw: unknown): SetlistItem[] {
     return [];
   });
 }
+
+function normalizeSavedPlans(raw: unknown): SavedServicePlan[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((plan): SavedServicePlan[] => {
+    if (
+      !plan ||
+      typeof plan !== "object" ||
+      typeof plan.id !== "string" ||
+      typeof plan.name !== "string" ||
+      typeof plan.date !== "string"
+    ) {
+      return [];
+    }
+    const createdAt = typeof plan.createdAt === "number" ? plan.createdAt : Date.now();
+    return [
+      {
+        id: plan.id,
+        name: plan.name,
+        date: plan.date,
+        items: normalizeSetlist(plan.items),
+        createdAt,
+        updatedAt: typeof plan.updatedAt === "number" ? plan.updatedAt : createdAt,
+      },
+    ];
+  });
+}
+
+const initialSetlist = normalizeSetlist(local.get<unknown[]>("setlist", []));
+const initialPlanDraft = local.get<{ id: string | null; name: string; date: string }>("planDraft", {
+  id: null,
+  name: "",
+  date: "",
+});
+const initialSavedPlans = normalizeSavedPlans(local.get<unknown[]>("servicePlans", []));
+const initialSavedPlan = initialSavedPlans.find((plan) => plan.id === initialPlanDraft.id);
+const comparableItems = (items: SetlistItem[]) =>
+  items.map(({ uid: itemUid, ...item }) => {
+    void itemUid;
+    return item;
+  });
+const initialPlanDirty = initialSetlist.length > 0 && (
+  !initialSavedPlan ||
+  initialSavedPlan.name !== initialPlanDraft.name ||
+  initialSavedPlan.date !== initialPlanDraft.date ||
+  JSON.stringify(comparableItems(initialSavedPlan.items)) !== JSON.stringify(comparableItems(initialSetlist))
+);
 
 export const useApp = create<State & Actions>((set, get) => ({
   hymns: [],
@@ -149,8 +230,15 @@ export const useApp = create<State & Actions>((set, get) => ({
     return isBibleVersion(stored) ? stored : DEFAULT_BIBLE_VERSION;
   })(),
   bibleLoading: false,
+  bibleError: null,
 
-  setlist: normalizeSetlist(local.get<unknown[]>("setlist", [])),
+  setlist: initialSetlist,
+  savedPlans: initialSavedPlans,
+  currentPlanId: initialPlanDraft.id,
+  planName: initialPlanDraft.name,
+  planDate: initialPlanDraft.date,
+  planDirty: initialPlanDirty,
+  undoSetlist: null,
   activeUid: null,
   hymnId: null,
   hymnUid: null,
@@ -169,6 +257,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   screenKey: local.get<string | null>("screenKey", null),
 
   async boot() {
+    set({ loading: true, error: null });
     try {
       const [hymnal, videos] = await Promise.all([
         loadHymnal((fresh) => set({ hymns: fresh.hymns })),
@@ -176,9 +265,10 @@ export const useApp = create<State & Actions>((set, get) => ({
       ]);
       set({ hymns: hymnal.hymns, videos, loading: false });
     } catch (error) {
+      console.error("Falha ao carregar o hinário.", error);
       set({
         loading: false,
-        error: error instanceof Error ? error.message : "Falha ao carregar o hinário",
+        error: "Verifique a conexão e os arquivos de dados, depois tente novamente.",
       });
       return;
     }
@@ -204,15 +294,21 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   async setBibleVersion(version) {
     local.set("bibleVersion", version);
-    set({ bibleVersion: version, bibleLoading: true });
+    set({ bibleVersion: version, bibleLoading: true, bibleError: null });
     try {
       const bible = await loadBible(version, (fresh) => {
         if (get().bibleVersion === version) set({ bible: fresh.books });
       });
       if (get().bibleVersion === version) set({ bible: bible.books, bibleLoading: false });
-    } catch {
+    } catch (error) {
       // Sem public/data/biblia-<versão>.json (ex: `npm run import:bible` não rodou ainda).
-      if (get().bibleVersion === version) set({ bibleLoading: false });
+      console.error(`Falha ao carregar a Bíblia (${version}).`, error);
+      if (get().bibleVersion === version) {
+        set({
+          bibleLoading: false,
+          bibleError: "Verifique a conexão ou os arquivos desta tradução.",
+        });
+      }
     }
   },
 
@@ -229,10 +325,15 @@ export const useApp = create<State & Actions>((set, get) => ({
       activeUid: get().hymnUid,
       passage: null,
       playing: false,
-      blank: false,
       seek: null,
       player: { ...emptyPlayer, activated: get().player.activated },
     });
+  },
+
+  async putOnAir() {
+    if (get().hymnId == null || !get().videoOf(get().hymnId)) return;
+    get().commitLive();
+    if (!get().displayOpen) await get().openDisplay();
   },
 
   stepHymn(delta) {
@@ -254,12 +355,17 @@ export const useApp = create<State & Actions>((set, get) => ({
   openPassage(ref, itemUid = null) {
     // Passagem substitui o vídeo na tela; o hino fica pausado até o operador voltar a ele.
     // Já é uma ação explícita de "botar no ar" (botão Projetar / duplo clique no roteiro).
+    const passageRef: PassageRef = {
+      book: ref.book,
+      chapter: ref.chapter,
+      verseStart: ref.verseStart,
+      verseEnd: ref.verseEnd,
+    };
     set({
-      passage: clampPassage(get().bible, ref) ?? ref,
+      passage: clampPassage(get().bible, passageRef) ?? passageRef,
       activeUid: itemUid,
       liveHymnId: null,
       playing: false,
-      blank: false,
     });
   },
 
@@ -288,7 +394,7 @@ export const useApp = create<State & Actions>((set, get) => ({
     get().commitLive();
     // Tocar sem projeção aberta não mostra nada; abrimos por conta do operador.
     if (!get().displayOpen) await get().openDisplay();
-    set({ playing: true, blank: false });
+    set({ playing: true });
   },
 
   pause() {
@@ -297,7 +403,10 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   toggle() {
     if (get().playing) get().pause();
-    else get().play();
+    else if (get().videoOf(get().liveHymnId)) {
+      if (!get().displayOpen) void get().openDisplay();
+      set({ playing: true });
+    }
   },
 
   seekTo(time) {
@@ -347,13 +456,13 @@ export const useApp = create<State & Actions>((set, get) => ({
   addToSetlist(id) {
     const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "hymn", hymnId: id }];
     local.set("setlist", setlist);
-    set({ setlist });
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   addPassageToSetlist(ref) {
     const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "passage", ...ref }];
     local.set("setlist", setlist);
-    set({ setlist });
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   addLabelToSetlist(text) {
@@ -361,7 +470,7 @@ export const useApp = create<State & Actions>((set, get) => ({
     if (!trimmed) return;
     const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "label", text: trimmed }];
     local.set("setlist", setlist);
-    set({ setlist });
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   renameSetlistLabel(itemUid, text) {
@@ -371,7 +480,29 @@ export const useApp = create<State & Actions>((set, get) => ({
       item.uid === itemUid && item.type === "label" ? { ...item, text: trimmed } : item,
     );
     local.set("setlist", setlist);
-    set({ setlist });
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
+  },
+
+  setSetlistItemNote(itemUid, note) {
+    const trimmed = note.trim();
+    const setlist = get().setlist.map((item): SetlistItem => {
+      if (item.uid !== itemUid) return item;
+      const next = { ...item };
+      if (trimmed) next.note = trimmed;
+      else delete next.note;
+      return next;
+    });
+    local.set("setlist", setlist);
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
+  },
+
+  duplicateSetlistItem(itemUid) {
+    const index = get().setlist.findIndex((item) => item.uid === itemUid);
+    if (index < 0) return;
+    const setlist = [...get().setlist];
+    setlist.splice(index + 1, 0, { ...setlist[index], uid: uid() });
+    local.set("setlist", setlist);
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   /** Acrescenta as etapas do modelo (culto de sábado, escola sabatina, ...) ao roteiro atual. */
@@ -379,23 +510,111 @@ export const useApp = create<State & Actions>((set, get) => ({
     const items: SetlistItem[] = template.items.map((text) => ({ uid: uid(), type: "label", text }));
     const setlist = [...get().setlist, ...items];
     local.set("setlist", setlist);
-    set({ setlist });
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   removeFromSetlist(itemUid) {
     const setlist = get().setlist.filter((item) => item.uid !== itemUid);
     local.set("setlist", setlist);
-    set({ setlist, activeUid: get().activeUid === itemUid ? null : get().activeUid });
+    set({
+      setlist,
+      undoSetlist: get().setlist,
+      planDirty: true,
+      activeUid: get().activeUid === itemUid ? null : get().activeUid,
+    });
   },
 
   reorderSetlist(items) {
     local.set("setlist", items);
-    set({ setlist: items });
+    set({ setlist: items, undoSetlist: get().setlist, planDirty: true });
   },
 
   clearSetlist() {
     local.set("setlist", []);
-    set({ setlist: [], activeUid: null });
+    set({ setlist: [], undoSetlist: get().setlist, planDirty: true, activeUid: null });
+  },
+
+  undoSetlistChange() {
+    const previous = get().undoSetlist;
+    if (!previous) return;
+    local.set("setlist", previous);
+    set({ setlist: previous, undoSetlist: null, planDirty: true, activeUid: null });
+  },
+
+  setPlanDetails(name, date) {
+    local.set("planDraft", { id: get().currentPlanId, name, date });
+    set({ planName: name, planDate: date, planDirty: true });
+  },
+
+  saveServicePlan() {
+    const name = get().planName.trim();
+    if (!name || get().setlist.length === 0) return false;
+    const now = Date.now();
+    const existing = get().savedPlans.find((plan) => plan.id === get().currentPlanId);
+    const plan: SavedServicePlan = {
+      id: existing?.id ?? uid(),
+      name,
+      date: get().planDate,
+      items: get().setlist.map((item) => ({ ...item })),
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
+    const savedPlans = existing
+      ? get().savedPlans.map((candidate) => (candidate.id === plan.id ? plan : candidate))
+      : [plan, ...get().savedPlans];
+    local.set("servicePlans", savedPlans);
+    local.set("planDraft", { id: plan.id, name: plan.name, date: plan.date });
+    set({ savedPlans, currentPlanId: plan.id, planName: plan.name, planDirty: false });
+    return true;
+  },
+
+  loadServicePlan(id) {
+    const plan = get().savedPlans.find((candidate) => candidate.id === id);
+    if (!plan) return;
+    const setlist = copyItems(plan.items);
+    local.set("setlist", setlist);
+    local.set("planDraft", { id: plan.id, name: plan.name, date: plan.date });
+    set({
+      setlist,
+      undoSetlist: get().setlist,
+      currentPlanId: plan.id,
+      planName: plan.name,
+      planDate: plan.date,
+      planDirty: false,
+      activeUid: null,
+      hymnUid: null,
+    });
+  },
+
+  duplicateServicePlan(id) {
+    const source = get().savedPlans.find((plan) => plan.id === id);
+    if (!source) return;
+    const now = Date.now();
+    const copy: SavedServicePlan = {
+      ...source,
+      id: uid(),
+      name: `${source.name} — cópia`,
+      items: copyItems(source.items),
+      createdAt: now,
+      updatedAt: now,
+    };
+    const savedPlans = [copy, ...get().savedPlans];
+    local.set("servicePlans", savedPlans);
+    set({ savedPlans });
+  },
+
+  deleteServicePlan(id) {
+    const savedPlans = get().savedPlans.filter((plan) => plan.id !== id);
+    local.set("servicePlans", savedPlans);
+    const deletingCurrent = get().currentPlanId === id;
+    if (deletingCurrent) {
+      local.set("planDraft", { id: null, name: get().planName, date: get().planDate });
+    }
+    set({
+      savedPlans,
+      currentPlanId: deletingCurrent ? null : get().currentPlanId,
+      planDirty: deletingCurrent ? true : get().planDirty,
+    });
   },
 
   setPlayer(state) {

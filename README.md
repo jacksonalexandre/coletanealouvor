@@ -21,6 +21,15 @@ npm run build
 npm run preview
 ```
 
+Verificações de qualidade:
+
+```bash
+npm run typecheck
+npm run lint       # alias de compatibilidade para o typecheck
+npm test
+npm run build
+```
+
 ## Como funciona o modo duas telas
 
 | Rota | Papel |
@@ -29,6 +38,8 @@ npm run preview
 | `/projecao` | Projeção: vídeo ou passagem bíblica, sem nenhum controle visível |
 
 O roteiro aceita hinos, passagens bíblicas e etapas da programação sem vídeo (ex: "Oração", "Sermão"). Os botões **+ Escola Sabatina** e **+ Culto de Sábado**, no topo do roteiro, já carregam a ordem padrão dessas programações; dá pra editar o texto de cada etapa clicando nela, digitar etapas avulsas no campo abaixo dos modelos e arrastar os hinos da busca para os pontos certos. Navegação por teclado e o `stepHymn` pulam as etapas sem hino, indo direto de um hino para o outro.
+
+Programações completas podem ser nomeadas, datadas e salvas no próprio navegador. A lista de programações salvas permite carregar, duplicar e excluir uma programação; carregar trabalho sobre um roteiro alterado pede confirmação. Cada item também aceita uma **nota privada** para lembretes da equipe. Essas notas ficam somente no controle e nunca são enviadas à projeção. O botão **Desfazer** recupera a última alteração feita no roteiro.
 
 O botão **Abrir projeção** abre `/projecao` em uma janela separada. Em Chrome/Edge no desktop, a [Window Management API](https://developer.mozilla.org/docs/Web/API/Window_Management_API) posiciona a janela direto na tela do projetor; nos demais navegadores a janela abre normal e o operador arrasta para a segunda tela.
 
@@ -51,6 +62,12 @@ A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O 
 | `F` (na projeção) | Tela cheia |
 
 As teclas funcionam nas duas janelas.
+
+## Verificação pré-culto
+
+O botão de escudo no topo executa um diagnóstico pontual sem alterar o conteúdo no ar. Ele confere hinário, Bíblia, `localStorage`, IndexedDB, janela de projeção, comunicação controle ↔ projeção, conectividade externa, acesso ao domínio do player e problemas conhecidos no roteiro (como hino sem vídeo ou passagem inválida). Resultados que o navegador não consegue comprovar aparecem como **desconhecidos**, em vez de um falso positivo.
+
+A comunicação é testada com um único ping/pong e timeout curto quando o operador abre o diagnóstico; não há polling permanente.
 
 ## Vídeos dos hinos
 
