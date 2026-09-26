@@ -15,16 +15,17 @@ export function DrawScreen({ frame }: { frame: Extract<Frame, { kind: "draw" }> 
   const phase = drawPhase(frame.results, frame.startedAt, now);
   const candidates = frame.candidates?.length ? frame.candidates : frame.results;
   const value = phase.revealing
-    ? reduced ? "…" : candidates[(phase.tick * 7 + phase.index * 13) % candidates.length]
+    ? reduced ? "…" : candidates[(phase.tick + phase.index * 13) % candidates.length]
     : frame.results[phase.index];
   const history = [...(frame.history ?? []), ...frame.results.slice(0, phase.index)];
-  const pages = Math.max(1, Math.ceil(history.length / 18));
+  const pageSize = history.some(value => value.length > 10) ? 6 : 18;
+  const pages = Math.max(1, Math.ceil(history.length / pageSize));
   const page = Math.floor(Math.max(0, now - (frame.startedAt ?? 0)) / 7000) % pages;
   return <section className="draw-stage" data-phase={phase.revealing ? "drawing" : "revealed"}>
     <h2>{frame.title}</h2>
     <div className="draw-winner-area">
       <div className={`draw-winner ${phase.revealing ? "drawing" : "revealed"}`} key={`${phase.index}-${phase.revealing}`}
-        style={{ fontSize: (value?.length ?? 0) > 24 ? 66 : (value?.length ?? 0) > 10 ? 92 : 158 }}>
+        style={{ fontSize: Math.max(36, Math.min(158, 180 - (value?.length ?? 0) * 4)) }}>
         {value ?? "—"}
       </div>
       <p className="draw-status">{phase.revealing ? "SORTEANDO…" : "SORTEADO"}
@@ -33,8 +34,8 @@ export function DrawScreen({ frame }: { frame: Extract<Frame, { kind: "draw" }> 
     </div>
     <div className="draw-history">
       <h3>JÁ SORTEADOS {pages > 1 && <span>· {page + 1}/{pages}</span>}</h3>
-      <div className="draw-history-grid">
-        {history.slice(page * 18, (page + 1) * 18).map((result, i) => <span key={i}>{result}</span>)}
+      <div className="draw-history-grid" style={pageSize === 6 ? { fontSize: 24 } : undefined}>
+        {history.slice(page * pageSize, (page + 1) * pageSize).map((result, i) => <span key={i}>{result}</span>)}
       </div>
       {!history.length && <p>Primeiro sorteio</p>}
     </div>

@@ -26,6 +26,7 @@ export function drawItems(
   noRepeat: boolean,
   history: string[],
 ): string[] {
+  if (pool.some(s => s.trim().length > 120)) throw new Error("Use nomes de até 120 caracteres para manter a leitura no telão.");
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100)
     throw new Error("Escolha de 1 a 100 resultados.");
   const available = [
