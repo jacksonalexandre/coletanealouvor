@@ -27,7 +27,12 @@ type YTNamespace = {
       };
     },
   ) => YTPlayer;
-  PlayerState: { ENDED: number; PLAYING: number; PAUSED: number; BUFFERING: number };
+  PlayerState: {
+    ENDED: number;
+    PLAYING: number;
+    PAUSED: number;
+    BUFFERING: number;
+  };
 };
 
 declare global {

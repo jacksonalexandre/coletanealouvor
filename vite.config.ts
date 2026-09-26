@@ -15,11 +15,17 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["favicon.ico", "favicon-16.png", "favicon-32.png", "apple-touch-icon.png"],
+      includeAssets: [
+        "favicon.ico",
+        "favicon-16.png",
+        "favicon-32.png",
+        "apple-touch-icon.png",
+      ],
       manifest: {
         name: "Coletânea de Louvor",
         short_name: "Coletânea",
-        description: "Central de operação de culto: músicas, Bíblia, apresentações e roteiro em uma única tela",
+        description:
+          "Central de operação de culto: músicas, Bíblia, apresentações e roteiro em uma única tela",
         lang: "pt-BR",
         start_url: base,
         scope: base,
@@ -31,17 +37,27 @@ export default defineConfig({
         icons: [
           { src: `${base}icon-192.png`, sizes: "192x192", type: "image/png" },
           { src: `${base}icon-512.png`, sizes: "512x512", type: "image/png" },
-          { src: `${base}icon-maskable-512.png`, sizes: "512x512", type: "image/png", purpose: "maskable" },
+          {
+            src: `${base}icon-maskable-512.png`,
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,mjs,css,html,svg,png,woff2,bcmap,pfb,ttf,wasm}"],
+        globPatterns: [
+          "**/*.{js,mjs,css,html,svg,png,woff2,bcmap,pfb,ttf,wasm}",
+        ],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: /\/data\/.*\.json$/,
             handler: "StaleWhileRevalidate",
-            options: { cacheName: "acervo-json", expiration: { maxEntries: 32 } },
+            options: {
+              cacheName: "acervo-json",
+              expiration: { maxEntries: 32 },
+            },
           },
         ],
       },

@@ -1,5 +1,5 @@
 import type { PassageStyle } from "@/lib/passageStyle";
-import type { Content, Frame } from './content';
+import type { Content, Frame } from "./content";
 
 export type Hymn = {
   /** Identificador estável; o número se repete nas variações A/B. */
@@ -46,7 +46,7 @@ export type PassageRef = {
 
 /** Um item do roteiro do culto: um hino, uma passagem bíblica ou uma etapa da programação. */
 export type SetlistItem =
-  | { uid: string; type: 'content'; content: Content; note?: string }
+  | { uid: string; type: "content"; content: Content; note?: string }
   | {
       /** Identificador local do item; o mesmo hino pode entrar duas vezes. */
       uid: string;
@@ -85,6 +85,7 @@ export type SetlistTemplate = {
 /** O que o controle manda para a janela de projeção. */
 export type LiveState = {
   content?: Frame | null;
+  retryAt?: number;
   videoId: string | null;
   title: string;
   /** Tela preta por cima do vídeo, sem parar a reprodução. */
@@ -95,7 +96,10 @@ export type LiveState = {
   /** Pedido de busca na linha do tempo; o nonce faz repetir o mesmo segundo. */
   seek: { time: number; nonce: number } | null;
   /** Passagem bíblica em cartaz; substitui o vídeo na tela enquanto ativa. */
-  passage: { reference: string; verses: { number: number; text: string }[] } | null;
+  passage: {
+    reference: string;
+    verses: { number: number; text: string }[];
+  } | null;
   /** Aparência da passagem na projeção (fonte, fundo, cor da letra). */
   passageStyle: PassageStyle;
   updatedAt: number;

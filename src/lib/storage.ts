@@ -45,7 +45,11 @@ async function fetchWithTimeout(url: string, timeoutMs = 10_000) {
   }
 }
 
-async function cachedJson<T>(url: string, key: string, onFresh?: (value: T) => void): Promise<T> {
+async function cachedJson<T>(
+  url: string,
+  key: string,
+  onFresh?: (value: T) => void,
+): Promise<T> {
   const cached = await read<{ etag: string; value: T }>(key);
   const revalidate = fetchWithTimeout(url)
     .then(async (response) => {
@@ -77,8 +81,15 @@ export function loadHymnal(onFresh?: (hymnal: Hymnal) => void) {
   return cachedJson<Hymnal>(dataUrl("hymnal.json"), "hymnal", onFresh);
 }
 
-export function loadBible(version: BibleVersionId, onFresh?: (bible: Bible) => void) {
-  return cachedJson<Bible>(dataUrl(`biblia-${version}.json`), `biblia:${version}`, onFresh);
+export function loadBible(
+  version: BibleVersionId,
+  onFresh?: (bible: Bible) => void,
+) {
+  return cachedJson<Bible>(
+    dataUrl(`biblia-${version}.json`),
+    `biblia:${version}`,
+    onFresh,
+  );
 }
 
 /** Confirma que o banco local pode ser aberto e lido, sem alterar dados do operador. */
@@ -122,7 +133,8 @@ export const local = {
     try {
       localStorage.setItem(PREFIX + key, JSON.stringify(value));
     } catch {
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage-failure'));
+      if (typeof window !== "undefined")
+        window.dispatchEvent(new Event("storage-failure"));
     }
   },
 };

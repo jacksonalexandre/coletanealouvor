@@ -1,11 +1,30 @@
 import { create } from "zustand";
-import { clampPassage, findBook, moveVerse, passageReference } from "@/lib/bible";
-import { adjacentContent, contentKey, hymnContent, isContent, resolveContent, timerSeconds, type Content, type Frame } from '@/lib/content';
-import { type BibleVersionId, DEFAULT_BIBLE_VERSION, isBibleVersion } from "@/lib/bibleVersions";
+import {
+  clampPassage,
+  findBook,
+  moveVerse,
+  passageReference,
+} from "@/lib/bible";
+import {
+  adjacentContent,
+  contentKey,
+  hymnContent,
+  isContent,
+  resolveContent,
+  timerSeconds,
+  type Content,
+  type Frame,
+} from "@/lib/content";
+import {
+  type BibleVersionId,
+  DEFAULT_BIBLE_VERSION,
+  isBibleVersion,
+} from "@/lib/bibleVersions";
 import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
 import { openDisplayWindow } from "@/lib/screens";
 import { loadBible, loadHymnal, loadVideoMap, local } from "@/lib/storage";
 import { parseVideoId } from "@/lib/youtube";
+import { readAsset } from "@/lib/media";
 import type {
   BibleBook,
   Hymn,
@@ -37,6 +56,9 @@ type State = {
   favorites: Content[];
   recent: Content[];
   simpleMode: boolean;
+  notice: string | null;
+  retryAt: number;
+  liveBible: BibleBook[];
   hymns: Hymn[];
   loading: boolean;
   error: string | null;
@@ -90,7 +112,11 @@ type Actions = {
   addContent: (content: Content) => void;
   toggleFavorite: (content: Content) => void;
   setSimpleMode: (simple: boolean) => void;
-  controlTimer: (action: 'start' | 'pause' | 'reset', target: 'preview' | 'live') => void;
+  controlTimer: (
+    action: "start" | "pause" | "reset",
+    target: "preview" | "live",
+  ) => void;
+  retryVideo: () => void;
   boot: () => Promise<void>;
   hymn: (id: number | null) => Hymn | null;
   videoOf: (id: number | null) => string | null;
@@ -148,19 +174,33 @@ type Actions = {
 const uid = () => Math.random().toString(36).slice(2, 10);
 const itemNote = (item: { note?: unknown }) =>
   typeof item.note === "string" && item.note.trim() ? { note: item.note } : {};
-const copyItems = (items: SetlistItem[]) => items.map((item) => ({ ...item, uid: uid() }));
+const copyItems = (items: SetlistItem[]) =>
+  items.map((item) => ({ ...item, uid: uid() }));
 
 /** Formato antigo do roteiro guardava só hinos, sem o campo "type". */
 function normalizeSetlist(raw: unknown): SetlistItem[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((item): SetlistItem[] => {
-    if (!item || typeof item !== "object" || typeof item.uid !== "string") return [];
-    if (item.type === 'content' && isContent(item.content)) return [{ uid: item.uid, type: 'content', content: item.content, ...itemNote(item) }];
+    if (!item || typeof item !== "object" || typeof item.uid !== "string")
+      return [];
+    if (item.type === "content" && isContent(item.content))
+      return [
+        {
+          uid: item.uid,
+          type: "content",
+          content: item.content,
+          ...itemNote(item),
+        },
+      ];
     if (item.type === "hymn" && typeof item.hymnId === "number") {
-      return [{ uid: item.uid, type: "hymn", hymnId: item.hymnId, ...itemNote(item) }];
+      return [
+        { uid: item.uid, type: "hymn", hymnId: item.hymnId, ...itemNote(item) },
+      ];
     }
     if (item.type === "label" && typeof item.text === "string") {
-      return [{ uid: item.uid, type: "label", text: item.text, ...itemNote(item) }];
+      return [
+        { uid: item.uid, type: "label", text: item.text, ...itemNote(item) },
+      ];
     }
     if (
       item.type === "passage" &&
@@ -200,7 +240,8 @@ function normalizeSavedPlans(raw: unknown): SavedServicePlan[] {
     ) {
       return [];
     }
-    const createdAt = typeof plan.createdAt === "number" ? plan.createdAt : Date.now();
+    const createdAt =
+      typeof plan.createdAt === "number" ? plan.createdAt : Date.now();
     return [
       {
         id: plan.id,
@@ -208,44 +249,68 @@ function normalizeSavedPlans(raw: unknown): SavedServicePlan[] {
         date: plan.date,
         items: normalizeSetlist(plan.items),
         createdAt,
-        updatedAt: typeof plan.updatedAt === "number" ? plan.updatedAt : createdAt,
+        updatedAt:
+          typeof plan.updatedAt === "number" ? plan.updatedAt : createdAt,
       },
     ];
   });
 }
 
 const initialSetlist = normalizeSetlist(local.get<unknown[]>("setlist", []));
-const initialPlanDraft = local.get<{ id: string | null; name: string; date: string }>("planDraft", {
+const initialPlanDraft = local.get<{
+  id: string | null;
+  name: string;
+  date: string;
+}>("planDraft", {
   id: null,
   name: "",
   date: "",
 });
-const initialSavedPlans = normalizeSavedPlans(local.get<unknown[]>("servicePlans", []));
-const initialSavedPlan = initialSavedPlans.find((plan) => plan.id === initialPlanDraft.id);
+const initialSavedPlans = normalizeSavedPlans(
+  local.get<unknown[]>("servicePlans", []),
+);
+const initialSavedPlan = initialSavedPlans.find(
+  (plan) => plan.id === initialPlanDraft.id,
+);
 const comparableItems = (items: SetlistItem[]) =>
   items.map(({ uid: itemUid, ...item }) => {
     void itemUid;
     return item;
   });
-const initialPlanDirty = initialSetlist.length > 0 && (
-  !initialSavedPlan ||
-  initialSavedPlan.name !== initialPlanDraft.name ||
-  initialSavedPlan.date !== initialPlanDraft.date ||
-  JSON.stringify(comparableItems(initialSavedPlan.items)) !== JSON.stringify(comparableItems(initialSetlist))
-);
+const initialPlanDirty =
+  initialSetlist.length > 0 &&
+  (!initialSavedPlan ||
+    initialSavedPlan.name !== initialPlanDraft.name ||
+    initialSavedPlan.date !== initialPlanDraft.date ||
+    JSON.stringify(comparableItems(initialSavedPlan.items)) !==
+      JSON.stringify(comparableItems(initialSetlist)));
 
 export const useApp = create<State & Actions>((set, get) => ({
   preview: null,
   previewUid: null,
   liveContent: null,
   liveFrame: null,
-  favorites: local.get<unknown[]>('favorites', []).filter(isContent),
-  recent: local.get<unknown[]>('recent', []).filter(isContent),
-  simpleMode: local.get('simpleMode', false),
+  favorites: local.get<unknown[]>("favorites", []).filter(isContent),
+  recent: local.get<unknown[]>("recent", []).filter(isContent),
+  simpleMode: local.get("simpleMode", false),
+  notice: null,
+  retryAt: 0,
+  liveBible: [],
+  retryVideo() {
+    set({
+      retryAt: Date.now(),
+      player: { ...emptyPlayer, activated: get().player.activated },
+    });
+  },
 
   prepare(content, itemUid = null) {
     const copy = structuredClone(content);
-    set({ preview: copy, previewUid: itemUid, hymnId: content.kind === 'hymn' ? content.hymnId : null, hymnUid: itemUid });
+    set({
+      preview: copy,
+      previewUid: itemUid,
+      hymnId: content.kind === "hymn" ? content.hymnId : null,
+      hymnUid: itemUid,
+    });
   },
 
   take() {
@@ -253,55 +318,109 @@ export const useApp = create<State & Actions>((set, get) => ({
     if (!s.preview) return;
     const content = structuredClone(s.preview);
     const frame = resolveContent(content, s.bible, s.videos, s.passageStyle);
-    if (!frame || frame.kind === 'video' && !frame.videoId || frame.kind === 'passage' && !frame.verses.length) return;
-    const recent = [content, ...s.recent.filter(item => contentKey(item) !== contentKey(content))].slice(0, 30);
-    local.set('recent', recent);
-    set({ liveContent: content, liveFrame: frame, activeUid: s.previewUid,
-      liveHymnId: content.kind === 'hymn' ? content.hymnId : null,
-      passage: content.kind === 'passage' ? content.ref : null,
-      playing: false, seek: null, recent, player: { ...emptyPlayer, activated: s.player.activated } });
+    if (
+      !frame ||
+      (frame.kind === "video" && !frame.videoId) ||
+      (frame.kind === "passage" && !frame.verses.length)
+    )
+      return;
+    const recent = [
+      content,
+      ...s.recent.filter((item) => contentKey(item) !== contentKey(content)),
+    ].slice(0, 30);
+    local.set("recent", recent);
+    set({
+      liveContent: content,
+      liveFrame: frame,
+      activeUid: s.previewUid,
+      liveBible: s.bible,
+      liveHymnId: content.kind === "hymn" ? content.hymnId : null,
+      passage: content.kind === "passage" ? content.ref : null,
+      playing: false,
+      seek: null,
+      recent,
+      player: { ...emptyPlayer, activated: s.player.activated },
+    });
   },
 
   stepLive(delta) {
     const s = get();
-    const next = adjacentContent(s.liveContent, delta, s.bible);
+    const bible = s.liveBible.length ? s.liveBible : s.bible;
+    const next = adjacentContent(s.liveContent, delta, bible);
     if (!next) return;
-    set({ liveContent: next, liveFrame: resolveContent(next, s.bible, s.videos, s.passageStyle), passage: next.kind === 'passage' ? next.ref : null });
+    set({
+      liveContent: next,
+      liveFrame: resolveContent(
+        next,
+        bible,
+        s.videos,
+        s.liveFrame?.kind === "passage" ? s.liveFrame.style : s.passageStyle,
+      ),
+      passage: next.kind === "passage" ? next.ref : null,
+    });
   },
 
   prepareItem(item) {
-    if (item.type === 'content') get().prepare(item.content, item.uid);
-    if (item.type === 'hymn') get().openHymn(item.hymnId, item.uid);
-    if (item.type === 'passage') {
-      const ref = { book: item.book, chapter: item.chapter, verseStart: item.verseStart, verseEnd: item.verseStart };
-      get().prepare({ kind: 'passage', title: passageReference(get().bible, ref), ref }, item.uid);
+    if (item.type === "content") get().prepare(item.content, item.uid);
+    if (item.type === "hymn") get().openHymn(item.hymnId, item.uid);
+    if (item.type === "passage") {
+      const ref = {
+        book: item.book,
+        chapter: item.chapter,
+        verseStart: item.verseStart,
+        verseEnd: item.verseStart,
+      };
+      get().prepare(
+        { kind: "passage", title: passageReference(get().bible, ref), ref },
+        item.uid,
+      );
     }
-    if (item.type === 'label') set({ activeUid: item.uid });
+    if (item.type === "label") set({ activeUid: item.uid });
   },
 
   addContent(content) {
-    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: 'content', content: structuredClone(content) }];
-    local.set('setlist', setlist);
+    const setlist: SetlistItem[] = [
+      ...get().setlist,
+      { uid: uid(), type: "content", content: structuredClone(content) },
+    ];
+    local.set("setlist", setlist);
     set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   toggleFavorite(content) {
     const key = contentKey(content);
-    const favorites = get().favorites.some(item => contentKey(item) === key)
-      ? get().favorites.filter(item => contentKey(item) !== key) : [...get().favorites, structuredClone(content)];
-    local.set('favorites', favorites);
+    const favorites = get().favorites.some((item) => contentKey(item) === key)
+      ? get().favorites.filter((item) => contentKey(item) !== key)
+      : [...get().favorites, structuredClone(content)];
+    local.set("favorites", favorites);
     set({ favorites });
   },
 
-  setSimpleMode(simpleMode) { local.set('simpleMode', simpleMode); set({ simpleMode }); },
+  setSimpleMode(simpleMode) {
+    local.set("simpleMode", simpleMode);
+    set({ simpleMode });
+  },
 
   controlTimer(action, target) {
-    const item = target === 'preview' ? get().preview : get().liveContent;
-    if (item?.kind !== 'timer') return;
-    const remaining = action === 'reset' ? item.duration : timerSeconds(item);
-    const next: Content = { ...item, remaining, endsAt: action === 'start' ? Date.now() + remaining * 1000 : null };
-    if (target === 'preview') set({ preview: next });
-    else set({ liveContent: next, liveFrame: resolveContent(next, get().bible, get().videos, get().passageStyle) });
+    const item = target === "preview" ? get().preview : get().liveContent;
+    if (item?.kind !== "timer") return;
+    const remaining = action === "reset" ? item.duration : timerSeconds(item);
+    const next: Content = {
+      ...item,
+      remaining,
+      endsAt: action === "start" ? Date.now() + remaining * 1000 : null,
+    };
+    if (target === "preview") set({ preview: next });
+    else
+      set({
+        liveContent: next,
+        liveFrame: resolveContent(
+          next,
+          get().bible,
+          get().videos,
+          get().passageStyle,
+        ),
+      });
   },
   hymns: [],
   loading: true,
@@ -353,7 +472,8 @@ export const useApp = create<State & Actions>((set, get) => ({
       console.error("Falha ao carregar o hinário.", error);
       set({
         loading: false,
-        error: "Verifique a conexão e os arquivos de dados, depois tente novamente.",
+        error:
+          "Verifique a conexão e os arquivos de dados, depois tente novamente.",
       });
       return;
     }
@@ -384,7 +504,8 @@ export const useApp = create<State & Actions>((set, get) => ({
       const bible = await loadBible(version, (fresh) => {
         if (get().bibleVersion === version) set({ bible: fresh.books });
       });
-      if (get().bibleVersion === version) set({ bible: bible.books, bibleLoading: false });
+      if (get().bibleVersion === version)
+        set({ bible: bible.books, bibleLoading: false });
     } catch (error) {
       // Sem public/data/biblia-<versão>.json (ex: `npm run import:bible` não rodou ainda).
       console.error(`Falha ao carregar a Bíblia (${version}).`, error);
@@ -406,7 +527,10 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   commitLive() {
-    if (get().preview) { get().take(); return; }
+    if (get().preview) {
+      get().take();
+      return;
+    }
     // Põe no ar o hino selecionado agora; começa parado, o operador decide quando toca.
     set({
       liveHymnId: get().hymnId,
@@ -419,6 +543,26 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   async putOnAir() {
+    const preview = get().preview;
+    if (!preview) return;
+    if (preview.kind === "media") {
+      try {
+        if (!(await readAsset(preview.assetIds[preview.slide]))) {
+          set({
+            notice:
+              "Arquivo não encontrado. Importe a apresentação novamente antes de colocá-la no ar.",
+          });
+          return;
+        }
+      } catch {
+        set({
+          notice:
+            "Não foi possível abrir este arquivo. O conteúdo anterior continua no ar.",
+        });
+        return;
+      }
+      if (get().preview !== preview) return;
+    }
     get().take();
     if (!get().displayOpen) await get().openDisplay();
   },
@@ -428,12 +572,14 @@ export const useApp = create<State & Actions>((set, get) => ({
     // navegar pelo teclado pula direto para o próximo/anterior hino da lista, sempre no ar
     // (é um controle de show, não uma busca).
     const hymnItems = get().setlist.filter(
-      (item): item is Extract<SetlistItem, { type: "hymn" }> => item.type === "hymn",
+      (item): item is Extract<SetlistItem, { type: "hymn" }> =>
+        item.type === "hymn",
     );
     if (hymnItems.length === 0) return;
     const { activeUid } = get();
     const current = hymnItems.findIndex((item) => item.uid === activeUid);
-    const next = hymnItems[Math.min(Math.max(current + delta, 0), hymnItems.length - 1)];
+    const next =
+      hymnItems[Math.min(Math.max(current + delta, 0), hymnItems.length - 1)];
     if (!next || next.uid === activeUid) return;
     get().openHymn(next.hymnId, next.uid);
     get().commitLive();
@@ -465,7 +611,10 @@ export const useApp = create<State & Actions>((set, get) => ({
   movePassageVerses(delta) {
     const { passage, bible } = get();
     if (!passage) return;
-    if (get().liveContent?.kind === 'passage') { get().stepLive(delta); return; }
+    if (get().liveContent?.kind === "passage") {
+      get().stepLive(delta);
+      return;
+    }
     const next = moveVerse(bible, passage, delta);
     if (next) set({ passage: next });
   },
@@ -490,7 +639,10 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   toggle() {
     if (get().playing) get().pause();
-    else if (get().liveFrame?.kind === 'video' || get().videoOf(get().liveHymnId)) {
+    else if (
+      get().liveFrame?.kind === "video" ||
+      get().videoOf(get().liveHymnId)
+    ) {
       if (!get().displayOpen) void get().openDisplay();
       set({ playing: true });
     }
@@ -513,7 +665,10 @@ export const useApp = create<State & Actions>((set, get) => ({
     const videoId = parseVideoId(input);
     if (!videoId) return false;
     const videos = { ...get().videos, [String(hymnId)]: videoId };
-    local.set("videos", { ...local.get<VideoMap>("videos", {}), [String(hymnId)]: videoId });
+    local.set("videos", {
+      ...local.get<VideoMap>("videos", {}),
+      [String(hymnId)]: videoId,
+    });
     set({ videos });
     return true;
   },
@@ -526,12 +681,17 @@ export const useApp = create<State & Actions>((set, get) => ({
     local.set("videos", stored);
     // Só para a projeção se o hino editado for o que está no ar; mexer no link de
     // outro hino não pode interromper o que já está tocando.
-    set({ videos, playing: hymnId === get().liveHymnId ? false : get().playing });
+    set({
+      videos,
+      playing: hymnId === get().liveHymnId ? false : get().playing,
+    });
   },
 
   /** Baixa o mapa completo para virar public/data/videos.json no projeto. */
   exportVideos() {
-    const blob = new Blob([JSON.stringify(get().videos, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(get().videos, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -541,13 +701,19 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   addToSetlist(id) {
-    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "hymn", hymnId: id }];
+    const setlist: SetlistItem[] = [
+      ...get().setlist,
+      { uid: uid(), type: "hymn", hymnId: id },
+    ];
     local.set("setlist", setlist);
     set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
 
   addPassageToSetlist(ref) {
-    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "passage", ...ref }];
+    const setlist: SetlistItem[] = [
+      ...get().setlist,
+      { uid: uid(), type: "passage", ...ref },
+    ];
     local.set("setlist", setlist);
     set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
@@ -555,7 +721,10 @@ export const useApp = create<State & Actions>((set, get) => ({
   addLabelToSetlist(text) {
     const trimmed = text.trim();
     if (!trimmed) return;
-    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "label", text: trimmed }];
+    const setlist: SetlistItem[] = [
+      ...get().setlist,
+      { uid: uid(), type: "label", text: trimmed },
+    ];
     local.set("setlist", setlist);
     set({ setlist, undoSetlist: get().setlist, planDirty: true });
   },
@@ -564,7 +733,9 @@ export const useApp = create<State & Actions>((set, get) => ({
     const trimmed = text.trim();
     if (!trimmed) return;
     const setlist = get().setlist.map((item): SetlistItem =>
-      item.uid === itemUid && item.type === "label" ? { ...item, text: trimmed } : item,
+      item.uid === itemUid && item.type === "label"
+        ? { ...item, text: trimmed }
+        : item,
     );
     local.set("setlist", setlist);
     set({ setlist, undoSetlist: get().setlist, planDirty: true });
@@ -594,7 +765,11 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   /** Acrescenta as etapas do modelo (culto de sábado, escola sabatina, ...) ao roteiro atual. */
   loadSetlistTemplate(template) {
-    const items: SetlistItem[] = template.items.map((text) => ({ uid: uid(), type: "label", text }));
+    const items: SetlistItem[] = template.items.map((text) => ({
+      uid: uid(),
+      type: "label",
+      text,
+    }));
     const setlist = [...get().setlist, ...items];
     local.set("setlist", setlist);
     set({ setlist, undoSetlist: get().setlist, planDirty: true });
@@ -618,14 +793,24 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   clearSetlist() {
     local.set("setlist", []);
-    set({ setlist: [], undoSetlist: get().setlist, planDirty: true, activeUid: null });
+    set({
+      setlist: [],
+      undoSetlist: get().setlist,
+      planDirty: true,
+      activeUid: null,
+    });
   },
 
   undoSetlistChange() {
     const previous = get().undoSetlist;
     if (!previous) return;
     local.set("setlist", previous);
-    set({ setlist: previous, undoSetlist: null, planDirty: true, activeUid: null });
+    set({
+      setlist: previous,
+      undoSetlist: null,
+      planDirty: true,
+      activeUid: null,
+    });
   },
 
   setPlanDetails(name, date) {
@@ -637,7 +822,9 @@ export const useApp = create<State & Actions>((set, get) => ({
     const name = get().planName.trim();
     if (!name || get().setlist.length === 0) return false;
     const now = Date.now();
-    const existing = get().savedPlans.find((plan) => plan.id === get().currentPlanId);
+    const existing = get().savedPlans.find(
+      (plan) => plan.id === get().currentPlanId,
+    );
     const plan: SavedServicePlan = {
       id: existing?.id ?? uid(),
       name,
@@ -647,11 +834,18 @@ export const useApp = create<State & Actions>((set, get) => ({
       updatedAt: now,
     };
     const savedPlans = existing
-      ? get().savedPlans.map((candidate) => (candidate.id === plan.id ? plan : candidate))
+      ? get().savedPlans.map((candidate) =>
+          candidate.id === plan.id ? plan : candidate,
+        )
       : [plan, ...get().savedPlans];
     local.set("servicePlans", savedPlans);
     local.set("planDraft", { id: plan.id, name: plan.name, date: plan.date });
-    set({ savedPlans, currentPlanId: plan.id, planName: plan.name, planDirty: false });
+    set({
+      savedPlans,
+      currentPlanId: plan.id,
+      planName: plan.name,
+      planDirty: false,
+    });
     return true;
   },
 
@@ -695,7 +889,11 @@ export const useApp = create<State & Actions>((set, get) => ({
     local.set("servicePlans", savedPlans);
     const deletingCurrent = get().currentPlanId === id;
     if (deletingCurrent) {
-      local.set("planDraft", { id: null, name: get().planName, date: get().planDate });
+      local.set("planDraft", {
+        id: null,
+        name: get().planName,
+        date: get().planDate,
+      });
     }
     set({
       savedPlans,
@@ -720,7 +918,13 @@ export const useApp = create<State & Actions>((set, get) => ({
     // A permissão de gerenciamento de janelas só é concedida dentro de um gesto
     // do usuário, por isso isto só deve rodar a partir de um clique/tecla real.
     const opened = await openDisplayWindow(get().screenKey);
-    if (!opened) return false;
+    if (!opened) {
+      set({
+        notice:
+          "O navegador bloqueou a janela. Permita pop-ups para abrir a projeção.",
+      });
+      return false;
+    }
     set({ displayWindow: opened.window, displayOpen: true });
     return true;
   },

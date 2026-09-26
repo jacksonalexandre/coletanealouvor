@@ -15,7 +15,16 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { BookOpen, Check, Copy, GripVertical, ListPlus, StickyNote, Trash2, Undo2 } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  Copy,
+  GripVertical,
+  ListPlus,
+  StickyNote,
+  Trash2,
+  Undo2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ServicePlans } from "@/components/ServicePlans";
@@ -40,7 +49,9 @@ export function Setlist() {
   const activeIndex = setlist.findIndex((item) => item.uid === activeUid);
   const nextUid = activeIndex >= 0 ? setlist[activeIndex + 1]?.uid : undefined;
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -66,7 +77,12 @@ export function Setlist() {
           </h2>
           <div className="flex items-center">
             {undoAvailable && (
-              <Button variant="ghost" size="sm" onClick={undo} title="Desfazer última alteração">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={undo}
+                title="Desfazer última alteração"
+              >
                 <Undo2 className="size-3.5" />
                 Desfazer
               </Button>
@@ -76,7 +92,8 @@ export function Setlist() {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  if (window.confirm("Limpar todos os itens do roteiro atual?")) clear();
+                  if (window.confirm("Limpar todos os itens do roteiro atual?"))
+                    clear();
                 }}
               >
                 Limpar
@@ -121,8 +138,9 @@ export function Setlist() {
 
       {setlist.length === 0 ? (
         <p className="px-4 py-6 text-sm text-ink-400">
-          Adicione hinos pelo <span className="text-ink-200">+</span> da busca, carregue um modelo de
-          programação ou digite uma etapa acima para montar a ordem do culto.
+          Adicione hinos pelo <span className="text-ink-200">+</span> da busca,
+          carregue um modelo de programação ou digite uma etapa acima para
+          montar a ordem do culto.
         </p>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
@@ -167,7 +185,14 @@ function Row({
   const remove = useApp((state) => state.removeFromSetlist);
   const duplicate = useApp((state) => state.duplicateSetlistItem);
   const setNote = useApp((state) => state.setSetlistItemNote);
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: item.uid,
   });
 
@@ -178,7 +203,7 @@ function Row({
       className={cn(
         "group mb-1 flex items-center gap-1 rounded-lg px-1 py-1.5",
         active
-          ? "bg-brand-600/15 ring-1 ring-brand-600/50"
+          ? "bg-red-500/10 ring-1 ring-red-500/40"
           : next
             ? "bg-sky-500/10 ring-1 ring-sky-500/30"
             : "hover:bg-ink-800",
@@ -198,12 +223,23 @@ function Row({
         {item.type === "hymn" && <HymnRow item={item} active={active} />}
         {item.type === "passage" && <PassageRow item={item} active={active} />}
         {item.type === "label" && <LabelRow item={item} />}
-        {item.type === 'content' && <button className="w-full truncate text-left text-sm" onClick={() => useApp.getState().prepareItem(item)} title="Preparar conteúdo">{item.content.title}</button>}
+        {item.type === "content" && (
+          <button
+            className="w-full truncate text-left text-sm"
+            onClick={() => useApp.getState().prepareItem(item)}
+            title="Preparar conteúdo"
+          >
+            {item.content.title}
+          </button>
+        )}
         {item.note && (
           <button
             className="mt-0.5 block w-full truncate text-left text-[11px] text-amber-300"
             onClick={() => {
-              const note = window.prompt("Nota privada (nunca aparece na projeção):", item.note);
+              const note = window.prompt(
+                "Nota privada (nunca aparece na projeção):",
+                item.note,
+              );
               if (note != null) setNote(item.uid, note);
             }}
             title={item.note}
@@ -214,8 +250,13 @@ function Row({
         )}
       </div>
       {(active || next) && (
-        <span className={cn("text-[9px] font-bold uppercase", active ? "text-brand-400" : "text-sky-300")}>
-          {active ? item.type === 'label' ? 'Em curso' : 'No ar' : 'Próximo'}
+        <span
+          className={cn(
+            "text-[9px] font-bold uppercase",
+            active ? "text-red-300" : "text-sky-300",
+          )}
+        >
+          {active ? (item.type === "label" ? "Em curso" : "No ar") : "Próximo"}
         </span>
       )}
       <Button
@@ -223,7 +264,10 @@ function Row({
         size="icon"
         className="h-8 w-8 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
         onClick={() => {
-          const note = window.prompt("Nota privada (nunca aparece na projeção):", item.note ?? "");
+          const note = window.prompt(
+            "Nota privada (nunca aparece na projeção):",
+            item.note ?? "",
+          );
           if (note != null) setNote(item.uid, note);
         }}
         aria-label="Editar nota privada"
@@ -268,10 +312,17 @@ function HymnRow({
     <button
       onClick={() => openHymn(item.hymnId, item.uid)}
       title="Preparar hino"
-      className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
+      className={cn(
+        "min-w-0 flex-1 truncate text-left text-sm",
+        active ? "text-ink-100" : "text-ink-200",
+      )}
     >
       {hymn?.title ?? "Hino removido"}
-      {hymn && <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>}
+      {hymn && (
+        <span className="ml-2 text-xs tabular-nums text-ink-500">
+          {hymn.number}
+        </span>
+      )}
     </button>
   );
 }
@@ -292,7 +343,10 @@ function PassageRow({
     <button
       onClick={() => useApp.getState().prepareItem({ ...item, uid: itemUid })}
       title="Preparar passagem"
-      className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
+      className={cn(
+        "min-w-0 flex-1 truncate text-left text-sm",
+        active ? "text-ink-100" : "text-ink-200",
+      )}
     >
       <BookOpen className="mr-2 inline size-3.5 shrink-0 text-brand-400" />
       {bible.length ? passageReference(bible, ref) : "Passagem"}
@@ -333,14 +387,20 @@ function LabelRow({ item }: { item: Extract<SetlistItem, { type: "label" }> }) {
 
   return (
     <div className="flex items-center gap-2">
-    <button onClick={() => useApp.getState().prepareItem(item)} title="Marcar etapa em curso (não muda o telão)" aria-label={`Iniciar ${item.text}`}><Check size={14} /></button>
-    <button
-      onClick={() => setEditing(true)}
-      className="min-w-0 flex-1 truncate text-left text-sm text-ink-400 italic"
-      title="Clique para editar"
-    >
-      {item.text}
-    </button>
+      <button
+        onClick={() => useApp.getState().prepareItem(item)}
+        title="Marcar etapa em curso (não muda o telão)"
+        aria-label={`Iniciar ${item.text}`}
+      >
+        <Check size={14} />
+      </button>
+      <button
+        onClick={() => setEditing(true)}
+        className="min-w-0 flex-1 truncate text-left text-sm text-ink-400 italic"
+        title="Clique para editar"
+      >
+        {item.text}
+      </button>
     </div>
   );
 }

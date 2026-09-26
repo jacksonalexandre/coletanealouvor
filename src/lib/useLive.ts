@@ -21,7 +21,8 @@ export const emptyLive: LiveState = {
 export function useControlLink() {
   // O que está no ar é liveHymnId, não o que o operador tem selecionado/olhando agora.
   const hymn = useApp((state) => state.hymn(state.liveHymnId));
-  const frame = useApp(state => state.liveFrame);
+  const frame = useApp((state) => state.liveFrame);
+  const retryAt = useApp((state) => state.retryAt);
   const videoId = useApp((state) => state.videoOf(state.liveHymnId));
   const blank = useApp((state) => state.blank);
   const playing = useApp((state) => state.playing);
@@ -39,7 +40,10 @@ export function useControlLink() {
   const passageLive = useMemo(
     () =>
       passage && bible.length
-        ? { reference: passageReference(bible, passage), verses: passageVerses(bible, passage) }
+        ? {
+            reference: passageReference(bible, passage),
+            verses: passageVerses(bible, passage),
+          }
         : null,
     [passage, bible],
   );
@@ -47,7 +51,12 @@ export function useControlLink() {
   const state = useMemo<LiveState>(
     () => ({
       content: frame,
-      videoId: frame ? frame.kind === 'video' ? frame.videoId : null : videoId,
+      retryAt,
+      videoId: frame
+        ? frame.kind === "video"
+          ? frame.videoId
+          : null
+        : videoId,
       title: frame?.title ?? (hymn ? `${hymn.title} (${hymn.number})` : ""),
       blank,
       playing,
@@ -57,7 +66,18 @@ export function useControlLink() {
       passageStyle,
       updatedAt: Date.now(),
     }),
-    [frame, videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle],
+    [
+      retryAt,
+      frame,
+      videoId,
+      hymn,
+      blank,
+      playing,
+      volume,
+      seek,
+      passageLive,
+      passageStyle,
+    ],
   );
 
   const stateRef = useRef(state);
@@ -84,7 +104,14 @@ export function useControlLink() {
           else store.stepHymn(-1);
         }
         if (message.action === "blank") store.setBlank(!store.blank);
-        if (message.action === "toggle") store.toggle();
+        if (message.action === "toggle") {
+          if (store.liveContent?.kind === "timer")
+            store.controlTimer(
+              store.liveContent.endsAt ? "pause" : "start",
+              "live",
+            );
+          else store.toggle();
+        }
       }
     });
 

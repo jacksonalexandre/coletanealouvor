@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createChannel } from "@/lib/channel";
 import { emptyLive } from "@/lib/useLive";
 import type { LiveState, PlayerState } from "@/lib/types";
-import { ContentScreen } from '@/components/ContentScreen';
+import { ContentScreen } from "@/components/ContentScreen";
 
-import { loadYouTubeApi, type YTPlayer } from '@/lib/youtubePlayer';
+import { loadYouTubeApi, type YTPlayer } from "@/lib/youtubePlayer";
 
 const erros: Record<number, string> = {
   2: "Id de vídeo inválido.",
@@ -27,19 +27,22 @@ export default function Display() {
   const liveRef = useRef(live);
   const stateRef = useRef({ playing: false, buffering: false, ended: false });
   const activatedRef = useRef(false);
+  const readyRef = useRef(false);
+  const errorRef = useRef<string | null>(null);
+  const loadedRef = useRef<string | null>(null);
   liveRef.current = live;
 
   const report = useCallback((patch: Partial<PlayerState> = {}) => {
     const player = playerRef.current;
     const state: PlayerState = {
-      ready: !!player,
+      ready: readyRef.current,
       activated: activatedRef.current,
       playing: stateRef.current.playing,
       buffering: stateRef.current.buffering,
       ended: stateRef.current.ended,
-      currentTime: player?.getCurrentTime() ?? 0,
-      duration: player?.getDuration() ?? 0,
-      error: null,
+      currentTime: readyRef.current ? (player?.getCurrentTime() ?? 0) : 0,
+      duration: readyRef.current ? (player?.getDuration() ?? 0) : 0,
+      error: errorRef.current,
       updatedAt: Date.now(),
       ...patch,
     };
@@ -50,10 +53,15 @@ export default function Display() {
   useEffect(() => {
     const channel = createChannel((message) => {
       if (message.type === "state") {
-        setLive((current) => (message.state.updatedAt >= current.updatedAt ? message.state : current));
+        setLive((current) =>
+          message.state.updatedAt >= current.updatedAt
+            ? message.state
+            : current,
+        );
       }
       if (message.type === "hello") channel.post({ type: "display-open" });
-      if (message.type === "health-ping") channel.post({ type: "health-pong", id: message.id });
+      if (message.type === "health-ping")
+        channel.post({ type: "health-pong", id: message.id });
     });
 
     channelRef.current = channel;
@@ -68,14 +76,22 @@ export default function Display() {
     };
   }, []);
 
-  // Cria o player uma vez.
+  const needsVideo = !!live.videoId;
   useEffect(() => {
+    if (!needsVideo) return;
     let cancelled = false;
+    readyRef.current = false;
+    setReady(false);
+    errorRef.current = null;
+    setError(null);
+    loadedRef.current = null;
+    const element = document.createElement("div");
+    mountRef.current?.append(element);
 
     void loadYouTubeApi()
       .then((YT) => {
         if (cancelled || !mountRef.current) return;
-        playerRef.current = new YT.Player(mountRef.current, {
+        playerRef.current = new YT.Player(element, {
           host: "https://www.youtube-nocookie.com",
           playerVars: {
             controls: 0,
@@ -88,6 +104,8 @@ export default function Display() {
           },
           events: {
             onReady: () => {
+              readyRef.current = true;
+              if (activatedRef.current) playerRef.current?.unMute();
               setReady(true);
               report({ ready: true });
             },
@@ -100,7 +118,10 @@ export default function Display() {
               report();
             },
             onError: (event) => {
-              const message = erros[event.data] ?? `Erro ${event.data} no player.`;
+              const message =
+                erros[event.data] ??
+                "Não foi possível reproduzir este vídeo. Tente novamente.";
+              errorRef.current = message;
               setError(message);
               report({ error: message });
             },
@@ -110,6 +131,7 @@ export default function Display() {
       .catch((cause: Error) => {
         if (!cancelled) {
           setError(cause.message);
+          errorRef.current = cause.message;
           report({ ready: false, error: cause.message });
         }
       });
@@ -118,11 +140,13 @@ export default function Display() {
       cancelled = true;
       playerRef.current?.destroy();
       playerRef.current = null;
+      readyRef.current = false;
+      element.remove();
+      stateRef.current = { playing: false, buffering: false, ended: false };
     };
-  }, [report]);
+  }, [report, needsVideo, live.retryAt]);
 
   // Troca de vídeo.
-  const loadedRef = useRef<string | null>(null);
   useEffect(() => {
     const player = playerRef.current;
     if (!player || !ready) return;
@@ -130,10 +154,12 @@ export default function Display() {
     if (live.videoId !== loadedRef.current) {
       loadedRef.current = live.videoId;
       setError(null);
+      errorRef.current = null;
       stateRef.current = { playing: false, buffering: false, ended: false };
       if (!live.videoId) player.stopVideo();
       // Sem gesto nesta janela o navegador recusa o play; aí só deixamos pronto.
-      else if (live.playing && activatedRef.current) player.loadVideoById(live.videoId);
+      else if (live.playing && activatedRef.current)
+        player.loadVideoById(live.videoId);
       else player.cueVideoById(live.videoId);
       return;
     }
@@ -155,7 +181,7 @@ export default function Display() {
   // Relatório periódico de posição enquanto toca.
   useEffect(() => {
     const timer = window.setInterval(() => {
-      if (playerRef.current && stateRef.current.playing) report();
+      if (playerRef.current && readyRef.current) report();
     }, 500);
     return () => clearInterval(timer);
   }, [report]);
@@ -186,7 +212,10 @@ export default function Display() {
   const toggleFullscreen = async () => {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
-      else await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+      else
+        await document.documentElement.requestFullscreen({
+          navigationUI: "hide",
+        });
     } catch {
       // Navegador pode recusar sem gesto do usuário; segue em janela.
     }
@@ -197,7 +226,7 @@ export default function Display() {
     activatedRef.current = true;
     setActivated(true);
     const player = playerRef.current;
-    if (player) {
+    if (player && readyRef.current) {
       player.unMute();
       player.setVolume(Math.round(liveRef.current.volume * 100));
       if (liveRef.current.playing) player.playVideo();
@@ -206,42 +235,23 @@ export default function Display() {
     report({ activated: true });
   };
 
-  const covered = live.blank || (!live.videoId && !live.passage && !live.content);
+  const covered =
+    live.blank || (!live.videoId && !live.passage && !live.content);
 
   return (
-    <div className="relative h-dvh w-screen overflow-hidden bg-black" onDoubleClick={toggleFullscreen}>
-      <div className="absolute inset-0 [&>iframe]:size-full">
-        <div ref={mountRef} className="size-full" />
-      </div>
+    <div
+      className="relative h-dvh w-screen overflow-hidden bg-black"
+      onDoubleClick={toggleFullscreen}
+    >
+      <div ref={mountRef} className="absolute inset-0 [&>iframe]:size-full" />
 
-      {live.content && live.content.kind !== 'video' && <div className="absolute inset-0"><ContentScreen frame={live.content} /></div>}
-
-      {live.passage && !live.blank && (
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-20 text-center"
-          style={{ background: live.passageStyle.background, color: live.passageStyle.color }}
-        >
-          <p
-            className="font-semibold tracking-wide uppercase opacity-75"
-            style={{ fontSize: `${live.passageStyle.fontSize * 0.6}rem` }}
-          >
-            {live.passage.reference}
-          </p>
-          <div
-            className="max-w-5xl space-y-4 leading-relaxed"
-            style={{ fontSize: `${live.passageStyle.fontSize}rem` }}
-          >
-            {live.passage.verses.map((verse) => (
-              <p key={verse.number}>
-                <span className="mr-3 align-top opacity-70" style={{ fontSize: "0.5em" }}>
-                  {verse.number}
-                </span>
-                {verse.text}
-              </p>
-            ))}
-          </div>
+      {live.content && live.content.kind !== "video" && (
+        <div className="absolute inset-0">
+          <ContentScreen frame={live.content} />
         </div>
       )}
+
+      {live.passage && !live.content && <div className="absolute inset-0"><ContentScreen frame={{ kind: "passage", title: live.passage.reference, verses: live.passage.verses, style: live.passageStyle }} /></div>}
 
       {/* Tela preta por cima: vídeo/passagem continuam por baixo. */}
       <div
@@ -256,7 +266,9 @@ export default function Display() {
           onClick={activate}
           className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black text-ink-200"
         >
-          <span className="text-2xl font-semibold">Clique para ativar o som</span>
+          <span className="text-2xl font-semibold">
+            Clique para ativar o som
+          </span>
           <span className="text-sm text-ink-400">
             Uma vez por sessão. Também entra em tela cheia.
           </span>
@@ -264,7 +276,9 @@ export default function Display() {
       )}
 
       {activated && error && !!live.videoId && !live.blank && (
-        <div className="absolute inset-x-0 bottom-8 text-center text-sm text-amber-400">{error}</div>
+        <div className="absolute inset-x-0 bottom-8 text-center text-sm text-amber-400">
+          {error}
+        </div>
       )}
 
       {activated && !error && live.updatedAt === 0 && (

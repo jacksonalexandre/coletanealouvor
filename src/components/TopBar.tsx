@@ -3,7 +3,11 @@ import { CircleHelp, MonitorPlay, MonitorX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SystemCheck } from "@/components/SystemCheck";
 import logoUrl from "@/assets/logo.png";
-import { listScreens, supportsScreenPlacement, type ScreenInfo } from "@/lib/screens";
+import {
+  listScreens,
+  supportsScreenPlacement,
+  type ScreenInfo,
+} from "@/lib/screens";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 
@@ -28,9 +32,13 @@ export function TopBar({ onShowShortcuts }: { onShowShortcuts: () => void }) {
   const open = async () => {
     // A permissão de gerenciamento de janelas só é concedida dentro de um gesto
     // do usuário, por isso pedimos as telas aqui e não na carga da página.
-    if (supportsScreenPlacement()) setScreens(await listScreens());
     const ok = await openDisplay();
-    setHint(ok ? null : "O navegador bloqueou a janela. Libere pop-ups para este site.");
+    if (supportsScreenPlacement()) setScreens(await listScreens());
+    setHint(
+      ok
+        ? null
+        : "O navegador bloqueou a janela. Libere pop-ups para este site.",
+    );
   };
 
   return (
@@ -64,14 +72,23 @@ export function TopBar({ onShowShortcuts }: { onShowShortcuts: () => void }) {
         )}
       >
         <span
-          className={cn("size-2 rounded-full", displayOpen ? "bg-brand-500" : "bg-ink-600")}
+          className={cn(
+            "size-2 rounded-full",
+            displayOpen ? "bg-brand-500" : "bg-ink-600",
+          )}
         />
         {displayOpen ? "Projeção conectada" : "Projeção fechada"}
       </span>
 
       <SystemCheck />
 
-      <Button variant="ghost" size="icon" onClick={onShowShortcuts} title="Atalhos (?)" aria-label="Ver atalhos">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onShowShortcuts}
+        title="Atalhos (?)"
+        aria-label="Ver atalhos"
+      >
         <CircleHelp className="size-4" />
       </Button>
 

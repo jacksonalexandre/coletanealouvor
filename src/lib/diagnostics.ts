@@ -1,6 +1,8 @@
 import { createChannel } from "@/lib/channel";
 import { checkIndexedDbAvailable } from "@/lib/storage";
 import type { BibleBook, Hymn, SetlistItem, VideoMap } from "@/lib/types";
+import { isContent, resolveContent } from "./content";
+import { DEFAULT_PASSAGE_STYLE } from "./passageStyle";
 
 export type DiagnosticStatus = "ok" | "warning" | "error" | "unknown";
 
@@ -19,32 +21,74 @@ export type DiagnosticSnapshot = {
   displayOpen: boolean;
 };
 
-export function inspectSetlist(snapshot: Pick<DiagnosticSnapshot, "hymns" | "bible" | "setlist" | "videos">): DiagnosticCheck {
+export function inspectSetlist(
+  snapshot: Pick<DiagnosticSnapshot, "hymns" | "bible" | "setlist" | "videos">,
+): DiagnosticCheck {
   if (snapshot.setlist.length === 0) {
-    return { id: "setlist", label: "Roteiro", status: "warning", message: "O roteiro está vazio." };
+    return {
+      id: "setlist",
+      label: "Roteiro",
+      status: "warning",
+      message: "O roteiro está vazio.",
+    };
   }
 
   const warnings: string[] = [];
   for (const item of snapshot.setlist) {
+    if (item.type === "content") {
+      if (!isContent(item.content)) warnings.push("conteúdo inválido");
+      else {
+        const frame = resolveContent(
+          item.content,
+          snapshot.bible,
+          snapshot.videos,
+          DEFAULT_PASSAGE_STYLE,
+        );
+        if (frame?.kind === "video" && !frame.videoId)
+          warnings.push("hino sem vídeo");
+        if (frame?.kind === "passage" && !frame.verses.length)
+          warnings.push("passagem bíblica inválida");
+      }
+    }
     if (item.type === "hymn") {
-      const hymn = snapshot.hymns.find((candidate) => candidate.id === item.hymnId);
+      const hymn = snapshot.hymns.find(
+        (candidate) => candidate.id === item.hymnId,
+      );
       if (!hymn) warnings.push("hino inválido");
-      else if (!snapshot.videos[String(item.hymnId)]) warnings.push(`hino ${hymn.number} sem vídeo`);
+      else if (!snapshot.videos[String(item.hymnId)])
+        warnings.push(`hino ${hymn.number} sem vídeo`);
     } else if (item.type === "passage") {
-      const book = snapshot.bible.find((candidate) => candidate.abbrev === item.book);
+      const book = snapshot.bible.find(
+        (candidate) => candidate.abbrev === item.book,
+      );
       const chapter = book?.chapters[item.chapter - 1];
-      if (!chapter || item.verseStart < 1 || item.verseEnd < item.verseStart || item.verseEnd > chapter.length) {
+      if (
+        !chapter ||
+        item.verseStart < 1 ||
+        item.verseEnd < item.verseStart ||
+        item.verseEnd > chapter.length
+      ) {
         warnings.push("passagem bíblica inválida");
       }
-    } else if (item.type === 'label' && !item.text.trim()) {
+    } else if (item.type === "label" && !item.text.trim()) {
       warnings.push("etapa sem nome");
     }
   }
 
   const unique = [...new Set(warnings)];
   return unique.length
-    ? { id: "setlist", label: "Roteiro", status: "warning", message: unique.join("; ") + "." }
-    : { id: "setlist", label: "Roteiro", status: "ok", message: `${snapshot.setlist.length} itens verificados.` };
+    ? {
+        id: "setlist",
+        label: "Roteiro",
+        status: "warning",
+        message: unique.join("; ") + ".",
+      }
+    : {
+        id: "setlist",
+        label: "Roteiro",
+        status: "ok",
+        message: `${snapshot.setlist.length} itens verificados.`,
+      };
 }
 
 export function checkLocalStorageAvailable(): DiagnosticCheck {
@@ -54,8 +98,18 @@ export function checkLocalStorageAvailable(): DiagnosticCheck {
     const valid = localStorage.getItem(key) === "ok";
     localStorage.removeItem(key);
     return valid
-      ? { id: "local-storage", label: "Preferências locais", status: "ok", message: "Disponível." }
-      : { id: "local-storage", label: "Preferências locais", status: "error", message: "Não foi possível confirmar a gravação." };
+      ? {
+          id: "local-storage",
+          label: "Preferências locais",
+          status: "ok",
+          message: "Disponível.",
+        }
+      : {
+          id: "local-storage",
+          label: "Preferências locais",
+          status: "error",
+          message: "Não foi possível confirmar a gravação.",
+        };
   } catch {
     return {
       id: "local-storage",
@@ -66,12 +120,20 @@ export function checkLocalStorageAvailable(): DiagnosticCheck {
   }
 }
 
-export async function checkDisplayHandshake(timeoutMs = 1_500): Promise<DiagnosticCheck> {
+export async function checkDisplayHandshake(
+  timeoutMs = 1_500,
+): Promise<DiagnosticCheck> {
   if (typeof window === "undefined") {
-    return { id: "communication", label: "Comunicação", status: "unknown", message: "Não verificável neste ambiente." };
+    return {
+      id: "communication",
+      label: "Comunicação",
+      status: "unknown",
+      message: "Não verificável neste ambiente.",
+    };
   }
 
-  const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
+  const id =
+    globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
   return new Promise((resolve) => {
     let settled = false;
     let channel: ReturnType<typeof createChannel> | null = null;
@@ -94,7 +156,12 @@ export async function checkDisplayHandshake(timeoutMs = 1_500): Promise<Diagnost
     try {
       channel = createChannel((message) => {
         if (message.type === "health-pong" && message.id === id) {
-          finish({ id: "communication", label: "Comunicação", status: "ok", message: "Controle e projeção responderam." });
+          finish({
+            id: "communication",
+            label: "Comunicação",
+            status: "ok",
+            message: "Controle e projeção responderam.",
+          });
         }
       });
       channel.post({ type: "health-ping", id });
@@ -113,7 +180,12 @@ async function probe(url: string, timeoutMs = 3_000) {
   const controller = new AbortController();
   const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
-    await fetch(url, { method: "HEAD", mode: "no-cors", cache: "no-store", signal: controller.signal });
+    await fetch(url, {
+      method: "HEAD",
+      mode: "no-cors",
+      cache: "no-store",
+      signal: controller.signal,
+    });
     return true;
   } catch {
     return false;
@@ -125,14 +197,34 @@ async function probe(url: string, timeoutMs = 3_000) {
 async function connectivityChecks(): Promise<DiagnosticCheck[]> {
   if (typeof navigator === "undefined") {
     return [
-      { id: "internet", label: "Internet", status: "unknown", message: "Não verificável neste ambiente." },
-      { id: "youtube", label: "YouTube", status: "unknown", message: "Não verificável neste ambiente." },
+      {
+        id: "internet",
+        label: "Internet",
+        status: "unknown",
+        message: "Não verificável neste ambiente.",
+      },
+      {
+        id: "youtube",
+        label: "YouTube",
+        status: "unknown",
+        message: "Não verificável neste ambiente.",
+      },
     ];
   }
   if (!navigator.onLine) {
     return [
-      { id: "internet", label: "Internet", status: "warning", message: "O navegador está offline." },
-      { id: "youtube", label: "YouTube", status: "unknown", message: "Não testado enquanto offline." },
+      {
+        id: "internet",
+        label: "Internet",
+        status: "warning",
+        message: "O navegador está offline.",
+      },
+      {
+        id: "youtube",
+        label: "YouTube",
+        status: "unknown",
+        message: "Não testado enquanto offline.",
+      },
     ];
   }
 
@@ -142,20 +234,38 @@ async function connectivityChecks(): Promise<DiagnosticCheck[]> {
   ]);
   return [
     internet
-      ? { id: "internet", label: "Internet", status: "ok", message: "Acesso externo confirmado." }
-      : { id: "internet", label: "Internet", status: "warning", message: "Não foi possível confirmar acesso externo." },
+      ? {
+          id: "internet",
+          label: "Internet",
+          status: "ok",
+          message: "Acesso externo confirmado.",
+        }
+      : {
+          id: "internet",
+          label: "Internet",
+          status: "warning",
+          message: "Não foi possível confirmar acesso externo.",
+        },
     youtube
-      ? { id: "youtube", label: "YouTube", status: "ok", message: "O domínio do player respondeu." }
+      ? {
+          id: "youtube",
+          label: "YouTube",
+          status: "ok",
+          message: "O domínio do player respondeu.",
+        }
       : {
           id: "youtube",
           label: "YouTube",
           status: "unknown",
-          message: "Não foi possível confirmar o YouTube; bloqueadores podem interferir.",
+          message:
+            "Não foi possível confirmar o YouTube; bloqueadores podem interferir.",
         },
   ];
 }
 
-export async function runPreServiceDiagnostics(snapshot: DiagnosticSnapshot): Promise<DiagnosticCheck[]> {
+export async function runPreServiceDiagnostics(
+  snapshot: DiagnosticSnapshot,
+): Promise<DiagnosticCheck[]> {
   const [indexedDb, communication, connectivity] = await Promise.all([
     checkIndexedDbAvailable(),
     checkDisplayHandshake(),
@@ -164,18 +274,58 @@ export async function runPreServiceDiagnostics(snapshot: DiagnosticSnapshot): Pr
 
   return [
     snapshot.hymns.length > 0
-      ? { id: "hymnal", label: "Hinário", status: "ok", message: `${snapshot.hymns.length} hinos carregados.` }
-      : { id: "hymnal", label: "Hinário", status: "error", message: "O hinário não está disponível." },
+      ? {
+          id: "hymnal",
+          label: "Hinário",
+          status: "ok",
+          message: `${snapshot.hymns.length} hinos carregados.`,
+        }
+      : {
+          id: "hymnal",
+          label: "Hinário",
+          status: "error",
+          message: "O hinário não está disponível.",
+        },
     snapshot.bible.length > 0
-      ? { id: "bible", label: "Bíblia", status: "ok", message: `${snapshot.bible.length} livros carregados.` }
-      : { id: "bible", label: "Bíblia", status: "warning", message: "O texto bíblico não está disponível." },
+      ? {
+          id: "bible",
+          label: "Bíblia",
+          status: "ok",
+          message: `${snapshot.bible.length} livros carregados.`,
+        }
+      : {
+          id: "bible",
+          label: "Bíblia",
+          status: "warning",
+          message: "O texto bíblico não está disponível.",
+        },
     checkLocalStorageAvailable(),
     indexedDb
-      ? { id: "indexed-db", label: "Cache offline", status: "ok", message: "IndexedDB disponível." }
-      : { id: "indexed-db", label: "Cache offline", status: "error", message: "IndexedDB indisponível." },
+      ? {
+          id: "indexed-db",
+          label: "Cache offline",
+          status: "ok",
+          message: "IndexedDB disponível.",
+        }
+      : {
+          id: "indexed-db",
+          label: "Cache offline",
+          status: "error",
+          message: "IndexedDB indisponível.",
+        },
     snapshot.displayOpen
-      ? { id: "display", label: "Projeção", status: "ok", message: "A janela informou que está aberta." }
-      : { id: "display", label: "Projeção", status: "warning", message: "Janela de projeção não detectada." },
+      ? {
+          id: "display",
+          label: "Projeção",
+          status: "ok",
+          message: "A janela informou que está aberta.",
+        }
+      : {
+          id: "display",
+          label: "Projeção",
+          status: "warning",
+          message: "Janela de projeção não detectada.",
+        },
     communication,
     ...connectivity,
     inspectSetlist(snapshot),

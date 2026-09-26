@@ -12,7 +12,12 @@ export function parseVideoId(input: string): string | null {
       const id = url.pathname.slice(1);
       return /^[\w-]{11}$/.test(id) ? id : null;
     }
-    if (host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtube-nocookie.com' || host.endsWith('.youtube-nocookie.com')) {
+    if (
+      host === "youtube.com" ||
+      host.endsWith(".youtube.com") ||
+      host === "youtube-nocookie.com" ||
+      host.endsWith(".youtube-nocookie.com")
+    ) {
       const fromQuery = url.searchParams.get("v");
       if (fromQuery && /^[\w-]{11}$/.test(fromQuery)) return fromQuery;
       const match = url.pathname.match(/\/(embed|shorts|live|v)\/([\w-]{11})/);
@@ -27,4 +32,5 @@ export function parseVideoId(input: string): string | null {
 export const thumbnailUrl = (videoId: string) =>
   `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 
-export const watchUrl = (videoId: string) => `https://www.youtube.com/watch?v=${videoId}`;
+export const watchUrl = (videoId: string) =>
+  `https://www.youtube.com/watch?v=${videoId}`;

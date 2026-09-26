@@ -1,5 +1,11 @@
 import { useDeferredValue, useMemo, useRef, useState } from "react";
-import { ListPlus, Search as SearchIcon, Video, VideoOff, X } from "lucide-react";
+import {
+  ListPlus,
+  Search as SearchIcon,
+  Video,
+  VideoOff,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, normalize } from "@/lib/utils";
@@ -12,7 +18,6 @@ export function HymnSearch() {
   const hymnId = useApp((state) => state.hymnId);
   const openHymn = useApp((state) => state.openHymn);
   const addToSetlist = useApp((state) => state.addToSetlist);
-
 
   const [term, setTerm] = useState("");
   const deferred = useDeferredValue(term);
@@ -38,7 +43,8 @@ export function HymnSearch() {
           const exact = (hymn: typeof a) => (hymn.number === number ? 0 : 1);
           if (exact(a) !== exact(b)) return exact(a) - exact(b);
         }
-        const starts = (hymn: typeof a) => (hymn.search.startsWith(query) ? 0 : 1);
+        const starts = (hymn: typeof a) =>
+          hymn.search.startsWith(query) ? 0 : 1;
         if (starts(a) !== starts(b)) return starts(a) - starts(b);
         return a.title.localeCompare(b.title, "pt-BR");
       });
@@ -96,8 +102,12 @@ export function HymnSearch() {
                   title="Preparar hino"
                   className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="w-8 shrink-0 text-xs tabular-nums text-ink-400">{String(hymn.number).padStart(3, '0')}</span>
-                  <span className="min-w-0 flex-1 truncate text-sm text-ink-200">{hymn.title}</span>
+                  <span className="w-8 shrink-0 text-xs tabular-nums text-ink-400">
+                    {String(hymn.number).padStart(3, "0")}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm text-ink-200">
+                    {hymn.title}
+                  </span>
                   {hasVideo ? (
                     <Video className="size-3.5 shrink-0 text-ink-600" />
                   ) : (
@@ -118,7 +128,9 @@ export function HymnSearch() {
           );
         })}
         {results.length === 0 && (
-          <li className="px-3 py-8 text-center text-sm text-ink-400">Nenhum hino encontrado.</li>
+          <li className="px-3 py-8 text-center text-sm text-ink-400">
+            Nenhum hino encontrado.
+          </li>
         )}
       </ul>
     </div>

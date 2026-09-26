@@ -34,7 +34,8 @@ declare global {
   }
 }
 
-export const supportsScreenPlacement = () => typeof window.getScreenDetails === "function";
+export const supportsScreenPlacement = () =>
+  typeof window.getScreenDetails === "function";
 
 export async function listScreens(): Promise<ScreenInfo[]> {
   if (!supportsScreenPlacement()) return [];
@@ -73,15 +74,24 @@ export type DisplayWindow = {
   screenLabel: string | null;
 };
 
-export async function openDisplayWindow(savedKey?: string | null): Promise<DisplayWindow | null> {
-  const screen = await preferredScreen(savedKey);
-  const features = screen
-    ? `popup=yes,left=${screen.left},top=${screen.top},width=${screen.width},height=${screen.height}`
-    : "popup=yes,width=1280,height=720";
-
-  const child = window.open(`${import.meta.env.BASE_URL}projecao`, "coletanea-projecao", features);
+export async function openDisplayWindow(
+  savedKey?: string | null,
+): Promise<DisplayWindow | null> {
+  const child = window.open(
+    `${import.meta.env.BASE_URL}projecao`,
+    "coletanea-projecao",
+    "popup=yes,width=1280,height=720",
+  );
   if (!child) return null;
-
+  const screen = await preferredScreen(savedKey);
+  if (screen) {
+    try {
+      child.moveTo(screen.left, screen.top);
+      child.resizeTo(screen.width, screen.height);
+    } catch {
+      /* Manual screen placement remains available. */
+    }
+  }
   child.focus();
   return { window: child, screenLabel: screen?.label ?? null };
 }

@@ -12,7 +12,13 @@ const shortcuts = [
   ["?", "Abrir esta ajuda"],
 ] as const;
 
-export function ShortcutsHelp({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function ShortcutsHelp({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -21,13 +27,20 @@ export function ShortcutsHelp({ open, onOpenChange }: { open: boolean; onOpenCha
           <div className="flex items-start gap-3">
             <Keyboard className="mt-0.5 size-5 text-brand-400" />
             <div className="min-w-0 flex-1">
-              <Dialog.Title className="font-semibold text-ink-100">Atalhos do controle</Dialog.Title>
+              <Dialog.Title className="font-semibold text-ink-100">
+                Atalhos do controle
+              </Dialog.Title>
               <Dialog.Description className="mt-1 text-sm text-ink-400">
                 Atalhos ficam desativados enquanto você digita em um campo.
               </Dialog.Description>
             </div>
             <Dialog.Close asChild>
-              <Button variant="ghost" size="icon" className="-mt-2 -mr-2" aria-label="Fechar ajuda">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="-mt-2 -mr-2"
+                aria-label="Fechar ajuda"
+              >
                 <X className="size-4" />
               </Button>
             </Dialog.Close>

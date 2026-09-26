@@ -13,6 +13,7 @@
     "lint": "npm run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:smoke": "playwright test",
     "import:hymnal": "node scripts/import-hymnal.mjs",
     "import:videos": "node scripts/import-videos.mjs",
     "import:bible": "node scripts/import-bible.mjs"

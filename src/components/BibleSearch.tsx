@@ -38,7 +38,9 @@ export function BibleSearch() {
 
   const [term, setTerm] = useState("");
   const deferred = useDeferredValue(term);
-  const [order, setOrder] = useState<Order>(() => local.get<Order>("bibleBookOrder", "biblia"));
+  const [order, setOrder] = useState<Order>(() =>
+    local.get<Order>("bibleBookOrder", "biblia"),
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [bookAbbrev, setBookAbbrev] = useState<string | null>(null);
   const [chapter, setChapter] = useState<number | null>(null);
@@ -54,7 +56,9 @@ export function BibleSearch() {
 
   const books = useMemo(() => {
     const ordered =
-      order === "alfabetica" ? [...bible].sort((a, b) => a.name.localeCompare(b.name, "pt-BR")) : bible;
+      order === "alfabetica"
+        ? [...bible].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
+        : bible;
     const query = normalize(deferred).trim();
     if (!query) return ordered;
     return ordered.filter((candidate) => candidate.search.includes(query));
@@ -74,7 +78,9 @@ export function BibleSearch() {
   const clickVerse = (n: number, extend: boolean) => {
     setRange((current) => {
       if (extend && current) {
-        return n < current.start ? { start: n, end: current.end } : { start: current.start, end: n };
+        return n < current.start
+          ? { start: n, end: current.end }
+          : { start: current.start, end: n };
       }
       return { start: n, end: n };
     });
@@ -82,7 +88,12 @@ export function BibleSearch() {
 
   const ref = (): PassageRef | null =>
     book && chapter && range
-      ? { book: book.abbrev, chapter, verseStart: range.start, verseEnd: range.end }
+      ? {
+          book: book.abbrev,
+          chapter,
+          verseStart: range.start,
+          verseEnd: range.end,
+        }
       : null;
 
   const gearButton = (
@@ -109,7 +120,9 @@ export function BibleSearch() {
               disabled={bibleLoading}
               className={cn(
                 "flex-1 rounded-lg py-1.5 text-xs font-medium disabled:opacity-60",
-                bibleVersion === version.id ? "bg-ink-700 text-ink-100" : "bg-ink-800 text-ink-400 hover:text-ink-200",
+                bibleVersion === version.id
+                  ? "bg-ink-700 text-ink-100"
+                  : "bg-ink-800 text-ink-400 hover:text-ink-200",
               )}
               title={version.name}
             >
@@ -124,9 +137,15 @@ export function BibleSearch() {
       </div>
 
       <div>
-        <label className="mb-1 block text-xs text-ink-400">Ordem dos livros</label>
+        <label className="mb-1 block text-xs text-ink-400">
+          Ordem dos livros
+        </label>
         <div className="flex gap-1">
-          <OrderButton label="Ordem da Bíblia" active={order === "biblia"} onClick={() => changeOrder("biblia")} />
+          <OrderButton
+            label="Ordem da Bíblia"
+            active={order === "biblia"}
+            onClick={() => changeOrder("biblia")}
+          />
           <OrderButton
             label="A-Z"
             icon={<ArrowDownAZ className="size-3.5" />}
@@ -139,7 +158,9 @@ export function BibleSearch() {
       <div>
         <label className="mb-1 flex justify-between text-xs text-ink-400">
           <span>Tamanho da fonte na projeção</span>
-          <span className="tabular-nums">{passageStyle.fontSize.toFixed(1)}rem</span>
+          <span className="tabular-nums">
+            {passageStyle.fontSize.toFixed(1)}rem
+          </span>
         </label>
         <Slider
           value={[passageStyle.fontSize]}
@@ -156,7 +177,9 @@ export function BibleSearch() {
           <input
             type="color"
             value={passageStyle.background}
-            onChange={(event) => setPassageStyle({ background: event.target.value })}
+            onChange={(event) =>
+              setPassageStyle({ background: event.target.value })
+            }
             className="h-8 flex-1 rounded border border-ink-700 bg-transparent"
           />
         </label>
@@ -171,7 +194,11 @@ export function BibleSearch() {
         </label>
       </div>
 
-      <Button variant="ghost" size="sm" onClick={() => setPassageStyle(DEFAULT_PASSAGE_STYLE)}>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setPassageStyle(DEFAULT_PASSAGE_STYLE)}
+      >
         Restaurar aparência padrão
       </Button>
     </div>
@@ -180,18 +207,22 @@ export function BibleSearch() {
   if (!bible.length) {
     return (
       <div className="flex h-full min-h-0 flex-col">
-        <div className="flex items-center justify-end border-b border-ink-800 p-2">{gearButton}</div>
+        <div className="flex items-center justify-end border-b border-ink-800 p-2">
+          {gearButton}
+        </div>
         {settingsPanel}
         <div className="flex flex-1 items-center justify-center p-6 text-center text-sm text-ink-400">
           {bibleLoading ? (
             "Carregando…"
           ) : bibleError ? (
             <span>
-              Bíblia indisponível no momento. <span className="text-amber-400">{bibleError}</span>
+              Bíblia indisponível no momento.{" "}
+              <span className="text-amber-400">{bibleError}</span>
             </span>
           ) : (
             <span>
-              Bíblia indisponível. Conecte-se à internet e tente carregar novamente.
+              Bíblia indisponível. Conecte-se à internet e tente carregar
+              novamente.
             </span>
           )}
         </div>
@@ -229,7 +260,9 @@ export function BibleSearch() {
 
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
           {books.length === 0 ? (
-            <p className="px-3 py-8 text-center text-sm text-ink-400">Nenhum livro encontrado.</p>
+            <p className="px-3 py-8 text-center text-sm text-ink-400">
+              Nenhum livro encontrado.
+            </p>
           ) : (
             <div className="columns-2 gap-2 lg:columns-3">
               {books.map((candidate) => (
@@ -252,7 +285,11 @@ export function BibleSearch() {
   if (!chapter) {
     return (
       <div className="flex h-full min-h-0 flex-col">
-        <BackHeader label={book.name} onBack={() => setBookAbbrev(null)} right={gearButton} />
+        <BackHeader
+          label={book.name}
+          onBack={() => setBookAbbrev(null)}
+          right={gearButton}
+        />
         {settingsPanel}
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           <div className="grid grid-cols-6 gap-1.5">
@@ -273,7 +310,11 @@ export function BibleSearch() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <BackHeader label={`${book.name} ${chapter}`} onBack={() => setChapter(null)} right={gearButton} />
+      <BackHeader
+        label={`${book.name} ${chapter}`}
+        onBack={() => setChapter(null)}
+        right={gearButton}
+      />
       {settingsPanel}
 
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
@@ -287,7 +328,9 @@ export function BibleSearch() {
                 onClick={(event) => clickVerse(n, event.shiftKey)}
                 className={cn(
                   "rounded-lg py-2 text-sm tabular-nums",
-                  selected ? "bg-brand-600 font-semibold text-ink-950" : "bg-ink-800 text-ink-200 hover:bg-ink-700",
+                  selected
+                    ? "bg-brand-600 font-semibold text-ink-950"
+                    : "bg-ink-800 text-ink-200 hover:bg-ink-700",
                 )}
               >
                 {n}
@@ -300,7 +343,9 @@ export function BibleSearch() {
           <div className="mt-3 space-y-2 rounded-lg border border-ink-800 bg-ink-900 p-3">
             {verses.slice(range.start - 1, range.end).map((text, index) => (
               <p key={range.start + index} className="text-sm text-ink-300">
-                <span className="mr-2 tabular-nums text-brand-400">{range.start + index}</span>
+                <span className="mr-2 tabular-nums text-brand-400">
+                  {range.start + index}
+                </span>
                 {text}
               </p>
             ))}
@@ -314,11 +359,19 @@ export function BibleSearch() {
             className="flex-1"
             onClick={() => {
               const passage = ref();
-              if (passage) prepare({ kind: 'passage', title: `${book.name} ${chapter}:${range.start}`, ref: { ...passage, verseEnd: passage.verseStart } });
+              if (passage)
+                prepare({
+                  kind: "passage",
+                  title: `${book.name} ${chapter}:${range.start}`,
+                  ref: { ...passage, verseEnd: passage.verseStart },
+                });
             }}
           >
             <MonitorPlay className="size-4" />
-            Preparar {range.start === range.end ? range.start : `${range.start}-${range.end}`}
+            Preparar{" "}
+            {range.start === range.end
+              ? range.start
+              : `${range.start}-${range.end}`}
           </Button>
           <Button
             variant="secondary"
@@ -353,7 +406,9 @@ function OrderButton({
       onClick={onClick}
       className={cn(
         "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-medium",
-        active ? "bg-ink-700 text-ink-100" : "bg-ink-800 text-ink-400 hover:text-ink-200",
+        active
+          ? "bg-ink-700 text-ink-100"
+          : "bg-ink-800 text-ink-400 hover:text-ink-200",
       )}
     >
       {icon ?? <BookOpen className="size-3.5" />}
@@ -373,10 +428,18 @@ function BackHeader({
 }) {
   return (
     <div className="flex items-center gap-2 border-b border-ink-800 p-3">
-      <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onBack} aria-label="Voltar">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 shrink-0"
+        onClick={onBack}
+        aria-label="Voltar"
+      >
         <ChevronLeft className="size-4" />
       </Button>
-      <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink-200">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink-200">
+        {label}
+      </span>
       {right}
     </div>
   );
