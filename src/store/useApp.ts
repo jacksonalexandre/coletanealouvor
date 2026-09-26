@@ -1,5 +1,13 @@
 import { create } from "zustand";
-import { type Appearance, applyAppearance, DEFAULT_APPEARANCE, normalizeAppearance } from "@/lib/appearance";
+import {
+  type Appearance,
+  applyAppearance,
+  DEFAULT_APPEARANCE,
+  defaultsFor,
+  normalizeAppearance,
+  type Theme,
+  THEME_COLORS,
+} from "@/lib/appearance";
 import { clampPassage, findBook } from "@/lib/bible";
 import { type BibleVersionId, DEFAULT_BIBLE_VERSION, isBibleVersion } from "@/lib/bibleVersions";
 import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
@@ -98,6 +106,8 @@ type Actions = {
   movePassageVerses: (delta: number) => void;
   setPassageStyle: (patch: Partial<PassageStyle>) => void;
   setAppearance: (patch: Partial<Appearance>) => void;
+  /** Troca o tema; fundo e fonte do app voltam para os do tema escolhido. */
+  setTheme: (theme: Theme) => void;
   resetAppearance: () => void;
   showDraw: (draw: DrawResult) => Promise<void>;
   closeDraw: () => void;
@@ -329,10 +339,16 @@ export const useApp = create<State & Actions>((set, get) => ({
     set({ appearance });
   },
 
+  setTheme(theme) {
+    get().setAppearance({ theme, ...THEME_COLORS[theme] });
+  },
+
   resetAppearance() {
-    local.set("appearance", DEFAULT_APPEARANCE);
-    applyAppearance(DEFAULT_APPEARANCE);
-    set({ appearance: DEFAULT_APPEARANCE });
+    // Restaura as cores do tema atual, sem trocar de tema.
+    const appearance = defaultsFor(get().appearance.theme);
+    local.set("appearance", appearance);
+    applyAppearance(appearance);
+    set({ appearance });
   },
 
   async showDraw(draw) {

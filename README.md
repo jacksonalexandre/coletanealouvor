@@ -95,15 +95,18 @@ Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — s
 
 ## Configurações gerais
 
-A engrenagem no topo (ao lado do sorteio) reúne as cores globais, salvas no navegador:
+A engrenagem no topo reúne a reprodução ("Tocar neste aparelho", ver acima) e as cores, salvas no navegador:
 
 | Opção | Onde aparece |
 | --- | --- |
-| Cor de destaque | Botões, seleção, indicador de "no ar" — no controle e no resultado do sorteio na projeção |
-| Fundo do app | Tela de controle (cabeçalho, campos e bordas acompanham em tons mais claros) |
-| Fundo da projeção | Projeção sem vídeo, tela apagada (`B`) e sorteio |
+| Tema (Escuro / Claro) | Tela de controle inteira; trocar o tema volta o fundo e a fonte do app para os do tema |
+| Cor de destaque | Botões, seleção, indicador de "no ar" — no controle e no número/contador da projeção |
+| Fundo do app | Tela de controle |
+| Cor da fonte | Textos do controle; os tons mais fracos (legendas, bordas, campos) são misturas do fundo com a fonte |
+| Fundo da projeção | Projeção sem vídeo, tela apagada (`B`), sorteio e cronômetro |
+| Fonte da projeção | Textos do sorteio e do cronômetro, e o relógio |
 
-A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta ao tema original. As cores foram pensadas para fundos escuros: com um fundo claro, o texto do controle perde contraste.
+A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta às cores do tema atual.
 
 ## Cronômetro
 
@@ -142,7 +145,7 @@ scripts/import-hymnal.mjs   Gera o índice do hinário
 scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
 scripts/import-bible.mjs    Gera o texto da Bíblia
 scripts/playlists.json      Playlists do YouTube usadas na importação
-src/lib/appearance.ts       Cores globais (destaque, fundo do app e da projeção)
+src/lib/appearance.ts       Tema claro/escuro e cores globais do app e da projeção
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
 src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeção

@@ -273,6 +273,7 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
 
   const covered = live.blank || (!live.videoId && !live.passage && !live.draw && !live.countdown);
   const background = live.appearance.displayBackground;
+  const text = live.appearance.displayText;
 
   return (
     <div
@@ -316,11 +317,16 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       )}
 
       {live.draw && !live.blank && (
-        <DrawScreen draw={live.draw} background={background} accent={live.appearance.accent} />
+        <DrawScreen draw={live.draw} background={background} text={text} accent={live.appearance.accent} />
       )}
 
       {live.countdown && !live.blank && (
-        <CountdownScreen countdown={live.countdown} background={background} accent={live.appearance.accent} />
+        <CountdownScreen
+          countdown={live.countdown}
+          background={background}
+          text={text}
+          accent={live.appearance.accent}
+        />
       )}
 
       {/* Tela apagada por cima: vídeo/passagem continuam por baixo. */}
@@ -335,11 +341,11 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       {!activated && !live.passage && !live.draw && !live.countdown && (
         <button
           onClick={activate}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-ink-200"
-          style={{ background }}
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+          style={{ background, color: text }}
         >
           <span className="text-2xl font-semibold">Clique para ativar o som</span>
-          <span className="text-sm text-ink-400">
+          <span className="text-sm opacity-60">
             Uma vez por sessão. Também entra em tela cheia.
           </span>
         </button>
@@ -364,7 +370,17 @@ const passageSize = (rem: number, embedded: boolean) => (embedded ? `${rem * 1.2
 const ROLL_MS = 1800;
 
 /** Resultado do sorteio em tela cheia, depois de uma "roleta" rápida de valores. */
-function DrawScreen({ draw, background, accent }: { draw: LiveDraw; background: string; accent: string }) {
+function DrawScreen({
+  draw,
+  background,
+  text,
+  accent,
+}: {
+  draw: LiveDraw;
+  background: string;
+  text: string;
+  accent: string;
+}) {
   const [shown, setShown] = useState(draw.value);
   const [rolling, setRolling] = useState(false);
 
@@ -400,7 +416,12 @@ function DrawScreen({ draw, background, accent }: { draw: LiveDraw; background: 
       className="absolute inset-0 flex flex-col items-center justify-center gap-[3cqh] px-[5cqw] text-center"
       style={{ background }}
     >
-      <p className="text-[min(5cqh,3cqw)] font-semibold tracking-[0.3em] text-white/60 uppercase">Sorteio</p>
+      <p
+        className="text-[min(5cqh,3cqw)] font-semibold tracking-[0.3em] uppercase opacity-60"
+        style={{ color: text }}
+      >
+        Sorteio
+      </p>
       <p
         key={rolling ? "rolling" : `result-${draw.nonce}`}
         className={`max-w-full font-bold break-words tabular-nums ${rolling ? "opacity-70" : "animate-[draw-pop_450ms_ease-out]"}`}
@@ -420,10 +441,12 @@ function DrawScreen({ draw, background, accent }: { draw: LiveDraw; background: 
 function CountdownScreen({
   countdown,
   background,
+  text: textColor,
   accent,
 }: {
   countdown: LiveCountdown;
   background: string;
+  text: string;
   accent: string;
 }) {
   const now = useNow();
@@ -437,7 +460,12 @@ function CountdownScreen({
       style={{ background }}
     >
       {countdown.label && (
-        <p className="max-w-full text-[min(6cqh,4cqw)] font-semibold break-words text-white/75">{countdown.label}</p>
+        <p
+          className="max-w-full text-[min(6cqh,4cqw)] font-semibold break-words opacity-75"
+          style={{ color: textColor }}
+        >
+          {countdown.label}
+        </p>
       )}
       <p
         className={`font-bold tabular-nums ${finished ? "animate-pulse" : ""}`}
@@ -449,7 +477,9 @@ function CountdownScreen({
       >
         {text}
       </p>
-      <p className="text-[min(5cqh,3cqw)] font-medium text-white/55 tabular-nums">{formatClock(now)}</p>
+      <p className="text-[min(5cqh,3cqw)] font-medium tabular-nums opacity-55" style={{ color: textColor }}>
+        {formatClock(now)}
+      </p>
     </div>
   );
 }

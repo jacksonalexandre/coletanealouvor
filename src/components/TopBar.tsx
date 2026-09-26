@@ -40,7 +40,8 @@ export function TopBar() {
   return (
     <header className="flex flex-wrap items-center gap-2 border-b border-ink-800 bg-ink-900 px-3 py-2">
       <h1 className="mr-auto flex items-center gap-2 text-sm font-semibold text-ink-200">
-        <img src={logoUrl} alt="" className="h-7 w-auto" />
+        {/* O logo é branco: no tema claro (sem .dark), inverte para escuro. */}
+        <img src={logoUrl} alt="" className="h-7 w-auto invert dark:invert-0" />
         <span>
           Coletânea <span className="text-brand-400">de Louvor</span>
         </span>
