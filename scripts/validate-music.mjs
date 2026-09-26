@@ -37,6 +37,7 @@ if(process.argv.includes('--report')) {
  lines.push('','## Mapeamentos ainda ausentes','');
  for(const c of data.collections){const missing=data.tracks.filter(t=>t.collectionId===c.id&&!t.videoId);if(missing.length)lines.push(`- **${c.title}**: ${missing.map(t=>t.title).join('; ')}.`);}
  lines.push('','## Limites conhecidos','', '- As fontes de inventário são o catálogo público da IASD Ermelinda, discografias do Cifra Club e metadados publicados pelo YouTube. Erros tipográficos das fontes foram corrigidos sem copiar letras ou mídia.', '- Biblioteca infantil inclui também músicas educativas adventistas; o operador escolhe as apropriadas à reunião.', '- Categorias de uso (ofertas, oração, dedicação) são curadoria operacional, não uma afirmação de que todas as faixas pertencem a um álbum oficial com esse nome.', '- Pesquisas, preferências por letra e correspondência com coleção são registradas no código de pesquisa; cache local ignorado pelo Git evita repetir consultas. O comando inventory recusa sobrescrever dados existentes.');
+ for(const e of data.exclusions??[])lines.push(`- Excluído: **${e.title}**. ${e.reason} [Evidência](${e.evidence}).`);
  await mkdir(new URL('docs/',root),{recursive:true});
  await writeFile(new URL('docs/music-library-status.md',root),lines.join('\n')+'\n');
  await writeFile(new URL('src/data/music/stats.json',root),JSON.stringify(stats,null,2)+'\n');

@@ -1,17 +1,17 @@
 {
   "collections": 91,
   "tracks": 941,
-  "lyrics": 380,
-  "fallbacks": 472,
-  "missing": 89,
-  "uniqueVideos": 832,
+  "lyrics": 379,
+  "fallbacks": 485,
+  "missing": 77,
+  "uniqueVideos": 844,
   "groups": {
     "youth": {
       "collections": 40,
-      "tracks": 370,
-      "lyrics": 159,
-      "fallbacks": 196,
-      "missing": 15
+      "tracks": 369,
+      "lyrics": 158,
+      "fallbacks": 208,
+      "missing": 3
     },
     "collections": {
       "collections": 31,
@@ -36,9 +36,9 @@
     },
     "other": {
       "collections": 3,
-      "tracks": 28,
+      "tracks": 29,
       "lyrics": 28,
-      "fallbacks": 0,
+      "fallbacks": 1,
       "missing": 0
     },
     "instrumental": {

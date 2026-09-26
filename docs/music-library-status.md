@@ -2,7 +2,7 @@
 
 Atualizado: 2026-09-26. Estatísticas geradas por `node scripts/validate-music.mjs --report`.
 
-Total: **941 faixas**, **91 coleções/seleções**, **380 com indicação de letra**, **472 fallbacks**, **89 sem vídeo**, **832 IDs únicos**.
+Total: **941 faixas**, **91 coleções/seleções**, **379 com indicação de letra**, **485 fallbacks**, **77 sem vídeo**, **844 IDs únicos**.
 
 “Com letra” significa indicação explícita no título do vídeo conferido no YouTube (ou inspeção visual registrada). Não significa que todos os vídeos foram assistidos integralmente. A verificação de existência/título usa oEmbed do YouTube, com data, título, canal e URL em cada registro. Reprodução incorporada, disponibilidade regional, anúncios e remoções podem mudar; confira antes do culto.
 
@@ -12,11 +12,11 @@ O inventário cobre as faixas identificadas nas fontes vinculadas, não afirma e
 
 | Categoria | Coleções | Faixas | Letra | Fallback | Sem vídeo |
 |---|---:|---:|---:|---:|---:|
-| youth | 40 | 370 | 159 | 196 | 15 |
+| youth | 40 | 369 | 158 | 208 | 3 |
 | collections | 31 | 279 | 110 | 105 | 64 |
 | children | 15 | 230 | 51 | 169 | 10 |
 | offering | 1 | 32 | 32 | 0 | 0 |
-| other | 3 | 28 | 28 | 0 | 0 |
+| other | 3 | 29 | 28 | 1 | 0 |
 | instrumental | 1 | 2 | 0 | 2 | 0 |
 
 ## Por coleção
@@ -72,7 +72,7 @@ O inventário cobre as faixas identificadas nas fontes vinculadas, não afirma e
 | [Instrumentais](https://www.youtube.com/watch?v=fOR2BvQGCTw) | selection | 2 | 0 | 2 | 0 |
 | [Ofertas, gratidão e doxologia · CPB](https://www.youtube.com/watch?v=WcbKoNxbg6E) | selection | 32 | 32 | 0 | 0 |
 | [Arautos do Rei · vídeos com letra](https://www.youtube.com/watch?v=2iKc4KjrcS4) | selection | 2 | 2 | 0 | 0 |
-| [Novo Tom · vídeos com letra](https://www.youtube.com/watch?v=qBcVz65OXi0) | selection | 5 | 5 | 0 | 0 |
+| [Novo Tom · vídeos com letra](https://www.youtube.com/watch?v=qBcVz65OXi0) | selection | 6 | 5 | 1 | 0 |
 | [Vocal Livre · vídeos com letra](https://www.youtube.com/watch?v=t3xq0kyHKlE) | selection | 21 | 21 | 0 | 0 |
 | [Ministério Jovem 1992 - Nosso Sol é Jesus](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-1992-nosso-sol-e-jesus/2mNxOaPK) | identified-tracklist | 8 | 2 | 6 | 0 |
 | [Ministério Jovem 1993 - Já é tempo](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-1993-ja-e-tempo/jYP0n5VX) | identified-tracklist | 7 | 1 | 6 | 0 |
@@ -85,14 +85,14 @@ O inventário cobre as faixas identificadas nas fontes vinculadas, não afirma e
 | [Ministério Jovem 2000 - É tempo de ver Jesus](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2000-e-tempo-de-ver-jesus/MLV5oDPB) | identified-tracklist | 14 | 1 | 13 | 0 |
 | [Ministério Jovem 2001 - Quase no lar](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2001-quase-no-lar/R9Vv6VQe) | identified-tracklist | 13 | 3 | 10 | 0 |
 | [Ministério Jovem 2002 - Você me pertence](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2002-voce-me-pertence/gbN1yN8w) | identified-tracklist | 10 | 3 | 7 | 0 |
-| [Ministério Jovem 2002 · Você Me Pertence II](https://www.cifraclub.com/ministerio-jovem/discografia.html) | selection | 13 | 2 | 9 | 2 |
+| [Ministério Jovem 2002 · Você Me Pertence II](https://www.cifraclub.com/ministerio-jovem/discografia.html) | selection | 13 | 2 | 10 | 1 |
 | [Ministério Jovem 2003 - Ensina-me a servir](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2003-ensima-me-a-servir/bmq8RNDd) | identified-tracklist | 10 | 2 | 8 | 0 |
 | [Ministério Jovem 2004 - Senhor, somos tua voz](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2004-senhor-somos-tua-voz/avNwJPBj) | identified-tracklist | 11 | 6 | 5 | 0 |
 | [Ministério Jovem 2005 - Fiel a toda prova](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2005-fiel-a-toda-prova/pQVaQVmd) | identified-tracklist | 11 | 11 | 0 | 0 |
 | [Ministério Jovem 2006 - Sou de Jesus](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2006-sou-de-jesus/WxVRzVG2) | identified-tracklist | 10 | 9 | 1 | 0 |
-| [Ministério Jovem 2007 -Vencedor cada dia](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2007-vencedor-cada-dia/2xN23VoB) | identified-tracklist | 11 | 5 | 4 | 2 |
+| [Ministério Jovem 2007 -Vencedor cada dia](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2007-vencedor-cada-dia/2xN23VoB) | identified-tracklist | 11 | 5 | 6 | 0 |
 | [Ministério Jovem 2008 - Vivo por Jesus](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2008-vivo-por-jesus/epVYxN6n) | identified-tracklist | 11 | 6 | 5 | 0 |
-| [Ministério Jovem 2009 - Brilha em mim](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2009-brilha-em-mim/9aqXwV3w) | identified-tracklist | 10 | 8 | 1 | 1 |
+| [Ministério Jovem 2009 - Brilha em mim](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2009-brilha-em-mim/9aqXwV3w) | identified-tracklist | 10 | 9 | 1 | 0 |
 | [Ministério Jovem 2010 - Geração Esperança](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2010-geracao-esperanca/DZNWDV0L) | identified-tracklist | 14 | 10 | 4 | 0 |
 | [Ministério Jovem 2010 · Escolhido Por Jesus](https://www.cifraclub.com/ministerio-jovem/discografia.html) | selection | 14 | 4 | 10 | 0 |
 | [Ministério Jovem 2011 - Amigos da Esperança](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2011-amigos-da-esperanca/k2VmDNOz) | identified-tracklist | 15 | 3 | 12 | 0 |
@@ -101,18 +101,18 @@ O inventário cobre as faixas identificadas nas fontes vinculadas, não afirma e
 | [Ministério Jovem 2013 · Minha Entrega](https://www.cifraclub.com/ministerio-jovem/discografia.html) | selection | 11 | 3 | 8 | 0 |
 | [Ministério Jovem 2014 - A única esperança](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2014-a-unica-esperanca/4ONnlqmA) | identified-tracklist | 11 | 10 | 1 | 0 |
 | [Ministério Jovem 2015 - Eu sou a Mensagem](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2015-eu-sou-a-mensagem/5gPGjqo2) | identified-tracklist | 12 | 10 | 2 | 0 |
-| [Ministério Jovem 2016 - Mais que Paixão](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2016-mais-que-paixao/XpNo5qan) | identified-tracklist | 9 | 2 | 6 | 1 |
-| [Ministério Jovem 2017 - Eu creio](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk) | identified-tracklist | 9 | 2 | 4 | 3 |
-| [Ministério Jovem 2018  - Fé e Ação](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2018-fe-e-acao/n2POlNoZ) | identified-tracklist | 6 | 0 | 4 | 2 |
-| [Ministério Jovem 2019  - Somos Tuas mãos](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2019-somos-tuas-maos/OYPrXVR3) | identified-tracklist | 11 | 3 | 5 | 3 |
-| [Ministério JA/Música 2020 - Tudo por Ele](https://iasdermelinda.com.br/musicas/albuns/ministerio-ja-musica-2020-tudo-por-ele/26Pp5NAj) | annual-selection | 7 | 3 | 3 | 1 |
+| [Ministério Jovem 2016 - Mais que Paixão](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2016-mais-que-paixao/XpNo5qan) | annual-selection | 9 | 2 | 7 | 0 |
+| [Ministério Jovem 2017 - Eu creio](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk) | annual-selection | 8 | 2 | 6 | 0 |
+| [Ministério Jovem 2018  - Fé e Ação](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2018-fe-e-acao/n2POlNoZ) | annual-selection | 6 | 0 | 6 | 0 |
+| [Ministério Jovem 2019  - Somos Tuas mãos](https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2019-somos-tuas-maos/OYPrXVR3) | annual-selection | 11 | 3 | 6 | 2 |
+| [Ministério JA/Música 2020 - Tudo por Ele](https://iasdermelinda.com.br/musicas/albuns/ministerio-ja-musica-2020-tudo-por-ele/26Pp5NAj) | annual-selection | 7 | 3 | 4 | 0 |
 | [Ministério JA/Música 2021 - Chegou a hora](https://iasdermelinda.com.br/musicas/albuns/ministerio-ja-musica-2021-chegou-a-hora/KAP3xNpv) | annual-selection | 3 | 0 | 3 | 0 |
 | [Ministério JA/Música 2022 - Eu vou](https://iasdermelinda.com.br/musicas/albuns/ministerio-ja-musica-2022-eu-vou/Mnq93N39) | annual-selection | 3 | 0 | 3 | 0 |
 | [Ministério Jovem 2023 · Culto Jovem Vol. 2](https://www.cifraclub.com/ministerio-jovem/discografia.html) | selection | 10 | 8 | 2 | 0 |
 | [Ministério Jovem 2023 · Me Ama](https://www.cifraclub.com/ministerio-jovem/discografia.html) | selection | 12 | 10 | 2 | 0 |
-| [Tema JA 2023 · Eu Vou](https://www.youtube.com/watch?v=VnDTO4HE5sE) | selection | 1 | 1 | 0 | 0 |
-| [Tema JA 2024 · Maranata](https://www.youtube.com/watch?v=BoWNEwIY0nI) | selection | 1 | 1 | 0 | 0 |
-| [Tema JA 2025 · Maranata](https://www.youtube.com/watch?v=Iqpvhm2yjO0) | selection | 1 | 1 | 0 | 0 |
+| [Tema JA 2023 · Eu Vou](https://www.youtube.com/watch?v=VnDTO4HE5sE) | annual-selection | 1 | 0 | 1 | 0 |
+| [Tema JA 2024 · Maranata](https://www.youtube.com/watch?v=BoWNEwIY0nI) | annual-selection | 1 | 1 | 0 | 0 |
+| [Tema JA 2025 · Maranata](https://www.youtube.com/watch?v=Iqpvhm2yjO0) | annual-selection | 1 | 0 | 1 | 0 |
 | [Ministério JA 2026](https://iasdermelinda.com.br/musicas/albuns/ministerio-ja-2026/jYP0x5PX) | annual-selection | 1 | 1 | 0 | 0 |
 
 ## Mapeamentos ainda ausentes
@@ -125,20 +125,14 @@ O inventário cobre as faixas identificadas nas fontes vinculadas, não afirma e
 - **Daniel Lüdtke - Minha vida é uma viagem**: As 7 cores da promessa; JESUS.
 - **Ministério da Mulher**: A gente precisa de amor.
 - **Ministério de louvor está escrito - Vol I**: Chuvas de bençãos; O senhor é o meu pastor; Nada poderá; O céu é o meu lugar; A glória de Deus; Nosso maravilhoso Deus.
-- **Ministério JA/Música 2020 - Tudo por Ele**: Medley da Fé.
-- **Ministério Jovem 2007 -Vencedor cada dia**: Vem brilhar em mim; Abertura (2007).
-- **Ministério Jovem 2009 - Brilha em mim**: Brilha em mim II.
-- **Ministério Jovem 2016 - Mais que Paixão**: Tenho Paz.
-- **Ministério Jovem 2017 - Eu creio**: Doce paz; Ouço Sua voz; Resgate do Amor.
-- **Ministério Jovem 2018  - Fé e Ação**: Canção dos Remidos; Nunca Mais Lágrimas.
-- **Ministério Jovem 2019  - Somos Tuas mãos**: Por Todo Mundo; Vencerei; Chamados.
+- **Ministério Jovem 2019  - Somos Tuas mãos**: Vencerei; Chamados.
 - **Momentos de louvor 2005**: Mensagem ao mundo; A glória de Deus; Equilíbrio; Glorifico; Isso sim que é amigo; Vou louvar; Maranata; Pra Glorificar; Céu, lindo céu.
 - **Momentos de louvor 2006**: Sei que vencerei; Vou deixar brilhar; O espírito desceu; Passo a passo; Medley do coração; Canto de alegria; Crescendo em graça; Jesus de nazaré; Além do Céu Azul.
 - **Momentos de louvor 2007**: Eu não mudei; Tocha de Jesus; Entrego a Ti; Obrigado bom pai; Deus do impossível; Isso é paz; Salmo 23; Unidos; Chegou a hora; Eu sou uma obra de arte; Viver com Jesus.
 - **Na presença de Deus**: A esperança é Jesus; Um em dez; Chuva de bênçãos; Súplica.
 - **Na trilha da conquista**: Reina em mim; Fui chamado por Cristo; Espírito de Deus; Tu és santo; O mover do espírito; Toma meu coração; Rompendo em fé; Águas purificadoras; Jesus meu capitão; O filho do Homem; Comunhão; Uma terra além do rio.
 - **Pôr do sol - 2012**: Presente de Deus; Descanso para o coração; Discípulos Teus; Graças ao Senhor; Na presença de Deus; Minha entrega; Casa de bênção.
-- **Ministério Jovem 2002 · Você Me Pertence II**: MEDLEY (Cante Aleluia, Ele é o Senhor Jeová); Exército de Salvação.
+- **Ministério Jovem 2002 · Você Me Pertence II**: Exército de Salvação.
 - **Tia Cecéu · Nessa Aventura**: Na Imensidão do Universo.
 - **Turma do Nosso Amiguinho · Nosso Amiguinho 50 Anos**: Ser Livre É Bom Demais; Gosto de Passear; A Biblioteca; Leitura; A Arca de Noé; Amigo Livro; A Bíblia.
 
@@ -148,3 +142,4 @@ O inventário cobre as faixas identificadas nas fontes vinculadas, não afirma e
 - Biblioteca infantil inclui também músicas educativas adventistas; o operador escolhe as apropriadas à reunião.
 - Categorias de uso (ofertas, oração, dedicação) são curadoria operacional, não uma afirmação de que todas as faixas pertencem a um álbum oficial com esse nome.
 - Pesquisas, preferências por letra e correspondência com coleção são registradas no código de pesquisa; cache local ignorado pelo Git evita repetir consultas. O comando inventory recusa sobrescrever dados existentes.
+- Excluído: **Ouço Sua voz**. Atribuição ao CD Jovem adventista não confirmada; versão encontrada é Mutual 2017 (Igreja de Jesus Cristo). [Evidência](https://www.youtube.com/watch?v=JXE2bPWO7FY).

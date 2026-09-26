@@ -468,7 +468,7 @@
       "group": "youth",
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2016-mais-que-paixao/XpNo5qan",
       "orderKnown": false,
-      "inventoryScope": "identified-tracklist"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "jovem-2017",
@@ -477,7 +477,7 @@
       "group": "youth",
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk",
       "orderKnown": false,
-      "inventoryScope": "identified-tracklist"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "jovem-2018",
@@ -486,7 +486,7 @@
       "group": "youth",
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2018-fe-e-acao/n2POlNoZ",
       "orderKnown": false,
-      "inventoryScope": "identified-tracklist"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "jovem-2019",
@@ -495,7 +495,7 @@
       "group": "youth",
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2019-somos-tuas-maos/OYPrXVR3",
       "orderKnown": false,
-      "inventoryScope": "identified-tracklist"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "momentos-de-louvor-2005",
@@ -750,7 +750,7 @@
       "group": "youth",
       "source": "https://www.youtube.com/watch?v=VnDTO4HE5sE",
       "orderKnown": false,
-      "inventoryScope": "selection"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "jovem-2024",
@@ -759,7 +759,7 @@
       "group": "youth",
       "source": "https://www.youtube.com/watch?v=BoWNEwIY0nI",
       "orderKnown": false,
-      "inventoryScope": "selection"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "jovem-2025",
@@ -768,7 +768,7 @@
       "group": "youth",
       "source": "https://www.youtube.com/watch?v=Iqpvhm2yjO0",
       "orderKnown": false,
-      "inventoryScope": "selection"
+      "inventoryScope": "annual-selection"
     },
     {
       "id": "selecao-vocal-livre",
@@ -5896,12 +5896,24 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-ja-musica-2020-tudo-por-ele/26Pp5NAj",
       "candidateId": "Z-sblqGGz0I",
-      "availability": "unmapped",
+      "availability": "verified",
       "researchedAt": "2026-09-26",
       "rejectedVideo": {
         "videoId": "Z-sblqGGz0I",
         "reason": "Title/collection correspondence not reliable"
-      }
+      },
+      "videoId": "Z-sblqGGz0I",
+      "lyrics": false,
+      "verification": {
+        "videoId": "Z-sblqGGz0I",
+        "title": "CORAL JOVEM DO RIO - MEDLEY DA FÉ - ft. @arautosdoreioficial",
+        "publisher": "GravadoraNT",
+        "source": "https://www.youtube.com/watch?v=Z-sblqGGz0I",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      },
+      "recordingNote": "Seleção anual da fonte; gravação do Coral Jovem do Rio com Arautos do Rei."
     },
     {
       "id": "jovem-2020-2",
@@ -9678,7 +9690,7 @@
     },
     {
       "id": "jovem-2007-1",
-      "title": "Vem brilhar em mim",
+      "title": "Vem Brilhar",
       "collectionId": "jovem-2007",
       "tags": [
         "JA",
@@ -9686,16 +9698,28 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2007-vencedor-cada-dia/2xN23VoB",
       "candidateId": "WLgBqc0wvsw",
-      "availability": "unmapped",
+      "availability": "verified",
       "track": 2,
       "alternateTitles": [
-        "Vem Brilhar"
+        "Vem Brilhar",
+        "Vem brilhar em mim"
       ],
       "rejectedVideo": {
         "videoId": "DNfjGf8qDWo",
         "reason": "Title/collection correspondence not reliable"
       },
-      "researchedAt": "2026-09-26"
+      "researchedAt": "2026-09-26",
+      "videoId": "2cmNgRYwZWQ",
+      "lyrics": false,
+      "verification": {
+        "videoId": "2cmNgRYwZWQ",
+        "title": "Vem Brilhar",
+        "publisher": "Ministério Jovem - Topic",
+        "source": "https://www.youtube.com/watch?v=2cmNgRYwZWQ",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      }
     },
     {
       "id": "jovem-2007-2",
@@ -10262,12 +10286,23 @@
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2009-brilha-em-mim/9aqXwV3w",
       "candidateId": "jUhxgrKziKo",
       "track": 2,
-      "availability": "unmapped",
+      "availability": "verified",
       "rejectedVideo": {
         "videoId": "JB5iwKxXdXw",
         "reason": "Title/collection correspondence not reliable"
       },
-      "researchedAt": "2026-09-26"
+      "researchedAt": "2026-09-26",
+      "videoId": "JB5iwKxXdXw",
+      "lyrics": true,
+      "verification": {
+        "videoId": "JB5iwKxXdXw",
+        "title": "Brilha em mim 2 - CD Jovem 2009 (Lyric Video)",
+        "publisher": "Músicas 7 Play",
+        "source": "https://www.youtube.com/watch?v=JB5iwKxXdXw",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": "title"
+      }
     },
     {
       "id": "jovem-2009-4",
@@ -12449,11 +12484,22 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2016-mais-que-paixao/XpNo5qan",
       "candidateId": "wtGU0GMO7ZQ",
-      "availability": "unmapped",
+      "availability": "verified",
       "researchedAt": "2026-09-26",
       "rejectedVideo": {
         "videoId": "8abSFc7KAoU",
         "reason": "Title/collection correspondence not reliable"
+      },
+      "videoId": "wtGU0GMO7ZQ",
+      "lyrics": false,
+      "verification": {
+        "videoId": "wtGU0GMO7ZQ",
+        "title": "CD JOVEM 2016 - Tenho Paz HD",
+        "publisher": "VBR PLAY",
+        "source": "https://www.youtube.com/watch?v=wtGU0GMO7ZQ",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
       }
     },
     {
@@ -12561,29 +12607,27 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk",
       "candidateId": "bHic1AvPM8o",
-      "availability": "unmapped",
+      "availability": "verified",
       "researchedAt": "2026-09-26",
       "rejectedVideo": {
         "videoId": "bHic1AvPM8o",
         "reason": "Title/collection correspondence not reliable"
+      },
+      "videoId": "bHic1AvPM8o",
+      "lyrics": false,
+      "verification": {
+        "videoId": "bHic1AvPM8o",
+        "title": "CD JOVEM 2017 - Doce Paz HD 1080P - VBR PLAY",
+        "publisher": "VBR PLAY",
+        "source": "https://www.youtube.com/watch?v=bHic1AvPM8o",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
       }
     },
     {
-      "id": "jovem-2017-6",
-      "title": "Ouço Sua voz",
-      "collectionId": "jovem-2017",
-      "tags": [
-        "JA",
-        "Jovens"
-      ],
-      "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk",
-      "candidateId": "5AuhIe07llI",
-      "availability": "unmapped",
-      "researchedAt": "2026-09-26"
-    },
-    {
       "id": "jovem-2017-7",
-      "title": "Resgate do Amor",
+      "title": "Resgate de Amor",
       "collectionId": "jovem-2017",
       "tags": [
         "JA",
@@ -12591,12 +12635,27 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk",
       "candidateId": "UFhJV4_CHrk",
-      "availability": "unmapped",
+      "availability": "verified",
       "rejectedVideo": {
         "videoId": "UFhJV4_CHrk",
         "reason": "Title/collection correspondence not reliable"
       },
-      "researchedAt": "2026-09-26"
+      "researchedAt": "2026-09-26",
+      "alternateTitles": [
+        "Resgate do Amor"
+      ],
+      "videoId": "UFhJV4_CHrk",
+      "lyrics": false,
+      "verification": {
+        "videoId": "UFhJV4_CHrk",
+        "title": "RESGATE DE AMOR  |  Música da Semana Santa 2017 | MENOS UM",
+        "publisher": "MENOS UM",
+        "source": "https://www.youtube.com/watch?v=UFhJV4_CHrk",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      },
+      "recordingNote": "Tema da Semana Santa 2017 incluído na seleção anual da fonte."
     },
     {
       "id": "jovem-2017-8",
@@ -12648,7 +12707,7 @@
     },
     {
       "id": "jovem-2018-1",
-      "title": "Canção dos Remidos",
+      "title": "Canção dos Redimidos",
       "collectionId": "jovem-2018",
       "tags": [
         "JA",
@@ -12656,8 +12715,22 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2018-fe-e-acao/n2POlNoZ",
       "candidateId": "JtWqWDoK94Y",
-      "availability": "unmapped",
-      "researchedAt": "2026-09-26"
+      "availability": "verified",
+      "researchedAt": "2026-09-26",
+      "alternateTitles": [
+        "Canção dos Remidos"
+      ],
+      "videoId": "JtWqWDoK94Y",
+      "lyrics": false,
+      "verification": {
+        "videoId": "JtWqWDoK94Y",
+        "title": "CANÇÃO DOS REDIMIDOS  | COLETÂNEA JOVEM | MENOS UM 2018",
+        "publisher": "MENOS UM",
+        "source": "https://www.youtube.com/watch?v=JtWqWDoK94Y",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      }
     },
     {
       "id": "jovem-2018-2",
@@ -12709,7 +12782,7 @@
     },
     {
       "id": "jovem-2018-4",
-      "title": "Nunca Mais Lágrimas",
+      "title": "Nunca Mais as Lágrimas",
       "collectionId": "jovem-2018",
       "tags": [
         "JA",
@@ -12717,8 +12790,22 @@
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2018-fe-e-acao/n2POlNoZ",
       "candidateId": "EUR-IUkbR8A",
-      "availability": "unmapped",
-      "researchedAt": "2026-09-26"
+      "availability": "verified",
+      "researchedAt": "2026-09-26",
+      "alternateTitles": [
+        "Nunca Mais Lágrimas"
+      ],
+      "videoId": "EUR-IUkbR8A",
+      "lyrics": false,
+      "verification": {
+        "videoId": "EUR-IUkbR8A",
+        "title": "NUNCA MAIS AS LÁGRIMAS | COLETÂNEA JOVEM | MENOS UM 2018",
+        "publisher": "MENOS UM",
+        "source": "https://www.youtube.com/watch?v=EUR-IUkbR8A",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      }
     },
     {
       "id": "jovem-2018-5",
@@ -12777,8 +12864,20 @@
         "Jovens"
       ],
       "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2019-somos-tuas-maos/OYPrXVR3",
-      "availability": "unmapped",
-      "researchedAt": "2026-09-26"
+      "availability": "verified",
+      "researchedAt": "2026-09-26",
+      "videoId": "GOJDbw6creI",
+      "lyrics": false,
+      "verification": {
+        "videoId": "GOJDbw6creI",
+        "title": "Por todo mundo",
+        "publisher": "Ministério de Desbravadores Paulista Sul",
+        "source": "https://www.youtube.com/watch?v=GOJDbw6creI",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      },
+      "recordingNote": "Versão publicada pelo Ministério de Desbravadores Paulista Sul."
     },
     {
       "id": "jovem-2019-2",
@@ -15100,8 +15199,19 @@
         "Jovens"
       ],
       "source": "https://www.cifraclub.com/ministerio-jovem/discografia.html",
-      "availability": "unmapped",
-      "researchedAt": "2026-09-26"
+      "availability": "verified",
+      "researchedAt": "2026-09-26",
+      "videoId": "aeE1mQGHgZw",
+      "lyrics": false,
+      "verification": {
+        "videoId": "aeE1mQGHgZw",
+        "title": "Abertura - CD Jovem 2007",
+        "publisher": "Iasd Louvores",
+        "source": "https://www.youtube.com/watch?v=aeE1mQGHgZw",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      }
     },
     {
       "id": "jovem-2005-extra-1",
@@ -15185,11 +15295,22 @@
         "Jovens"
       ],
       "source": "https://www.cifraclub.com/ministerio-jovem/discografia.html",
-      "availability": "unmapped",
+      "availability": "verified",
       "researchedAt": "2026-09-26",
       "rejectedVideo": {
         "videoId": "HjjNtxe-KyE",
         "reason": "Title/collection correspondence not reliable"
+      },
+      "videoId": "HjjNtxe-KyE",
+      "lyrics": false,
+      "verification": {
+        "videoId": "HjjNtxe-KyE",
+        "title": "Cante Aleluia, Ele É o Senhor Jeová)",
+        "publisher": "Ministério Jovem - Topic",
+        "source": "https://www.youtube.com/watch?v=HjjNtxe-KyE",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
       }
     },
     {
@@ -20825,18 +20946,19 @@
         "Missão"
       ],
       "source": "https://www.youtube.com/watch?v=VnDTO4HE5sE",
-      "videoId": "VnDTO4HE5sE",
-      "lyrics": true,
+      "videoId": "ygwQGsRFvlk",
+      "lyrics": false,
       "availability": "verified",
       "verification": {
-        "videoId": "VnDTO4HE5sE",
-        "title": "Hino Tema JA 2023 Videoclip \"EU VOU COM JESUS\" (Letra e Voz)",
-        "publisher": "Juventude Adventista",
-        "source": "https://www.youtube.com/watch?v=VnDTO4HE5sE",
+        "videoId": "ygwQGsRFvlk",
+        "title": "EU VOU -  TEMA JA 2023 | MÚSICA OFICIAL",
+        "publisher": "Feliz7Play",
+        "source": "https://www.youtube.com/watch?v=ygwQGsRFvlk",
         "checkedAt": "2026-09-26",
         "method": "youtube-oembed",
-        "lyricEvidence": "title"
-      }
+        "lyricEvidence": null
+      },
+      "recordingNote": "Tema oficial de 2023; substitui candidato cujo título indicava outra composição."
     },
     {
       "id": "jovem-2024-BoWNEwIY0nI",
@@ -20871,18 +20993,19 @@
         "Missão"
       ],
       "source": "https://www.youtube.com/watch?v=Iqpvhm2yjO0",
-      "videoId": "Iqpvhm2yjO0",
-      "lyrics": true,
+      "videoId": "3wpRy-60ILg",
+      "lyrics": false,
       "availability": "verified",
       "verification": {
-        "videoId": "Iqpvhm2yjO0",
-        "title": "Maranata | Canto Tema JA 2024-2025 | Canto oficial | Música y letra | Música adventista",
-        "publisher": "Música Adventista | Kevin Torres",
-        "source": "https://www.youtube.com/watch?v=Iqpvhm2yjO0",
+        "videoId": "3wpRy-60ILg",
+        "title": "CLIPE OFICIAL | Maranata - Tema JA 2025",
+        "publisher": "Feliz7Play",
+        "source": "https://www.youtube.com/watch?v=3wpRy-60ILg",
         "checkedAt": "2026-09-26",
         "method": "youtube-oembed",
-        "lyricEvidence": "title"
-      }
+        "lyricEvidence": null
+      },
+      "recordingNote": "Versão oficial em português; candidato anterior estava em espanhol."
     },
     {
       "id": "selecao-vocal-livre-t3xq0kyHKlE",
@@ -21629,6 +21752,35 @@
         "method": "youtube-oembed",
         "lyricEvidence": null
       }
+    },
+    {
+      "id": "novo-tom-live",
+      "title": "O Melhor Lugar do Mundo (Ao Vivo)",
+      "collectionId": "selecao-novo-tom",
+      "tags": [
+        "Adoração"
+      ],
+      "source": "https://www.youtube.com/watch?v=GsJR4rRldgo",
+      "videoId": "GsJR4rRldgo",
+      "lyrics": false,
+      "availability": "verified",
+      "verification": {
+        "videoId": "GsJR4rRldgo",
+        "title": "Novo Tom  - O melhor lugar do mundo (Ao Vivo)",
+        "publisher": "Rede Novo Tempo de Comunicação",
+        "source": "https://www.youtube.com/watch?v=GsJR4rRldgo",
+        "checkedAt": "2026-09-26",
+        "method": "youtube-oembed",
+        "lyricEvidence": null
+      }
+    }
+  ],
+  "exclusions": [
+    {
+      "title": "Ouço Sua voz",
+      "source": "https://iasdermelinda.com.br/musicas/albuns/ministerio-jovem-2017-eu-creio/wrV7BNBk",
+      "reason": "Atribuição ao CD Jovem adventista não confirmada; versão encontrada é Mutual 2017 (Igreja de Jesus Cristo).",
+      "evidence": "https://www.youtube.com/watch?v=JXE2bPWO7FY"
     }
   ]
 }
