@@ -1,360 +1,54 @@
-import { useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  EyeOff,
-  Loader2,
-  MonitorPlay,
-  Pause,
-  Play,
-  Send,
-  Volume2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { VideoLink } from "@/components/VideoLink";
-import { passageReference, passageVerses } from "@/lib/bible";
-import { cn, formatDuration } from "@/lib/utils";
-import { thumbnailUrl } from "@/lib/youtube";
-import { useApp } from "@/store/useApp";
+import { ChevronLeft, ChevronRight, EyeOff, Pause, Play, Radio, Send, Star } from 'lucide-react';
+import { useApp } from '@/store/useApp';
+import { adjacentContent, contentKey, resolveContent } from '@/lib/content';
+import { ContentScreen, AssetImage } from './ContentScreen';
+import { Button } from './ui/button';
+import { VideoLink } from './VideoLink';
+import { formatDuration } from '@/lib/utils';
+import { VideoMonitor } from './VideoMonitor';
 
-/** Comando da projeção: o que está no ar e os controles do vídeo. */
 export function Transport() {
-  const hymn = useApp((state) => state.hymn(state.hymnId));
-  const videoId = useApp((state) => state.videoOf(state.hymnId));
-  const liveHymnId = useApp((state) => state.liveHymnId);
-  const liveHymn = useApp((state) => state.hymn(state.liveHymnId));
-  const playing = useApp((state) => state.playing);
-  const blank = useApp((state) => state.blank);
-  const volume = useApp((state) => state.volume);
-  const player = useApp((state) => state.player);
-  const displayOpen = useApp((state) => state.displayOpen);
-  const passage = useApp((state) => state.passage);
-  const bible = useApp((state) => state.bible);
-  const setlist = useApp((state) => state.setlist);
-  const activeUid = useApp((state) => state.activeUid);
-
-  const toggle = useApp((state) => state.toggle);
-  const seekTo = useApp((state) => state.seekTo);
-  const setVolume = useApp((state) => state.setVolume);
-  const setBlank = useApp((state) => state.setBlank);
-  const stepHymn = useApp((state) => state.stepHymn);
-  const movePassageVerses = useApp((state) => state.movePassageVerses);
-  const closePassage = useApp((state) => state.closePassage);
-  const putOnAir = useApp((state) => state.putOnAir);
-
-  const [scrubbing, setScrubbing] = useState<number | null>(null);
-  const activeIndex = setlist.findIndex((item) => item.uid === activeUid);
-  const nextItem = activeIndex >= 0 ? setlist[activeIndex + 1] : setlist[0];
-  const nextLabel = nextItem
-    ? nextItem.type === "hymn"
-      ? useApp.getState().hymn(nextItem.hymnId)?.title ?? "Hino indisponível"
-      : nextItem.type === "passage"
-        ? bible.length
-          ? passageReference(bible, nextItem)
-          : "Passagem bíblica"
-        : nextItem.type === 'content' ? nextItem.content.title : nextItem.text
-    : null;
-
-  if (passage && bible.length) {
-    return (
-      <PassageTransport
-        reference={passageReference(bible, passage)}
-        verses={passageVerses(bible, passage)}
-        blank={blank}
-        displayOpen={displayOpen}
-        activated={player.activated}
-        onPrev={() => movePassageVerses(-1)}
-        onNext={() => movePassageVerses(1)}
-        onBlank={() => setBlank(!blank)}
-        onClose={closePassage}
-        nextLabel={nextLabel}
-      />
-    );
-  }
-
-  if (!hymn) {
-    return (
-      <div className="flex h-full flex-col gap-3 p-3">
-        <LiveSummary
-          title={liveHymn ? `${liveHymn.title} · ${liveHymn.number}` : "Nada projetado"}
-          blank={blank}
-          playing={playing}
-        />
-        <NextSummary label={nextLabel} />
-        <p className="m-auto px-3 text-center text-sm text-ink-400">Busque um hino para preparar o preview.</p>
-      </div>
-    );
-  }
-
-  const duration = player.duration || 0;
-  const position = scrubbing ?? player.currentTime;
-  const isLive = hymn.id === liveHymnId;
-
-  return (
-    <div className="flex h-full min-h-0 flex-col gap-3 p-3">
-      <LiveSummary
-        title={liveHymn ? `${liveHymn.title} · ${liveHymn.number}` : "Nada projetado"}
-        blank={blank}
-        playing={playing}
-      />
-      <NextSummary label={nextLabel} />
-      <div>
-        <span className="text-xs font-semibold tracking-wider text-sky-300 uppercase">Preview · selecionado</span>
-        <div
-          className={cn(
-            "mt-1 aspect-video overflow-hidden rounded-xl border bg-black",
-            isLive && playing && !blank ? "border-brand-500/70" : "border-ink-700",
-          )}
-        >
-          {videoId && !(isLive && blank) ? (
-            <img
-              src={thumbnailUrl(videoId)}
-              alt=""
-              className="size-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div className="flex size-full items-center justify-center text-xs text-ink-600">
-              {isLive && blank ? "Tela apagada" : "Sem vídeo"}
-            </div>
-          )}
-        </div>
-        <p className="mt-2 text-sm text-ink-200">
-          {hymn.title}
-          <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>
-        </p>
-        <Status displayOpen={displayOpen} activated={player.activated} error={player.error} />
-      </div>
-
-      <VideoLink hymnId={hymn.id} videoId={videoId} />
-
-      <div className="mt-auto space-y-3">
-        <div>
-          <Slider
-            value={[Math.min(position, duration || 1)]}
-            min={0}
-            max={duration || 1}
-            step={0.5}
-            disabled={!videoId || duration === 0}
-            onValueChange={([value]) => setScrubbing(value)}
-            onValueCommit={([value]) => {
-              seekTo(value);
-              setScrubbing(null);
-            }}
-          />
-          <div className="mt-1 flex justify-between text-[11px] tabular-nums text-ink-400">
-            <span>{formatDuration(Math.floor(position))}</span>
-            <span>{duration ? formatDuration(Math.floor(duration)) : "--:--"}</span>
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button variant="secondary" size="lg" onClick={() => stepHymn(-1)} title="Hino anterior (P)">
-            <ChevronLeft className="size-5" />
-          </Button>
-          <Button
-            size="lg"
-            className="flex-1"
-            onClick={() => (isLive ? toggle() : void putOnAir())}
-            disabled={isLive ? !playing && !videoId : !videoId}
-            title={isLive ? "Espaço" : "Colocar no ar (Enter)"}
-          >
-            {!isLive ? (
-              <Send className="size-5" />
-            ) : player.buffering ? (
-              <Loader2 className="size-5 animate-spin" />
-            ) : playing ? (
-              <Pause className="size-5" />
-            ) : (
-              <Play className="size-5" />
-            )}
-            {!isLive ? "Colocar no ar" : playing ? "Pausar" : "Tocar"}
-          </Button>
-          <Button variant="secondary" size="lg" onClick={() => stepHymn(1)} title="Próximo hino (N)">
-            <ChevronRight className="size-5" />
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant={blank ? "danger" : "outline"}
-            className="flex-1"
-            onClick={() => setBlank(!blank)}
-            title="Tecla B"
-          >
-            <EyeOff className="size-4" />
-            {blank ? "Tela apagada" : "Apagar tela"}
-          </Button>
-          <div className="flex w-28 items-center gap-2">
-            <Volume2 className="size-4 shrink-0 text-ink-400" />
-            <Slider
-              value={[volume]}
-              min={0}
-              max={1}
-              step={0.05}
-              onValueChange={([value]) => setVolume(value)}
-            />
-          </div>
-        </div>
-      </div>
+  const preview = useApp(s => s.preview), live = useApp(s => s.liveContent), frame = useApp(s => s.liveFrame);
+  const bible = useApp(s => s.bible), videos = useApp(s => s.videos), style = useApp(s => s.passageStyle);
+  const blank = useApp(s => s.blank), playing = useApp(s => s.playing), player = useApp(s => s.player);
+  const displayOpen = useApp(s => s.displayOpen), volume = useApp(s => s.volume), simple = useApp(s => s.simpleMode);
+  const favorites = useApp(s => s.favorites);
+  const preparedFrame = resolveContent(preview, bible, videos, style);
+  const previous = adjacentContent(live, -1, bible), next = adjacentContent(live, 1, bible);
+  const preparedPrevious = adjacentContent(preview, -1, bible), preparedNext = adjacentContent(preview, 1, bible);
+  const canTake = !!preparedFrame && !(preparedFrame.kind === 'video' && !preparedFrame.videoId) && !(preparedFrame.kind === 'passage' && !preparedFrame.verses.length);
+  const s = useApp.getState();
+  const favorite = preview && favorites.some(i => contentKey(i) === contentKey(preview));
+  return <section className="operation-panel">
+    <div className="monitor-grid">
+      <section className="monitor live-monitor" data-testid="live-monitor">
+        <header><span><Radio size={14} />NO AR</span><span>{blank ? 'TELA APAGADA' : !displayOpen ? 'Projeção fechada' : playing ? 'Reproduzindo' : 'Projeção conectada'}</span></header>
+        <div className="monitor-screen">{frame?.kind === 'video' && frame.videoId && !simple ? <VideoMonitor videoId={frame.videoId} blank={blank} /> : <ContentScreen frame={frame} blank={blank} />}</div>
+        <div className="monitor-caption">{live?.title ?? 'Nenhum conteúdo no ar'}{live?.kind === 'media' && <span>Slide {live.slide + 1} / {live.assetIds.length}</span>}</div>
+        {frame?.kind === 'video' && <p className="hint px-3">{simple ? 'Capa do vídeo' : 'Monitor sem som · sincronização aproximada'} · {formatDuration(player.currentTime)} / {formatDuration(player.duration)}</p>}
+      </section>
+      <section className="monitor preview-monitor" data-testid="preview-monitor">
+        <header><span>PREVIEW · PREPARADO</span>{preview && <button aria-label={favorite ? 'Remover favorito' : 'Favoritar preparado'} onClick={() => s.toggleFavorite(preview)}><Star size={14} fill={favorite ? 'currentColor' : 'none'} /></button>}</header>
+        <div className="monitor-screen"><ContentScreen frame={preparedFrame} /></div>
+        <div className="monitor-caption">{preview?.title ?? 'Busque ou selecione um item'}{preview?.kind === 'media' && <span>Slide {preview.slide + 1} / {preview.assetIds.length}</span>}</div>
+        <div className="preview-actions"><Button variant="ghost" size="sm" disabled={!preparedPrevious} onClick={() => preparedPrevious && s.prepare(preparedPrevious, s.previewUid)} aria-label="Anterior no Preview"><ChevronLeft size={16} /></Button><span className="hint">Preparar não altera o telão</span><Button variant="ghost" size="sm" disabled={!preparedNext} onClick={() => preparedNext && s.prepare(preparedNext, s.previewUid)} aria-label="Próximo no Preview"><ChevronRight size={16} /></Button></div>
+      </section>
     </div>
-  );
-}
-
-function PassageTransport({
-  reference,
-  verses,
-  blank,
-  displayOpen,
-  activated,
-  onPrev,
-  onNext,
-  onBlank,
-  onClose,
-  nextLabel,
-}: {
-  reference: string;
-  verses: { number: number; text: string }[];
-  blank: boolean;
-  displayOpen: boolean;
-  activated: boolean;
-  onPrev: () => void;
-  onNext: () => void;
-  onBlank: () => void;
-  onClose: () => void;
-  nextLabel: string | null;
-}) {
-  return (
-    <div className="flex h-full min-h-0 flex-col gap-3 p-3">
-      <LiveSummary title={reference} blank={blank} playing={false} />
-      <NextSummary label={nextLabel} />
-      <div>
-        <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">Conteúdo no ar</span>
-        <div className="mt-1 max-h-64 space-y-2 overflow-y-auto rounded-xl border border-brand-500/70 bg-ink-900 p-3">
-          <p className="text-sm font-semibold text-brand-400">{reference}</p>
-          {verses.map((verse) => (
-            <p key={verse.number} className="text-sm text-ink-200">
-              <span className="mr-2 tabular-nums text-brand-400">{verse.number}</span>
-              {verse.text}
-            </p>
-          ))}
-        </div>
-        <Status displayOpen={displayOpen} activated={activated} error={null} />
-      </div>
-
-      <div className="mt-auto space-y-3">
-        <div className="flex gap-2">
-          <Button variant="secondary" size="lg" onClick={onPrev} title="Versículo anterior (P)">
-            <ChevronLeft className="size-5" />
-          </Button>
-          <Button variant="secondary" size="lg" className="flex-1" onClick={onClose}>
-            Encerrar passagem
-          </Button>
-          <Button variant="secondary" size="lg" onClick={onNext} title="Próximo versículo (N)">
-            <ChevronRight className="size-5" />
-          </Button>
-        </div>
-
-        <Button variant={blank ? "danger" : "outline"} className="w-full" onClick={onBlank} title="Tecla B">
-          <EyeOff className="size-4" />
-          {blank ? "Tela apagada" : "Apagar tela"}
-        </Button>
-      </div>
+    <div className="live-transport" aria-label="Controles ao vivo">
+      <Button variant="secondary" disabled={!previous} onClick={() => s.stepLive(-1)} title="Anterior no ar (←)"><ChevronLeft size={18} />Anterior</Button>
+      <Button variant="secondary" disabled={frame?.kind !== 'video' && live?.kind !== 'timer'} onClick={() => live?.kind === 'timer' ? s.controlTimer(live.endsAt ? 'pause' : 'start', 'live') : s.toggle()} title="Tocar / pausar (Espaço)">{playing || live?.kind === 'timer' && live.endsAt ? <Pause size={18} /> : <Play size={18} />}{playing || live?.kind === 'timer' && live.endsAt ? 'Pausar' : 'Iniciar'}</Button>
+      <Button className="take-button" disabled={!canTake} onClick={() => void s.putOnAir()} title="Colocar Preview no ar (Enter)"><Send size={18} />Colocar no ar</Button>
+      <Button variant="secondary" disabled={!next} onClick={() => s.stepLive(1)} title="Próximo no ar (→)">Próximo<ChevronRight size={18} /></Button>
+      <Button variant={blank ? 'danger' : 'outline'} onClick={() => s.setBlank(!blank)} title="Tela preta preserva o conteúdo e não silencia o áudio (B)"><EyeOff size={18} />{blank ? 'Restaurar tela' : 'Apagar tela'}</Button>
     </div>
-  );
-}
-
-function LiveSummary({ title, blank, playing }: { title: string; blank: boolean; playing: boolean }) {
-  return (
-    <section
-      className={cn(
-        "rounded-xl border p-3",
-        blank ? "border-red-500 bg-red-950/60" : "border-brand-500/60 bg-brand-600/10",
-      )}
-      aria-live="polite"
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span
-          className={cn(
-            "text-xs font-bold tracking-wider uppercase",
-            blank ? "text-red-300" : "text-brand-400",
-          )}
-        >
-          No ar agora
-        </span>
-        {blank && (
-          <span className="rounded bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white uppercase">
-            Blackout ativo
-          </span>
-        )}
-      </div>
-      <p className="mt-1 truncate text-sm font-medium text-ink-100">{title}</p>
-      <p className="mt-0.5 text-xs text-ink-400">
-        {blank
-          ? "A igreja está vendo uma tela preta; o conteúdo foi preservado."
-          : playing
-            ? "Reproduzindo"
-            : "Visível / preparado na projeção"}
-      </p>
-    </section>
-  );
-}
-
-function NextSummary({ label }: { label: string | null }) {
-  if (!label) return null;
-  return (
-    <section className="rounded-lg border border-ink-800 bg-ink-900 px-3 py-2">
-      <span className="text-[10px] font-semibold tracking-wider text-ink-400 uppercase">
-        Próximo no roteiro
-      </span>
-      <p className="truncate text-sm text-ink-200">{label}</p>
-    </section>
-  );
-}
-
-function Status({
-  displayOpen,
-  activated,
-  error,
-}: {
-  displayOpen: boolean;
-  activated: boolean;
-  error: string | null;
-}) {
-  if (error) return <Line tone="danger">{error}</Line>;
-  if (!displayOpen) {
-    return (
-      <Line tone="muted">
-        <MonitorPlay className="size-3.5" />
-        Abra a projeção para tocar.
-      </Line>
-    );
-  }
-  if (!activated) {
-    return <Line tone="warn">Clique uma vez na janela de projeção para liberar o som.</Line>;
-  }
-  return <Line tone="ok">Projeção pronta.</Line>;
-}
-
-function Line({
-  tone,
-  children,
-}: {
-  tone: "ok" | "warn" | "danger" | "muted";
-  children: React.ReactNode;
-}) {
-  return (
-    <p
-      className={cn(
-        "mt-1 flex items-center gap-1.5 text-xs",
-        tone === "ok" && "text-brand-400",
-        tone === "warn" && "text-amber-400",
-        tone === "danger" && "text-red-400",
-        tone === "muted" && "text-ink-400",
-      )}
-    >
-      {children}
-    </p>
-  );
+    {blank && <p className="blackout-notice">Blackout ativo. O conteúdo foi preservado; o áudio continua se estiver tocando.</p>}
+    {frame?.kind === 'video' && <div className="video-controls"><label>Posição<input aria-label="Posição do vídeo" type="range" min={0} max={player.duration || 1} value={Math.min(player.currentTime, player.duration || 1)} step={1} disabled={!player.duration} onChange={e => s.seekTo(Number(e.target.value))} /></label><label>Volume<input aria-label="Volume" type="range" min={0} max={1} step={0.05} value={volume} onChange={e => s.setVolume(Number(e.target.value))} /></label>{displayOpen && !player.activated && <p className="hint">Clique uma vez na projeção para liberar o som.</p>}{player.error && <p className="feedback">Não foi possível carregar o vídeo. {player.error}</p>}</div>}
+    {live?.kind === 'timer' && <Button size="sm" variant="ghost" onClick={() => s.controlTimer('reset', 'live')}>Redefinir timer no ar</Button>}
+    <div className="operation-details">
+      {preview?.kind === 'media' && <div><div className="panel-heading">SLIDES · clique para preparar</div><div className="slide-strip">{preview.assetIds.map((id, slide) => <button key={id} aria-label={`Preparar slide ${slide + 1}`} aria-pressed={preview.slide === slide} onClick={() => s.prepare({ ...preview, slide }, s.previewUid)}><div><AssetImage id={id} /></div><span>{slide + 1}{live?.kind === 'media' && live.assetIds[live.slide] === id ? ' · NO AR' : ''}</span></button>)}</div></div>}
+      {next && <div className="next-content"><div className="next-screen"><ContentScreen frame={resolveContent(next, bible, videos, style)} /></div><div><div className="eyebrow">PRÓXIMO NO CONTEÚDO</div><p>{next.kind === 'media' ? `Slide ${next.slide + 1}` : next.title}</p><span className="hint">Use Próximo para avançar no ar.</span></div></div>}
+      {preview && <div className="flex flex-wrap items-center gap-3"><Button size="sm" variant="secondary" onClick={() => s.addContent(preview)}>+ Adicionar preparado ao roteiro</Button></div>}
+      {preview?.kind === 'hymn' && (!simple || !videos[String(preview.hymnId)]) && <VideoLink hymnId={preview.hymnId} videoId={videos[String(preview.hymnId)] ?? null} />}
+    </div>
+  </section>;
 }

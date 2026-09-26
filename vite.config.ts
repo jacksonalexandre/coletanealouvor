@@ -14,12 +14,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: ["favicon.ico", "favicon-16.png", "favicon-32.png", "apple-touch-icon.png"],
       manifest: {
         name: "Coletânea de Louvor",
         short_name: "Coletânea",
-        description: "Hinário Adventista projetado em tela separada, com o vídeo de cada hino",
+        description: "Central de operação de culto: músicas, Bíblia, apresentações e roteiro em uma única tela",
         lang: "pt-BR",
         start_url: base,
         scope: base,
@@ -35,7 +35,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        globPatterns: ["**/*.{js,mjs,css,html,svg,png,woff2,bcmap,pfb,ttf,wasm}"],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         runtimeCaching: [
           {

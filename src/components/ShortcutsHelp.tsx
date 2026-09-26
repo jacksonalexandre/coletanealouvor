@@ -3,10 +3,11 @@ import { Keyboard, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const shortcuts = [
-  ["Enter", "Colocar o hino selecionado no ar"],
+  ["Ctrl / ⌘ K", "Buscar em toda a central"],
+  ["Enter", "Colocar o Preview no ar"],
   ["Espaço", "Tocar ou pausar"],
-  ["← / P", "Anterior"],
-  ["→ / N", "Próximo"],
+  ["← / P", "Slide ou versículo anterior no ar"],
+  ["→ / N", "Próximo slide ou versículo no ar"],
   ["B", "Ativar ou desativar blackout"],
   ["?", "Abrir esta ajuda"],
 ] as const;

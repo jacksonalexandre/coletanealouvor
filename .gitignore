@@ -8,3 +8,6 @@ dev-dist
 # O mapa hino -> vídeo é curado, vale versionar.
 !/public/data/videos.json
 *.tsbuildinfo
+/public/pdf-assets/
+/test-results/
+/playwright-report/

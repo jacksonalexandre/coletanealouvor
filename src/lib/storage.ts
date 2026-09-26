@@ -122,7 +122,7 @@ export const local = {
     try {
       localStorage.setItem(PREFIX + key, JSON.stringify(value));
     } catch {
-      // Sem persistência disponível; a sessão continua em memória.
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage-failure'));
     }
   },
 };

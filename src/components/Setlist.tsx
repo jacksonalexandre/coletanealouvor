@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { BookOpen, Copy, GripVertical, ListPlus, StickyNote, Trash2, Undo2 } from "lucide-react";
+import { BookOpen, Check, Copy, GripVertical, ListPlus, StickyNote, Trash2, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ServicePlans } from "@/components/ServicePlans";
@@ -198,6 +198,7 @@ function Row({
         {item.type === "hymn" && <HymnRow item={item} active={active} />}
         {item.type === "passage" && <PassageRow item={item} active={active} />}
         {item.type === "label" && <LabelRow item={item} />}
+        {item.type === 'content' && <button className="w-full truncate text-left text-sm" onClick={() => useApp.getState().prepareItem(item)} title="Preparar conteúdo">{item.content.title}</button>}
         {item.note && (
           <button
             className="mt-0.5 block w-full truncate text-left text-[11px] text-amber-300"
@@ -214,7 +215,7 @@ function Row({
       </div>
       {(active || next) && (
         <span className={cn("text-[9px] font-bold uppercase", active ? "text-brand-400" : "text-sky-300")}>
-          {active ? "No ar" : "Próximo"}
+          {active ? item.type === 'label' ? 'Em curso' : 'No ar' : 'Próximo'}
         </span>
       )}
       <Button
@@ -262,16 +263,11 @@ function HymnRow({
 }) {
   const hymn = useApp((state) => state.hymn(item.hymnId));
   const openHymn = useApp((state) => state.openHymn);
-  const play = useApp((state) => state.play);
 
   return (
     <button
       onClick={() => openHymn(item.hymnId, item.uid)}
-      onDoubleClick={() => {
-        openHymn(item.hymnId, item.uid);
-        void play();
-      }}
-      title="Duplo clique: abre a projeção e já toca"
+      title="Preparar hino"
       className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
     >
       {hymn?.title ?? "Hino removido"}
@@ -288,15 +284,14 @@ function PassageRow({
   active: boolean;
 }) {
   const bible = useApp((state) => state.bible);
-  const openPassage = useApp((state) => state.openPassage);
   const { uid: itemUid, type: _type, note: _note, ...ref } = item;
   void _type;
   void _note;
 
   return (
     <button
-      onDoubleClick={() => openPassage(ref, itemUid)}
-      title="Duplo clique: projeta a passagem"
+      onClick={() => useApp.getState().prepareItem({ ...item, uid: itemUid })}
+      title="Preparar passagem"
       className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
     >
       <BookOpen className="mr-2 inline size-3.5 shrink-0 text-brand-400" />
@@ -337,6 +332,8 @@ function LabelRow({ item }: { item: Extract<SetlistItem, { type: "label" }> }) {
   }
 
   return (
+    <div className="flex items-center gap-2">
+    <button onClick={() => useApp.getState().prepareItem(item)} title="Marcar etapa em curso (não muda o telão)" aria-label={`Iniciar ${item.text}`}><Check size={14} /></button>
     <button
       onClick={() => setEditing(true)}
       className="min-w-0 flex-1 truncate text-left text-sm text-ink-400 italic"
@@ -344,5 +341,6 @@ function LabelRow({ item }: { item: Extract<SetlistItem, { type: "label" }> }) {
     >
       {item.text}
     </button>
+    </div>
   );
 }

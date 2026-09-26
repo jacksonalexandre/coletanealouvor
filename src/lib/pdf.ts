@@ -4,7 +4,11 @@ import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 GlobalWorkerOptions.workerSrc = workerUrl;
 
 export async function renderPdf(file: File, onPage: (canvas: HTMLCanvasElement, page: number, total: number) => Promise<void>) {
-  const task = getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false });
+  const task = getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false,
+    cMapUrl: `${import.meta.env.BASE_URL}pdf-assets/cmaps/`, cMapPacked: true,
+    standardFontDataUrl: `${import.meta.env.BASE_URL}pdf-assets/standard_fonts/`,
+    wasmUrl: `${import.meta.env.BASE_URL}pdf-assets/wasm/`,
+  });
   task.onPassword = () => { void task.destroy(); };
   try {
     const pdf = await task.promise;
