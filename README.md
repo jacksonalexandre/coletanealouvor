@@ -155,25 +155,23 @@ O ícone de dados no topo abre o sorteio, em dois modos:
 
 ## Login com o Google
 
-O canto direito do topo tem o botão **Fazer login com o Google** (Google Identity Services). Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
+O canto direito do topo tem o botão **Entrar com Google**. O login é feito pelo **Supabase Auth**, no mesmo projeto do ei-clube (a mesma conta Google vale nos dois). Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
 
-Como o app é estático, tudo acontece no navegador: o Google devolve um ID token e o app guarda só o perfil (nome, e-mail, foto) em `localStorage`. Na volta, o Google entra sozinho na mesma conta (`auto_select`) até o operador clicar em **Sair**.
+O Google volta para a raiz do app (`BASE_URL`) e o `supabase-js` lê a sessão da URL e a guarda no navegador, renovando o token sozinho até o operador clicar em **Sair**.
 
-Para ativar:
+Para funcionar, o provedor Google já precisa estar ativo no projeto (é o mesmo do ei-clube) e as URLs de volta do app precisam estar em Supabase → Authentication → URL Configuration → **Redirect URLs**:
 
-1. No [Google Cloud Console](https://console.cloud.google.com/apis/credentials), crie uma credencial **ID do cliente OAuth** do tipo **Aplicativo da Web**.
-2. Em **Origens JavaScript autorizadas**, inclua `http://localhost:5173`, `http://localhost` (exigido pelo Google para testes locais) e a origem do deploy (ex: `https://<usuario>.github.io`).
-3. Local: crie `.env.local` com `VITE_GOOGLE_CLIENT_ID=<id>.apps.googleusercontent.com`.
-4. GitHub Pages: em Settings → Secrets and variables → Actions → **Variables**, crie `GOOGLE_CLIENT_ID` com o mesmo valor. O client ID não é segredo (vai no JavaScript público).
+- `http://localhost:5173/**` (desenvolvimento)
+- `https://jacksonalexandre.github.io/coletanealouvor/**` (GitHub Pages)
 
-Sem o client ID, o botão não aparece.
+Sem `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` no build, o botão não aparece.
 
 ## Estrutura
 
 ```
 supabase/migrations/        Tabelas coletanea_*, políticas RLS e funções de leitura/importação
 supabase/functions/         Edge Function coletanea-importar (hinário, Bíblia, vídeos)
-src/lib/supabase.ts         Leitura do acervo no Supabase (API REST, chave pública)
+src/lib/supabase.ts         Cliente Supabase: login com o Google e leitura do acervo
 src/lib/appearance.ts       Tema claro/escuro e cores globais do app e da projeção
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
@@ -183,12 +181,11 @@ src/lib/templates.ts        Modelos de programação (culto de sábado, escola s
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
 src/lib/countdown.ts        Cronômetro regressivo (horário final, formatação, relógio)
 src/lib/draw.ts             Sorteio de número e de nome
-src/lib/googleAuth.ts       Login com o Google (Google Identity Services)
 src/lib/storage.ts          Acervo do Supabase com cache em IndexedDB, preferências
 src/lib/youtube.ts          Leitura de link do YouTube
 src/lib/useLive.ts          Lado do controle do canal
 src/store/useApp.ts         Estado global (zustand)
-src/store/useAuth.ts        Usuário logado com o Google
+src/store/useAuth.ts        Sessão do Supabase Auth (login com o Google)
 src/routes/Control.tsx      Tela de controle
 src/routes/Display.tsx      Tela de projeção (IFrame Player API)
 ```

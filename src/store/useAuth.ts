@@ -1,56 +1,67 @@
+import type { Session } from "@supabase/supabase-js";
 import { create } from "zustand";
-import { googleClientId, loadGoogle, userFromCredential, type GoogleUser } from "@/lib/googleAuth";
-import { local } from "@/lib/storage";
+import { supabase } from "@/lib/supabase";
+
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  picture: string | null;
+};
 
 type AuthState = {
-  user: GoogleUser | null;
-  /** GIS carregado e inicializado; só então dá para desenhar o botão oficial. */
+  user: AuthUser | null;
+  /** Sessão já lida do armazenamento (ou da URL, na volta do Google). */
   ready: boolean;
-  /** Mensagem para o operador quando o login falha (script bloqueado, offline…). */
+  /** Mensagem para o operador quando o login falha (offline, redirect recusado…). */
   authError: string | null;
-  /** Inicializa o GIS com o callback de login; seguro chamar mais de uma vez. */
-  initGoogle: () => Promise<void>;
-  signOut: () => void;
+  /** Lê a sessão atual e passa a ouvir as mudanças; seguro chamar mais de uma vez. */
+  initAuth: () => Promise<void>;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
 };
+
+function userFromSession(session: Session | null): AuthUser | null {
+  if (!session) return null;
+  const { id, email, user_metadata: meta } = session.user;
+  const text = (value: unknown) => (typeof value === "string" && value ? value : null);
+  return {
+    id,
+    email: email ?? "",
+    name: text(meta.full_name) ?? text(meta.name) ?? email ?? "",
+    picture: text(meta.avatar_url) ?? text(meta.picture),
+  };
+}
 
 let initialized = false;
 
 export const useAuth = create<AuthState>((set) => ({
-  user: local.get<GoogleUser | null>("googleUser", null),
+  user: null,
   ready: false,
   authError: null,
 
-  initGoogle: async () => {
-    if (!googleClientId || initialized) return;
-    try {
-      const google = await loadGoogle();
-      if (initialized) return;
-      initialized = true;
-      google.accounts.id.initialize({
-        client_id: googleClientId,
-        auto_select: true,
-        cancel_on_tap_outside: true,
-        use_fedcm_for_prompt: true,
-        callback: ({ credential }) => {
-          const user = userFromCredential(credential);
-          if (!user) {
-            set({ authError: "Resposta de login inválida." });
-            return;
-          }
-          local.set("googleUser", user);
-          set({ user, authError: null });
-        },
-      });
-      set({ ready: true, authError: null });
-    } catch (error) {
-      set({ authError: error instanceof Error ? error.message : String(error) });
-    }
+  initAuth: async () => {
+    if (!supabase || initialized) return;
+    initialized = true;
+    supabase.auth.onAuthStateChange((_event, session) => {
+      set({ user: userFromSession(session), ready: true });
+    });
+    const { data, error } = await supabase.auth.getSession();
+    set({ user: userFromSession(data.session), ready: true, authError: error?.message ?? null });
   },
 
-  signOut: () => {
-    // Sem isso, o auto_select entraria de novo na mesma conta na próxima visita.
-    window.google?.accounts.id.disableAutoSelect();
-    local.set("googleUser", null);
+  signIn: async () => {
+    if (!supabase) return;
+    // Volta para a raiz do app (no GitHub Pages fica em /<repo>/).
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: new URL(import.meta.env.BASE_URL, window.location.origin).href },
+    });
+    if (error) set({ authError: error.message });
+  },
+
+  signOut: async () => {
+    await supabase?.auth.signOut();
     set({ user: null });
   },
 }));

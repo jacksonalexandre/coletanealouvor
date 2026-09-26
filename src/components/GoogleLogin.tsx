@@ -1,51 +1,45 @@
 import { useEffect, useRef, useState } from "react";
-import { LogOut } from "lucide-react";
+import { LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { googleClientId } from "@/lib/googleAuth";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/store/useAuth";
 
-/** Botão "Fazer login com o Google" ou, já logado, a foto com o menu de sair. */
+/** Botão "Entrar com Google" (Supabase Auth) ou, já logado, a foto com o menu de sair. */
 export function GoogleLogin() {
   const user = useAuth((state) => state.user);
+  const ready = useAuth((state) => state.ready);
   const authError = useAuth((state) => state.authError);
-  const initGoogle = useAuth((state) => state.initGoogle);
+  const initAuth = useAuth((state) => state.initAuth);
 
   useEffect(() => {
-    void initGoogle();
-  }, [initGoogle]);
+    void initAuth();
+  }, [initAuth]);
 
-  // Sem client ID configurado no build, o app segue funcionando sem login.
-  if (!googleClientId) return null;
+  // Sem Supabase configurado no build, o app segue funcionando sem login.
+  if (!supabase || !ready) return null;
   if (user) return <UserMenu />;
   return <SignInButton error={authError} />;
 }
 
 function SignInButton({ error }: { error: string | null }) {
-  const ready = useAuth((state) => state.ready);
-  const slot = useRef<HTMLDivElement>(null);
+  const signIn = useAuth((state) => state.signIn);
+  const [opening, setOpening] = useState(false);
 
-  useEffect(() => {
-    const google = window.google;
-    if (!ready || !google || !slot.current) return;
-    slot.current.replaceChildren();
-    google.accounts.id.renderButton(slot.current, {
-      type: "standard",
-      theme: "filled_black",
-      size: "large",
-      text: "signin_with",
-      shape: "pill",
-      locale: "pt-BR",
-    });
-  }, [ready]);
-
-  if (error) {
-    return (
-      <span className="text-xs text-amber-400" title={error}>
-        Login indisponível
-      </span>
-    );
-  }
-  return <div ref={slot} className="h-10 min-w-10" />;
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      title={error ?? undefined}
+      disabled={opening}
+      onClick={() => {
+        setOpening(true);
+        void signIn().finally(() => setOpening(false));
+      }}
+    >
+      <LogIn className="size-4" />
+      {opening ? "Abrindo…" : error ? "Tentar login de novo" : "Entrar com Google"}
+    </Button>
+  );
 }
 
 function UserMenu() {
@@ -92,7 +86,7 @@ function UserMenu() {
             className="mt-3 w-full"
             onClick={() => {
               setOpen(false);
-              signOut();
+              void signOut();
             }}
           >
             <LogOut className="size-4" />
