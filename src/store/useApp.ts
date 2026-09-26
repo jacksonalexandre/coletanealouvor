@@ -342,6 +342,7 @@ export const useApp = create<State & Actions>((set, get) => ({
     const s = get();
     if (!s.preview) return;
     const content = structuredClone(s.preview);
+    if (content.kind === "draw") content.startedAt = content.animate ? Date.now() : undefined;
     const frame = resolveContent(content, s.bible, s.videos, s.passageStyle);
     if (
       !frame ||

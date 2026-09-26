@@ -19,6 +19,7 @@ import { HymnSearch } from "./HymnSearch";
 import { BibleSearch } from "./BibleSearch";
 import { MediaLibrary } from "./MediaLibrary";
 import { WorshipTools } from "./WorshipTools";
+import { MusicCatalog } from "./MusicCatalog";
 
 export function ContentRow({
   item,
@@ -50,9 +51,7 @@ export function ContentRow({
         <span className="block truncate text-sm">{item.title}</span>
         <span className="hint">
           {item.kind === "youtube"
-            ? item.category
-              ? `Instrumental · ${item.category}`
-              : (item.collection ?? "Vídeo YouTube")
+            ? (item.collection ?? item.category ?? "Vídeo YouTube")
             : contentNames[item.kind]}
         </span>
       </button>
@@ -77,59 +76,16 @@ export function ContentRow({
 }
 
 function MusicLibrary() {
-  const [collection, setCollection] = useState("Adoradores 4");
-  const [term, setTerm] = useState("");
   const custom = useLibrary((s) => s.custom);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [category, setCategory] = useState("Vídeos adicionados");
   const [message, setMessage] = useState("");
-  const music = [...musicLibrary, ...custom];
-  const collections = [
-    ...new Set(
-      music.map((i) =>
-        i.kind === "youtube"
-          ? (i.collection ?? "Vídeos adicionados")
-          : contentNames[i.kind],
-      ),
-    ),
-  ];
   return (
     <div className="library-scroll">
-      <label className="field-label">
-        Coletânea / biblioteca
-        <select
-          value={collection}
-          onChange={(e) => setCollection(e.target.value)}
-        >
-          {collections.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
-      </label>
-      <Input
-        placeholder="Buscar música ou instrumental"
-        value={term}
-        onChange={(e) => setTerm(e.target.value)}
-      />
-      <div className="my-3">
-        {music
-          .filter(
-            (i) =>
-              i.kind === "youtube" &&
-              (term
-                ? normalize(i.title).includes(normalize(term))
-                : (i.collection ?? "Vídeos adicionados") === collection),
-          )
-          .map((i) => (
-            <ContentRow key={contentKey(i)} item={i} />
-          ))}
-      </div>
-      <p className="hint">
-        Seleções oficiais: Gravadora Novo Tempo e Novo Tom. Instrumentais:
-        Gravadora Novo Tempo e Matheus Rizzo. Reprodução pelo YouTube; requer
-        internet.
-      </p>
+      <MusicCatalog />
+      <details className="mt-4"><summary>Instrumentais</summary>{musicLibrary.filter(i => i.collection === "Instrumentais").map(i => <ContentRow key={contentKey(i)} item={i} />)}</details>
+      {!!custom.length && <details className="mt-4"><summary>Vídeos adicionados por você</summary>{custom.map(i => <ContentRow key={contentKey(i)} item={i} />)}</details>}
       <details className="mt-5">
         <summary>Adicionar vídeo / instrumental por link</summary>
         <div className="tools-panel">
@@ -167,7 +123,6 @@ function MusicLibrary() {
               };
               useLibrary.getState().add(item);
               useApp.getState().prepare(item);
-              setCollection(category);
               setUrl("");
               setTitle("");
               setMessage("Vídeo salvo na biblioteca.");
@@ -272,7 +227,7 @@ export function GlobalSearch({
               normalize(
                 i.title +
                   (i.kind === "youtube"
-                    ? ` ${i.collection ?? ""} ${i.category ?? ""}`
+                    ? ` ${i.collection ?? ""} ${i.category ?? ""} ${i.track ?? ""}`
                     : ""),
               ).includes(q),
             ) ||
@@ -320,7 +275,7 @@ export function GlobalSearch({
           <div className="search-results">
             {results.map((i) => (
               <ContentRow
-                key={contentKey(i)}
+                key={i.kind === "youtube" ? i.catalogId ?? contentKey(i) : contentKey(i)}
                 item={i}
                 onChoose={() => onOpenChange(false)}
               />

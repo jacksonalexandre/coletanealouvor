@@ -11,3 +11,4 @@ dev-dist
 /public/pdf-assets/
 /test-results/
 /playwright-report/
+/.music-research/
