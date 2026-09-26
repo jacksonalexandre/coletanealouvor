@@ -20,6 +20,7 @@ import type {
   Hymn,
   LiveCountdown,
   LiveDraw,
+  LiveLink,
   PassageRef,
   PlayerState,
   SetlistItem,
@@ -59,6 +60,8 @@ type State = {
   hymnUid: string | null;
   /** Hino em cartaz na projeção agora; só muda com uma ação explícita (Tocar, duplo clique, próximo/anterior). */
   liveHymnId: number | null;
+  /** Vídeo avulso (link colado) em cartaz; excludente com o hino e a passagem. */
+  liveLink: LiveLink | null;
   /** Passagem em cartaz na projeção; excludente com o vídeo do hino. */
   passage: PassageRef | null;
   /** Aparência da passagem na projeção (fonte, fundo, cor da letra). */
@@ -100,6 +103,12 @@ type Actions = {
   /** Põe no ar o hino selecionado agora (sem tocar); usado por Tocar/duplo clique/próximo. */
   commitLive: () => void;
   stepHymn: (delta: number) => void;
+  /** Põe um vídeo avulso no ar, parado (como commitLive faz com o hino). */
+  commitLink: (link: LiveLink, uid?: string | null) => void;
+  /** Põe um vídeo avulso no ar e já toca, abrindo a projeção se preciso. */
+  playLink: (link: LiveLink, uid?: string | null) => Promise<void>;
+  closeLink: () => void;
+  addVideoToSetlist: (link: LiveLink) => void;
 
   openPassage: (ref: PassageRef, uid?: string | null) => void;
   closePassage: () => void;
@@ -117,6 +126,7 @@ type Actions = {
   play: () => Promise<void>;
   pause: () => void;
   toggle: () => void;
+  resumeLink: () => Promise<void>;
   seekTo: (time: number) => void;
   setVolume: (volume: number) => void;
   setBlank: (blank: boolean) => void;
@@ -152,6 +162,9 @@ function normalizeSetlist(raw: unknown): SetlistItem[] {
     if (!item || typeof item !== "object" || typeof item.uid !== "string") return [];
     if (item.type === "hymn" && typeof item.hymnId === "number") return [item as SetlistItem];
     if (item.type === "label" && typeof item.text === "string") return [item as SetlistItem];
+    if (item.type === "video" && typeof item.videoId === "string" && typeof item.title === "string") {
+      return [item as SetlistItem];
+    }
     if (
       item.type === "passage" &&
       typeof item.book === "string" &&
@@ -196,6 +209,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   hymnId: null,
   hymnUid: null,
   liveHymnId: null,
+  liveLink: null,
   passage: null,
   passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
   appearance: initialAppearance,
@@ -272,6 +286,7 @@ export const useApp = create<State & Actions>((set, get) => ({
     set({
       liveHymnId: get().hymnId,
       activeUid: get().hymnUid,
+      liveLink: null,
       passage: null,
       draw: null,
       countdown: null,
@@ -286,16 +301,57 @@ export const useApp = create<State & Actions>((set, get) => ({
     // Etapas da programação sem hino (ex: "Oração") não têm o que projetar, então
     // navegar pelo teclado pula direto para o próximo/anterior hino da lista, sempre no ar
     // (é um controle de show, não uma busca).
+    // Vídeos avulsos contam como hinos: também têm o que tocar.
     const hymnItems = get().setlist.filter(
-      (item): item is Extract<SetlistItem, { type: "hymn" }> => item.type === "hymn",
+      (item): item is Extract<SetlistItem, { type: "hymn" | "video" }> =>
+        item.type === "hymn" || item.type === "video",
     );
     if (hymnItems.length === 0) return;
     const { activeUid } = get();
     const current = hymnItems.findIndex((item) => item.uid === activeUid);
     const next = hymnItems[Math.min(Math.max(current + delta, 0), hymnItems.length - 1)];
     if (!next || next.uid === activeUid) return;
+    if (next.type === "video") {
+      get().commitLink({ videoId: next.videoId, title: next.title }, next.uid);
+      return;
+    }
     get().openHymn(next.hymnId, next.uid);
     get().commitLive();
+  },
+
+  commitLink(link, itemUid = null) {
+    // O hino selecionado sai da seleção: assim "Tocar" retoma o link, e clicar
+    // num hino volta a ter o hino como alvo.
+    set({
+      liveLink: link,
+      liveHymnId: null,
+      hymnId: null,
+      hymnUid: null,
+      activeUid: itemUid,
+      passage: null,
+      draw: null,
+      countdown: null,
+      playing: false,
+      blank: false,
+      seek: null,
+      player: { ...emptyPlayer, activated: get().player.activated },
+    });
+  },
+
+  async playLink(link, itemUid = null) {
+    get().commitLink(link, itemUid);
+    if (!get().displayOpen) await get().openDisplay();
+    set({ playing: true });
+  },
+
+  closeLink() {
+    set({ liveLink: null, playing: false, activeUid: null });
+  },
+
+  addVideoToSetlist(link) {
+    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: "video", ...link }];
+    local.set("setlist", setlist);
+    set({ setlist });
   },
 
   openPassage(ref, itemUid = null) {
@@ -305,6 +361,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       passage: clampPassage(get().bible, ref) ?? ref,
       activeUid: itemUid,
       liveHymnId: null,
+      liveLink: null,
       draw: null,
       countdown: null,
       playing: false,
@@ -384,7 +441,14 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   toggle() {
     if (get().playing) get().pause();
-    else get().play();
+    // Link no ar e nenhum hino selecionado depois dele: retoma o link.
+    else if (get().liveLink && get().hymnId == null) void get().resumeLink();
+    else void get().play();
+  },
+
+  async resumeLink() {
+    if (!get().displayOpen) await get().openDisplay();
+    set({ playing: true, blank: false });
   },
 
   seekTo(time) {

@@ -3,6 +3,7 @@ import { MonitorPlay, MonitorX } from "lucide-react";
 import { AppearanceSettings } from "@/components/AppearanceSettings";
 import { Countdown } from "@/components/Countdown";
 import { GoogleLogin } from "@/components/GoogleLogin";
+import { LinkPlayer } from "@/components/LinkPlayer";
 import { Raffle } from "@/components/Raffle";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@/assets/logo.png";
@@ -91,6 +92,7 @@ export function TopBar() {
         </>
       )}
 
+      <LinkPlayer />
       <Countdown />
       <Raffle />
       <AppearanceSettings />

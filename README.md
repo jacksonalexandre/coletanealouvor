@@ -58,6 +58,12 @@ A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **C
 
 As teclas funcionam nas duas janelas.
 
+## Link avulso do YouTube
+
+Para um vídeo fora do hinário (abertura, clipe, vinheta), use o ícone de **link** no topo: cole o link (normal, `youtu.be`, `/shorts/`, `/live/`…) e escolha **Projetar agora** — vai para a projeção e já toca — ou **Na programação**. O título vem do YouTube quando possível; dá para digitar outro.
+
+Também dá para colar o link direto no campo de etapa da programação: em vez de uma etapa de texto, entra um vídeo. Na programação, o vídeo se comporta como um hino: duplo clique toca, e `→`/`←` passam por ele. No painel **Ao vivo** ele aparece como "No ar · link", com os mesmos controles (tocar/pausar, linha do tempo, apagar tela, volume) e **Encerrar vídeo**. Clicar num hino enquanto o link está no ar só seleciona; **Tocar** então troca para o hino.
+
 ## Vídeos dos hinos
 
 O app precisa saber qual vídeo do YouTube corresponde a cada hino. O mapa vive em `public/data/videos.json`, no formato `{ "<id do hino>": "<id do vídeo>" }`.

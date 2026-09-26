@@ -8,6 +8,7 @@ import {
   Pause,
   Play,
   Volume2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -25,22 +26,17 @@ export function Transport() {
   const liveHymn = useApp((state) => state.hymn(state.liveHymnId));
   const playing = useApp((state) => state.playing);
   const blank = useApp((state) => state.blank);
-  const volume = useApp((state) => state.volume);
   const player = useApp((state) => state.player);
   const displayOpen = useApp((state) => state.displayOpen);
   const passage = useApp((state) => state.passage);
   const bible = useApp((state) => state.bible);
   const inlinePlayer = useApp((state) => state.inlinePlayer);
+  const liveLink = useApp((state) => state.liveLink);
 
-  const toggle = useApp((state) => state.toggle);
-  const seekTo = useApp((state) => state.seekTo);
-  const setVolume = useApp((state) => state.setVolume);
   const setBlank = useApp((state) => state.setBlank);
-  const stepHymn = useApp((state) => state.stepHymn);
+  const closeLink = useApp((state) => state.closeLink);
   const movePassageVerses = useApp((state) => state.movePassageVerses);
   const closePassage = useApp((state) => state.closePassage);
-
-  const [scrubbing, setScrubbing] = useState<number | null>(null);
 
   if (passage && bible.length) {
     return (
@@ -59,6 +55,39 @@ export function Transport() {
     );
   }
 
+  // Vídeo avulso no ar e nenhum hino selecionado depois dele.
+  if (!hymn && liveLink) {
+    return (
+      <div className="flex h-full min-h-0 flex-col gap-3 p-3">
+        <div>
+          <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">No ar · link</span>
+          {!inlinePlayer && (
+            <div
+              className={cn(
+                "mt-1 aspect-video overflow-hidden rounded-xl border bg-black",
+                playing && !blank ? "border-brand-500/70" : "border-ink-700",
+              )}
+            >
+              {blank ? (
+                <div className="flex size-full items-center justify-center text-xs text-ink-600">Tela apagada</div>
+              ) : (
+                <img src={thumbnailUrl(liveLink.videoId)} alt="" className="size-full object-cover" />
+              )}
+            </div>
+          )}
+          <p className="mt-2 text-sm text-ink-200">{liveLink.title}</p>
+          <Status displayOpen={displayOpen} activated={player.activated} error={player.error} inline={inlinePlayer} />
+          <Button variant="ghost" size="sm" className="mt-2" onClick={closeLink}>
+            <X className="size-4" />
+            Encerrar vídeo
+          </Button>
+        </div>
+
+        <PlaybackControls canPlay />
+      </div>
+    );
+  }
+
   if (!hymn) {
     return (
       <div className="flex h-full items-center justify-center p-6 text-center text-sm text-ink-400">
@@ -67,8 +96,6 @@ export function Transport() {
     );
   }
 
-  const duration = player.duration || 0;
-  const position = scrubbing ?? player.currentTime;
   const isLive = hymn.id === liveHymnId;
 
   return (
@@ -103,9 +130,9 @@ export function Transport() {
           {hymn.title}
           <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>
         </p>
-        {!isLive && liveHymn && (
+        {!isLive && (liveHymn || liveLink) && (
           <p className="mt-1 text-xs text-ink-400">
-            No ar agora: <span className="text-ink-300">{liveHymn.title}</span>
+            No ar agora: <span className="text-ink-300">{liveLink?.title ?? liveHymn?.title}</span>
           </p>
         )}
         <Status displayOpen={displayOpen} activated={player.activated} error={player.error} inline={inlinePlayer} />
@@ -113,6 +140,28 @@ export function Transport() {
 
       <VideoLink hymnId={hymn.id} videoId={videoId} />
 
+      <PlaybackControls canPlay={!!videoId} />
+    </div>
+  );
+}
+
+/** Linha do tempo, anterior/tocar/próximo, apagar tela e volume — hino ou vídeo avulso. */
+function PlaybackControls({ canPlay }: { canPlay: boolean }) {
+  const playing = useApp((state) => state.playing);
+  const blank = useApp((state) => state.blank);
+  const volume = useApp((state) => state.volume);
+  const player = useApp((state) => state.player);
+  const toggle = useApp((state) => state.toggle);
+  const seekTo = useApp((state) => state.seekTo);
+  const setVolume = useApp((state) => state.setVolume);
+  const setBlank = useApp((state) => state.setBlank);
+  const stepHymn = useApp((state) => state.stepHymn);
+  const [scrubbing, setScrubbing] = useState<number | null>(null);
+
+  const duration = player.duration || 0;
+  const position = scrubbing ?? player.currentTime;
+
+  return (
       <div className="mt-auto space-y-3">
         <div>
           <Slider
@@ -120,7 +169,7 @@ export function Transport() {
             min={0}
             max={duration || 1}
             step={0.5}
-            disabled={!videoId || duration === 0}
+            disabled={!canPlay || duration === 0}
             onValueChange={([value]) => setScrubbing(value)}
             onValueCommit={([value]) => {
               seekTo(value);
@@ -141,7 +190,7 @@ export function Transport() {
             size="lg"
             className="flex-1"
             onClick={toggle}
-            disabled={!playing && !videoId}
+            disabled={!playing && !canPlay}
             title="Espaço"
           >
             {player.buffering ? (
@@ -180,7 +229,6 @@ export function Transport() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
