@@ -53,7 +53,7 @@ export function Transport() {
         ? bible.length
           ? passageReference(bible, nextItem)
           : "Passagem bíblica"
-        : nextItem.text
+        : nextItem.type === 'content' ? nextItem.content.title : nextItem.text
     : null;
 
   if (passage && bible.length) {

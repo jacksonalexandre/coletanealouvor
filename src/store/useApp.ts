@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { clampPassage, findBook } from "@/lib/bible";
+import { clampPassage, findBook, moveVerse, passageReference } from "@/lib/bible";
+import { adjacentContent, contentKey, hymnContent, isContent, resolveContent, timerSeconds, type Content, type Frame } from '@/lib/content';
 import { type BibleVersionId, DEFAULT_BIBLE_VERSION, isBibleVersion } from "@/lib/bibleVersions";
 import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
 import { openDisplayWindow } from "@/lib/screens";
@@ -29,6 +30,13 @@ const emptyPlayer: PlayerState = {
 };
 
 type State = {
+  preview: Content | null;
+  previewUid: string | null;
+  liveContent: Content | null;
+  liveFrame: Frame | null;
+  favorites: Content[];
+  recent: Content[];
+  simpleMode: boolean;
   hymns: Hymn[];
   loading: boolean;
   error: string | null;
@@ -75,6 +83,14 @@ type State = {
 };
 
 type Actions = {
+  prepare: (content: Content, uid?: string | null) => void;
+  take: () => void;
+  stepLive: (delta: number) => void;
+  prepareItem: (item: SetlistItem) => void;
+  addContent: (content: Content) => void;
+  toggleFavorite: (content: Content) => void;
+  setSimpleMode: (simple: boolean) => void;
+  controlTimer: (action: 'start' | 'pause' | 'reset', target: 'preview' | 'live') => void;
   boot: () => Promise<void>;
   hymn: (id: number | null) => Hymn | null;
   videoOf: (id: number | null) => string | null;
@@ -139,6 +155,7 @@ function normalizeSetlist(raw: unknown): SetlistItem[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((item): SetlistItem[] => {
     if (!item || typeof item !== "object" || typeof item.uid !== "string") return [];
+    if (item.type === 'content' && isContent(item.content)) return [{ uid: item.uid, type: 'content', content: item.content, ...itemNote(item) }];
     if (item.type === "hymn" && typeof item.hymnId === "number") {
       return [{ uid: item.uid, type: "hymn", hymnId: item.hymnId, ...itemNote(item) }];
     }
@@ -218,6 +235,74 @@ const initialPlanDirty = initialSetlist.length > 0 && (
 );
 
 export const useApp = create<State & Actions>((set, get) => ({
+  preview: null,
+  previewUid: null,
+  liveContent: null,
+  liveFrame: null,
+  favorites: local.get<unknown[]>('favorites', []).filter(isContent),
+  recent: local.get<unknown[]>('recent', []).filter(isContent),
+  simpleMode: local.get('simpleMode', false),
+
+  prepare(content, itemUid = null) {
+    const copy = structuredClone(content);
+    set({ preview: copy, previewUid: itemUid, hymnId: content.kind === 'hymn' ? content.hymnId : null, hymnUid: itemUid });
+  },
+
+  take() {
+    const s = get();
+    if (!s.preview) return;
+    const content = structuredClone(s.preview);
+    const frame = resolveContent(content, s.bible, s.videos, s.passageStyle);
+    if (!frame || frame.kind === 'video' && !frame.videoId || frame.kind === 'passage' && !frame.verses.length) return;
+    const recent = [content, ...s.recent.filter(item => contentKey(item) !== contentKey(content))].slice(0, 30);
+    local.set('recent', recent);
+    set({ liveContent: content, liveFrame: frame, activeUid: s.previewUid,
+      liveHymnId: content.kind === 'hymn' ? content.hymnId : null,
+      passage: content.kind === 'passage' ? content.ref : null,
+      playing: false, seek: null, recent, player: { ...emptyPlayer, activated: s.player.activated } });
+  },
+
+  stepLive(delta) {
+    const s = get();
+    const next = adjacentContent(s.liveContent, delta, s.bible);
+    if (!next) return;
+    set({ liveContent: next, liveFrame: resolveContent(next, s.bible, s.videos, s.passageStyle), passage: next.kind === 'passage' ? next.ref : null });
+  },
+
+  prepareItem(item) {
+    if (item.type === 'content') get().prepare(item.content, item.uid);
+    if (item.type === 'hymn') get().openHymn(item.hymnId, item.uid);
+    if (item.type === 'passage') {
+      const ref = { book: item.book, chapter: item.chapter, verseStart: item.verseStart, verseEnd: item.verseStart };
+      get().prepare({ kind: 'passage', title: passageReference(get().bible, ref), ref }, item.uid);
+    }
+    if (item.type === 'label') set({ activeUid: item.uid });
+  },
+
+  addContent(content) {
+    const setlist: SetlistItem[] = [...get().setlist, { uid: uid(), type: 'content', content: structuredClone(content) }];
+    local.set('setlist', setlist);
+    set({ setlist, undoSetlist: get().setlist, planDirty: true });
+  },
+
+  toggleFavorite(content) {
+    const key = contentKey(content);
+    const favorites = get().favorites.some(item => contentKey(item) === key)
+      ? get().favorites.filter(item => contentKey(item) !== key) : [...get().favorites, structuredClone(content)];
+    local.set('favorites', favorites);
+    set({ favorites });
+  },
+
+  setSimpleMode(simpleMode) { local.set('simpleMode', simpleMode); set({ simpleMode }); },
+
+  controlTimer(action, target) {
+    const item = target === 'preview' ? get().preview : get().liveContent;
+    if (item?.kind !== 'timer') return;
+    const remaining = action === 'reset' ? item.duration : timerSeconds(item);
+    const next: Content = { ...item, remaining, endsAt: action === 'start' ? Date.now() + remaining * 1000 : null };
+    if (target === 'preview') set({ preview: next });
+    else set({ liveContent: next, liveFrame: resolveContent(next, get().bible, get().videos, get().passageStyle) });
+  },
   hymns: [],
   loading: true,
   error: null,
@@ -315,10 +400,13 @@ export const useApp = create<State & Actions>((set, get) => ({
   openHymn(id, itemUid = null) {
     // Só seleciona (busca/roteiro): olhar um hino não pode mexer no que já está no ar.
     // O ar só muda com commitLive (Tocar, duplo clique, próximo/anterior).
-    set({ hymnId: id, hymnUid: itemUid });
+    const hymn = get().hymn(id);
+    if (hymn) get().prepare(hymnContent(hymn), itemUid);
+    else set({ hymnId: id, hymnUid: itemUid });
   },
 
   commitLive() {
+    if (get().preview) { get().take(); return; }
     // Põe no ar o hino selecionado agora; começa parado, o operador decide quando toca.
     set({
       liveHymnId: get().hymnId,
@@ -331,8 +419,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   async putOnAir() {
-    if (get().hymnId == null || !get().videoOf(get().hymnId)) return;
-    get().commitLive();
+    get().take();
     if (!get().displayOpen) await get().openDisplay();
   },
 
@@ -362,6 +449,8 @@ export const useApp = create<State & Actions>((set, get) => ({
       verseEnd: ref.verseEnd,
     };
     set({
+      liveContent: null,
+      liveFrame: null,
       passage: clampPassage(get().bible, passageRef) ?? passageRef,
       activeUid: itemUid,
       liveHymnId: null,
@@ -376,11 +465,9 @@ export const useApp = create<State & Actions>((set, get) => ({
   movePassageVerses(delta) {
     const { passage, bible } = get();
     if (!passage) return;
-    const chapter = findBook(bible, passage.book)?.chapters[passage.chapter - 1];
-    if (!chapter) return;
-    const span = passage.verseEnd - passage.verseStart;
-    const verseStart = Math.min(Math.max(passage.verseStart + delta, 1), chapter.length - span);
-    set({ passage: { ...passage, verseStart, verseEnd: verseStart + span } });
+    if (get().liveContent?.kind === 'passage') { get().stepLive(delta); return; }
+    const next = moveVerse(bible, passage, delta);
+    if (next) set({ passage: next });
   },
 
   setPassageStyle(patch) {
@@ -403,7 +490,7 @@ export const useApp = create<State & Actions>((set, get) => ({
 
   toggle() {
     if (get().playing) get().pause();
-    else if (get().videoOf(get().liveHymnId)) {
+    else if (get().liveFrame?.kind === 'video' || get().videoOf(get().liveHymnId)) {
       if (!get().displayOpen) void get().openDisplay();
       set({ playing: true });
     }

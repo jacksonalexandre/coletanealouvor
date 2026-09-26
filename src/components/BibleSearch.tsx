@@ -33,7 +33,7 @@ export function BibleSearch() {
   const setBibleVersion = useApp((state) => state.setBibleVersion);
   const passageStyle = useApp((state) => state.passageStyle);
   const setPassageStyle = useApp((state) => state.setPassageStyle);
-  const openPassage = useApp((state) => state.openPassage);
+  const prepare = useApp((state) => state.prepare);
   const addPassageToSetlist = useApp((state) => state.addPassageToSetlist);
 
   const [term, setTerm] = useState("");
@@ -191,7 +191,7 @@ export function BibleSearch() {
             </span>
           ) : (
             <span>
-              Bíblia não disponível. Rode <code className="mx-1">npm run import:bible</code> e recarregue.
+              Bíblia indisponível. Conecte-se à internet e tente carregar novamente.
             </span>
           )}
         </div>
@@ -314,11 +314,11 @@ export function BibleSearch() {
             className="flex-1"
             onClick={() => {
               const passage = ref();
-              if (passage) openPassage(passage);
+              if (passage) prepare({ kind: 'passage', title: `${book.name} ${chapter}:${range.start}`, ref: { ...passage, verseEnd: passage.verseStart } });
             }}
           >
             <MonitorPlay className="size-4" />
-            Projetar {range.start === range.end ? range.start : `${range.start}-${range.end}`}
+            Preparar {range.start === range.end ? range.start : `${range.start}-${range.end}`}
           </Button>
           <Button
             variant="secondary"

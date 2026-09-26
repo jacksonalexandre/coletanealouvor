@@ -11,14 +11,8 @@ export function HymnSearch() {
   const videos = useApp((state) => state.videos);
   const hymnId = useApp((state) => state.hymnId);
   const openHymn = useApp((state) => state.openHymn);
-  const play = useApp((state) => state.play);
   const addToSetlist = useApp((state) => state.addToSetlist);
 
-  /** Duplo clique já abre a projeção (se preciso) e toca, sem passar pelo "Tocar". */
-  const openAndPlay = (id: number) => {
-    openHymn(id);
-    void play();
-  };
 
   const [term, setTerm] = useState("");
   const deferred = useDeferredValue(term);
@@ -27,8 +21,7 @@ export function HymnSearch() {
   const results = useMemo(() => {
     const query = normalize(deferred).trim();
     if (!query) {
-      // Sem busca: ordem alfabética pelo título, o número é só um detalhe.
-      return [...hymns].sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
+      return [...hymns].sort((a, b) => a.number - b.number || a.id - b.id);
     }
 
     const number = /^\d+$/.test(query) ? Number(query) : null;
@@ -100,12 +93,11 @@ export function HymnSearch() {
               >
                 <button
                   onClick={() => openHymn(hymn.id)}
-                  onDoubleClick={() => openAndPlay(hymn.id)}
-                  title="Duplo clique: abre a projeção e já toca"
+                  title="Preparar hino"
                   className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
+                  <span className="w-8 shrink-0 text-xs tabular-nums text-ink-400">{String(hymn.number).padStart(3, '0')}</span>
                   <span className="min-w-0 flex-1 truncate text-sm text-ink-200">{hymn.title}</span>
-                  <span className="shrink-0 text-xs tabular-nums text-ink-500">{hymn.number}</span>
                   {hasVideo ? (
                     <Video className="size-3.5 shrink-0 text-ink-600" />
                   ) : (

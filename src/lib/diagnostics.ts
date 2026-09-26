@@ -36,7 +36,7 @@ export function inspectSetlist(snapshot: Pick<DiagnosticSnapshot, "hymns" | "bib
       if (!chapter || item.verseStart < 1 || item.verseEnd < item.verseStart || item.verseEnd > chapter.length) {
         warnings.push("passagem bíblica inválida");
       }
-    } else if (!item.text.trim()) {
+    } else if (item.type === 'label' && !item.text.trim()) {
       warnings.push("etapa sem nome");
     }
   }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createChannel } from "@/lib/channel";
 import { emptyLive } from "@/lib/useLive";
 import type { LiveState, PlayerState } from "@/lib/types";
+import { ContentScreen } from '@/components/ContentScreen';
 
 type YTPlayer = {
   loadVideoById: (id: string) => void;
@@ -271,13 +272,15 @@ export default function Display() {
     report({ activated: true });
   };
 
-  const covered = live.blank || (!live.videoId && !live.passage);
+  const covered = live.blank || (!live.videoId && !live.passage && !live.content);
 
   return (
     <div className="relative h-dvh w-screen overflow-hidden bg-black" onDoubleClick={toggleFullscreen}>
       <div className="absolute inset-0 [&>iframe]:size-full">
         <div ref={mountRef} className="size-full" />
       </div>
+
+      {live.content && live.content.kind !== 'video' && <div className="absolute inset-0"><ContentScreen frame={live.content} /></div>}
 
       {live.passage && !live.blank && (
         <div
@@ -314,7 +317,7 @@ export default function Display() {
       />
 
       {/* Passagem não tem som: mostra direto, sem pedir o clique de ativação. */}
-      {!activated && !live.passage && (
+      {!activated && !!live.videoId && !live.blank && (
         <button
           onClick={activate}
           className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black text-ink-200"
@@ -326,7 +329,7 @@ export default function Display() {
         </button>
       )}
 
-      {activated && error && (
+      {activated && error && !!live.videoId && !live.blank && (
         <div className="absolute inset-x-0 bottom-8 text-center text-sm text-amber-400">{error}</div>
       )}
 

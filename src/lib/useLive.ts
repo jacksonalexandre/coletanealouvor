@@ -21,6 +21,7 @@ export const emptyLive: LiveState = {
 export function useControlLink() {
   // O que está no ar é liveHymnId, não o que o operador tem selecionado/olhando agora.
   const hymn = useApp((state) => state.hymn(state.liveHymnId));
+  const frame = useApp(state => state.liveFrame);
   const videoId = useApp((state) => state.videoOf(state.liveHymnId));
   const blank = useApp((state) => state.blank);
   const playing = useApp((state) => state.playing);
@@ -45,17 +46,18 @@ export function useControlLink() {
 
   const state = useMemo<LiveState>(
     () => ({
-      videoId,
-      title: hymn ? `${hymn.title} (${hymn.number})` : "",
+      content: frame,
+      videoId: frame ? frame.kind === 'video' ? frame.videoId : null : videoId,
+      title: frame?.title ?? (hymn ? `${hymn.title} (${hymn.number})` : ""),
       blank,
       playing,
       volume,
       seek,
-      passage: passageLive,
+      passage: frame ? null : passageLive,
       passageStyle,
       updatedAt: Date.now(),
     }),
-    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle],
+    [frame, videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle],
   );
 
   const stateRef = useRef(state);
@@ -72,11 +74,13 @@ export function useControlLink() {
       if (message.type === "command") {
         const store = useApp.getState();
         if (message.action === "next") {
-          if (store.passage) store.movePassageVerses(1);
+          if (store.liveContent) store.stepLive(1);
+          else if (store.passage) store.movePassageVerses(1);
           else store.stepHymn(1);
         }
         if (message.action === "prev") {
-          if (store.passage) store.movePassageVerses(-1);
+          if (store.liveContent) store.stepLive(-1);
+          else if (store.passage) store.movePassageVerses(-1);
           else store.stepHymn(-1);
         }
         if (message.action === "blank") store.setBlank(!store.blank);
