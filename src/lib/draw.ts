@@ -1,3 +1,16 @@
+export const DRAW_DURATION = 3200;
+
+// Visual timing only. Winners are already immutable in the content snapshot.
+export function drawPhase(results: string[], startedAt: number | undefined, now: number) {
+  if (startedAt === undefined) return { index: Math.max(0, results.length - 1), revealing: false, tick: 0 };
+  const elapsed = Math.max(0, now - startedAt);
+  const index = Math.min(Math.floor(elapsed / DRAW_DURATION), Math.max(0, results.length - 1));
+  const time = elapsed - index * DRAW_DURATION;
+  // 36 changes: quick at first, with steadily longer pauses near the reveal.
+  const tick = Math.floor(36 * (1 - Math.pow(1 - Math.min(1, time / 2700), 2.5)));
+  return { index, revealing: time < 2700, tick };
+}
+
 function randomIndex(length: number) {
   const limit = Math.floor(0x100000000 / length) * length;
   const data = new Uint32Array(1);

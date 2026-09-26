@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { type Frame, timerSeconds } from "@/lib/content";
 import { readAsset } from "@/lib/media";
 import { thumbnailUrl } from "@/lib/youtube";
+import { DrawScreen } from "./DrawScreen";
 
 export function AssetImage({
   id,
@@ -157,6 +158,8 @@ export function ContentScreen({
               Adicione o link do vídeo deste hino
             </div>
           )
+        ) : frame.kind === "draw" ? (
+          <DrawScreen frame={frame} />
         ) : (
           <div
             className="text-stage"
@@ -178,13 +181,6 @@ export function ContentScreen({
                   </p>
                 ))}
               {frame.kind === "text" && frame.body}
-              {frame.kind === "draw" && (
-                <div className="draw-results">
-                  {frame.results.map((r, i) => (
-                    <span key={i}>{r}</span>
-                  ))}
-                </div>
-              )}
               {frame.kind === "timer" && (
                 <div className="stage-timer">
                   <TimerValue timer={frame} />

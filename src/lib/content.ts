@@ -21,7 +21,8 @@ export type Content =
       remaining: number;
       endsAt: number | null;
     }
-  | { kind: "draw"; title: string; results: string[] };
+  | { kind: "draw"; title: string; results: string[]; history?: string[];
+      candidates?: string[]; animate?: boolean; startedAt?: number };
 
 export type Frame =
   | { kind: "video"; title: string; videoId: string | null }
@@ -97,7 +98,9 @@ export function resolveContent(
         endsAt: item.endsAt,
       };
     case "draw":
-      return { kind: "draw", title, results: [...item.results] };
+      return { kind: "draw", title, results: [...item.results],
+        history: [...(item.history ?? [])], candidates: [...(item.candidates ?? [])],
+        animate: item.animate, startedAt: item.startedAt };
   }
 }
 
@@ -165,7 +168,10 @@ export function isContent(value: unknown): value is Content {
     case "draw":
       return (
         Array.isArray(v.results) &&
-        v.results.every((s) => typeof s === "string")
+        v.results.every((s) => typeof s === "string") &&
+        [v.history, v.candidates].every(a => a === undefined || (Array.isArray(a) && a.every(s => typeof s === "string"))) &&
+        (v.startedAt === undefined || (typeof v.startedAt === "number" && Number.isFinite(v.startedAt))) &&
+        (v.animate === undefined || typeof v.animate === "boolean")
       );
     case "timer":
       return (

@@ -160,7 +160,9 @@ test("live operation, universal plan, media, recovery and private tools", async 
   await page
     .getByRole("button", { name: "Colocar no ar", exact: true })
     .click();
-  await expect(display.locator(".draw-results span")).toHaveCount(5);
+  await expect(display.locator(".draw-stage")).toHaveAttribute("data-phase", "drawing");
+  await expect(display.locator(".draw-status")).toContainText("5 de 5", { timeout: 18000 });
+  await expect(display.locator(".draw-history-grid span")).toHaveCount(4);
   await page.reload();
   await page.getByRole("button", { name: "Restaurar", exact: true }).click();
   await expect(page.getByTestId("live-monitor")).toContainText("TELA APAGADA");

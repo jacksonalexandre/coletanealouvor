@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { ContentScreen, TimerValue } from "./ContentScreen";
+import { TimerValue } from "./ContentScreen";
 import { useApp } from "@/store/useApp";
 import { type Content, timerSeconds } from "@/lib/content";
 import { drawItems } from "@/lib/draw";
@@ -46,7 +46,8 @@ export function WorshipTools() {
   const [history, setHistory] = useState<string[]>(() =>
     local.get("draw-history", []),
   );
-  const [results, setResults] = useState<string[]>([]);
+  const [results, setResults] = useState<string[]>(() => local.get("draw-results", []));
+  const [candidates, setCandidates] = useState<string[]>([]);
   const [error, setError] = useState("");
   const draw = () => {
     try {
@@ -66,6 +67,8 @@ export function WorshipTools() {
           : names.split("\n");
       const selected = drawItems(pool, quantity, noRepeat, history);
       setResults(selected);
+      local.set("draw-results", selected);
+      setCandidates([...new Set(pool.map(s => s.trim()).filter(Boolean))].filter(s => !noRepeat || !history.includes(s)).filter((_, i, all) => i % Math.max(1, Math.floor(all.length / 60)) === 0).slice(0, 60));
       setError("");
       const next = [...history, ...selected];
       setHistory(next);
@@ -232,10 +235,11 @@ export function WorshipTools() {
                 setHistory([]);
                 setResults([]);
                 local.set("draw-history", []);
+                local.set("draw-results", []);
               }
             }}
           >
-            Limpar
+            Novo sorteio / limpar histórico
           </Button>
         </div>
         {error && (
@@ -245,18 +249,16 @@ export function WorshipTools() {
         )}
         {!!results.length && (
           <>
-            <div className="aspect-video">
-              <ContentScreen
-                frame={{ kind: "draw", title: "SORTEIO", results }}
-              />
-            </div>
+            <p className="hint">Resultado escolhido. Prepare e coloque no ar para revelar com suspense, um por vez.</p>
+            <div className="draw-results" aria-label="Resultados desta rodada">{results.map((result, i) => <span key={i}>{result}</span>)}</div>
             <ContentActions
-              content={{ kind: "draw", title: "SORTEIO", results }}
+              content={{ kind: "draw", title: "SORTEIO", results, history: history.slice(0, Math.max(0, history.length - results.length)), candidates, animate: true }}
             />
+            <Button variant="secondary" onClick={() => useApp.getState().prepare({ kind: "draw", title: "SORTEIO", results: history.slice(-1), history: history.slice(0, -1), animate: false })}>Preparar histórico sem animação</Button>
           </>
         )}
         {!!history.length && (
-          <p className="hint break-words">Sorteados: {history.join(", ")}</p>
+          <div className="operator-draw-history"><h3>JÁ SORTEADOS · {history.length}</h3><p>{history.join(" · ")}</p><p className="hint">Sortear continua sem repetir quando essa opção estiver marcada. Encerrar a projeção não apaga este histórico.</p></div>
         )}
       </details>
     </div>
