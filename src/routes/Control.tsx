@@ -127,6 +127,8 @@ function useShortcuts() {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
+      // Com um diálogo aberto (sorteio, configurações), espaço/setas são dele.
+      if (target?.closest('[role="dialog"]')) return;
 
       const store = useApp.getState();
       const key = event.key.toLowerCase();

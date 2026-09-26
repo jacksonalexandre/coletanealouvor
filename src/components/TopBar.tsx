@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { MonitorPlay, MonitorX } from "lucide-react";
+import { AppearanceSettings } from "@/components/AppearanceSettings";
+import { Countdown } from "@/components/Countdown";
+import { GoogleLogin } from "@/components/GoogleLogin";
+import { Raffle } from "@/components/Raffle";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@/assets/logo.png";
 import { listScreens, supportsScreenPlacement, type ScreenInfo } from "@/lib/screens";
@@ -79,6 +83,11 @@ export function TopBar() {
           Abrir projeção
         </Button>
       )}
+
+      <Countdown />
+      <Raffle />
+      <AppearanceSettings />
+      <GoogleLogin />
 
       {hint && <p className="w-full text-xs text-amber-400">{hint}</p>}
     </header>

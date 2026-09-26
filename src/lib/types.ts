@@ -1,3 +1,4 @@
+import type { Appearance } from "@/lib/appearance";
 import type { PassageStyle } from "@/lib/passageStyle";
 
 export type Hymn = {
@@ -83,7 +84,32 @@ export type LiveState = {
   passage: { reference: string; verses: { number: number; text: string }[] } | null;
   /** Aparência da passagem na projeção (fonte, fundo, cor da letra). */
   passageStyle: PassageStyle;
+  /** Cores globais; a projeção usa o fundo e o destaque. */
+  appearance: Appearance;
+  /** Resultado de sorteio em cartaz; fica por cima do vídeo/passagem. */
+  draw: LiveDraw | null;
+  /** Contagem regressiva em cartaz; fica por cima do vídeo/passagem. */
+  countdown: LiveCountdown | null;
   updatedAt: number;
+};
+
+/** Cronômetro regressivo até um horário; cada janela calcula o restante pelo próprio relógio. */
+export type LiveCountdown = {
+  /** Horário final, em ms desde a época. */
+  endsAt: number;
+  /** Texto opcional acima do contador (ex: "O culto começa em"). */
+  label: string;
+};
+
+/** Resultado de um sorteio; o intervalo/lista alimenta a animação de roleta na projeção. */
+export type DrawResult = { value: string } & (
+  | { kind: "number"; min: number; max: number }
+  | { kind: "name"; names: string[] }
+);
+
+export type LiveDraw = DrawResult & {
+  /** Muda a cada sorteio, para a projeção animar de novo mesmo se o valor repetir. */
+  nonce: number;
 };
 
 /** O que a janela de projeção responde sobre o player. */

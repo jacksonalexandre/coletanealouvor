@@ -87,6 +87,48 @@ O ícone de engrenagem (mesma linha da busca, e também no cabeçalho do capítu
 
 Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
 
+## Configurações gerais
+
+A engrenagem no topo (ao lado do sorteio) reúne as cores globais, salvas no navegador:
+
+| Opção | Onde aparece |
+| --- | --- |
+| Cor de destaque | Botões, seleção, indicador de "no ar" — no controle e no resultado do sorteio na projeção |
+| Fundo do app | Tela de controle (cabeçalho, campos e bordas acompanham em tons mais claros) |
+| Fundo da projeção | Projeção sem vídeo, tela apagada (`B`) e sorteio |
+
+A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta ao tema original. As cores foram pensadas para fundos escuros: com um fundo claro, o texto do controle perde contraste.
+
+## Cronômetro
+
+O ícone de cronômetro no topo abre a contagem regressiva até um **horário final** (ex: o início do culto). Digite o horário ou use os atalhos **+5/+10/+15/+30 min**; se o horário já passou hoje, vale o de amanhã (o painel avisa). O texto acima do contador é opcional (ex: "O culto começa em").
+
+**Iniciar na projeção** mostra o contador grande — `MM:SS`, ou `H:MM:SS` quando falta mais de uma hora — com o relógio atual pequeno embaixo, nas cores das configurações gerais. Ao zerar, o `00:00` fica piscando até o operador tirar. Mudou o horário ou o texto com o cronômetro no ar? **Atualizar na projeção**. Cada janela conta pelo próprio relógio, então o contador não depende do canal para andar. Pôr um hino, passagem ou sorteio no ar tira o cronômetro.
+
+## Sorteio
+
+O ícone de dados no topo abre o sorteio, em dois modos:
+
+- **Número**: sorteia entre o número inicial (1 por padrão) e o final (50 por padrão).
+- **Nome**: cole ou digite os nomes, um por linha; linhas vazias são ignoradas e os espaços nas pontas, descartados.
+
+**Não repetir** (ligado por padrão) tira da roda o que já saiu; a lista "Já sorteados" mostra o histórico e **Recomeçar** zera. Mudar o intervalo ou a lista também recomeça. Com **Mostrar na projeção** ligado, cada sorteio vai para a tela da igreja com uma roleta rápida antes do resultado (abrindo a projeção se estiver fechada); **Tirar sorteio da projeção** volta ao que estava por baixo. Pôr um hino ou passagem no ar também encerra o sorteio. O sorteio usa `crypto.getRandomValues`, sem viés.
+
+## Login com o Google
+
+O canto direito do topo tem o botão **Fazer login com o Google** (Google Identity Services). Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
+
+Como o app é estático, tudo acontece no navegador: o Google devolve um ID token e o app guarda só o perfil (nome, e-mail, foto) em `localStorage`. Na volta, o Google entra sozinho na mesma conta (`auto_select`) até o operador clicar em **Sair**.
+
+Para ativar:
+
+1. No [Google Cloud Console](https://console.cloud.google.com/apis/credentials), crie uma credencial **ID do cliente OAuth** do tipo **Aplicativo da Web**.
+2. Em **Origens JavaScript autorizadas**, inclua `http://localhost:5173`, `http://localhost` (exigido pelo Google para testes locais) e a origem do deploy (ex: `https://<usuario>.github.io`).
+3. Local: crie `.env.local` com `VITE_GOOGLE_CLIENT_ID=<id>.apps.googleusercontent.com`.
+4. GitHub Pages: em Settings → Secrets and variables → Actions → **Variables**, crie `GOOGLE_CLIENT_ID` com o mesmo valor. O client ID não é segredo (vai no JavaScript público).
+
+Sem o client ID, o botão não aparece.
+
 ## Estrutura
 
 ```
@@ -94,16 +136,21 @@ scripts/import-hymnal.mjs   Gera o índice do hinário
 scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
 scripts/import-bible.mjs    Gera o texto da Bíblia
 scripts/playlists.json      Playlists do YouTube usadas na importação
+src/lib/appearance.ts       Cores globais (destaque, fundo do app e da projeção)
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
 src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeção
 src/lib/channel.ts          Canal controle <-> projeção
 src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
+src/lib/countdown.ts        Cronômetro regressivo (horário final, formatação, relógio)
+src/lib/draw.ts             Sorteio de número e de nome
+src/lib/googleAuth.ts       Login com o Google (Google Identity Services)
 src/lib/storage.ts          Cache do índice (IndexedDB), mapa de vídeos, preferências
 src/lib/youtube.ts          Leitura de link do YouTube
 src/lib/useLive.ts          Lado do controle do canal
 src/store/useApp.ts         Estado global (zustand)
+src/store/useAuth.ts        Usuário logado com o Google
 src/routes/Control.tsx      Tela de controle
 src/routes/Display.tsx      Tela de projeção (IFrame Player API)
 ```
