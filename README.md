@@ -38,6 +38,12 @@ Clicar (uma vez) num hino ou passagem só seleciona, pro painel mostrar o hino/e
 
 A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O controle publica o que quer (vídeo, tocar/pausar, volume, posição, tela apagada) e a projeção devolve o estado real do player.
 
+### No celular: toca no próprio aparelho
+
+No celular (e tablet) não há segunda tela, então o app **não abre a janela de projeção**: a projeção fica embutida no topo da aba **Ao vivo** e **Tocar** (ou duplo toque num hino) toca ali mesmo. Quando algo entra no ar — hino, passagem, sorteio, cronômetro — o app troca sozinho para essa aba. Trocar de aba depois não para o som. Toque duas vezes no quadro para tela cheia.
+
+A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **Configurações gerais → Tocar neste aparelho** — dá para ligar no desktop ou desligar num tablet ligado a um projetor. O canal é o mesmo `BroadcastChannel`, que também entrega mensagens dentro da própria página. Embutido, o player mostra os botões do YouTube: no iPhone o Safari só deixa começar um vídeo com som a partir de um toque dentro do próprio vídeo; se **Tocar** não arrancar, toque no play do quadro.
+
 **Na primeira vez, clique uma vez na janela de projeção.** O navegador não deixa um vídeo com som começar sozinho em uma janela onde ninguém clicou. Esse clique também entra em tela cheia e vale para o culto inteiro.
 
 ### Atalhos de teclado

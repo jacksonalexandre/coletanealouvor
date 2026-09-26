@@ -17,6 +17,7 @@ export function TopBar() {
   const closeDisplay = useApp((state) => state.closeDisplay);
   const screenKey = useApp((state) => state.screenKey);
   const setScreenKey = useApp((state) => state.setScreenKey);
+  const inlinePlayer = useApp((state) => state.inlinePlayer);
   const [screens, setScreens] = useState<ScreenInfo[]>([]);
   const [hint, setHint] = useState<string | null>(null);
 
@@ -45,7 +46,7 @@ export function TopBar() {
         </span>
       </h1>
 
-      {screens.length > 1 && (
+      {!inlinePlayer && screens.length > 1 && (
         <select
           value={screenKey ?? ""}
           onChange={(event) => setScreenKey(event.target.value || null)}
@@ -60,28 +61,33 @@ export function TopBar() {
         </select>
       )}
 
-      <span
-        className={cn(
-          "hidden items-center gap-1.5 text-xs sm:flex",
-          displayOpen ? "text-brand-400" : "text-ink-400",
-        )}
-      >
-        <span
-          className={cn("size-2 rounded-full", displayOpen ? "bg-brand-500" : "bg-ink-600")}
-        />
-        {displayOpen ? "Projeção conectada" : "Projeção fechada"}
-      </span>
+      {/* Tocando no aparelho não há janela de projeção para abrir/fechar. */}
+      {!inlinePlayer && (
+        <>
+          <span
+            className={cn(
+              "hidden items-center gap-1.5 text-xs sm:flex",
+              displayOpen ? "text-brand-400" : "text-ink-400",
+            )}
+          >
+            <span
+              className={cn("size-2 rounded-full", displayOpen ? "bg-brand-500" : "bg-ink-600")}
+            />
+            {displayOpen ? "Projeção conectada" : "Projeção fechada"}
+          </span>
 
-      {displayOpen && displayWindow ? (
-        <Button variant="outline" onClick={closeDisplay}>
-          <MonitorX className="size-4" />
-          Fechar projeção
-        </Button>
-      ) : (
-        <Button onClick={open}>
-          <MonitorPlay className="size-4" />
-          Abrir projeção
-        </Button>
+          {displayOpen && displayWindow ? (
+            <Button variant="outline" onClick={closeDisplay}>
+              <MonitorX className="size-4" />
+              Fechar projeção
+            </Button>
+          ) : (
+            <Button onClick={open}>
+              <MonitorPlay className="size-4" />
+              Abrir projeção
+            </Button>
+          )}
+        </>
       )}
 
       <Countdown />

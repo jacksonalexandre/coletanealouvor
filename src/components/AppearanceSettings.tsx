@@ -1,6 +1,7 @@
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import type { Appearance } from "@/lib/appearance";
 import { useApp } from "@/store/useApp";
 
@@ -10,11 +11,13 @@ const FIELDS: { key: keyof Appearance; label: string; hint: string }[] = [
   { key: "displayBackground", label: "Fundo da projeção", hint: "Tela sem vídeo, tela apagada e sorteio" },
 ];
 
-/** Engrenagem do topo: cores globais do app e da projeção, salvas no navegador. */
+/** Engrenagem do topo: onde tocar e cores globais do app e da projeção, salvas no navegador. */
 export function AppearanceSettings() {
   const appearance = useApp((state) => state.appearance);
   const setAppearance = useApp((state) => state.setAppearance);
   const resetAppearance = useApp((state) => state.resetAppearance);
+  const inlinePlayer = useApp((state) => state.inlinePlayer);
+  const setInlinePlayer = useApp((state) => state.setInlinePlayer);
 
   return (
     <Dialog>
@@ -23,7 +26,17 @@ export function AppearanceSettings() {
           <Settings className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent title="Configurações gerais" description="Cores do app e da projeção. Ficam salvas neste navegador.">
+      <DialogContent title="Configurações gerais" description="Reprodução e cores. Ficam salvas neste navegador.">
+        <label className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-ink-700 bg-ink-800 p-3">
+          <span className="min-w-0">
+            <span className="block text-sm text-ink-200">Tocar neste aparelho</span>
+            <span className="block text-xs text-ink-400">
+              Sem janela de projeção: o vídeo toca na aba Ao vivo. Já vem ligado no celular.
+            </span>
+          </span>
+          <Switch checked={inlinePlayer} onCheckedChange={setInlinePlayer} />
+        </label>
+
         <div className="space-y-3">
           {FIELDS.map((field) => (
             <label key={field.key} className="flex items-center gap-3">

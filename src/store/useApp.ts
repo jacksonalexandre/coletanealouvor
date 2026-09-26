@@ -74,6 +74,11 @@ type State = {
   /** Referência à janela de projeção aberta por nós; null se nunca abrimos ou se já fechou. */
   displayWindow: Window | null;
   screenKey: string | null;
+  /**
+   * Tocar no próprio aparelho: a projeção fica embutida na aba "Ao vivo" em vez
+   * de abrir outra janela. Padrão no celular/tablet, onde não há segunda tela.
+   */
+  inlinePlayer: boolean;
 };
 
 type Actions = {
@@ -125,6 +130,7 @@ type Actions = {
   openDisplay: () => Promise<boolean>;
   closeDisplay: () => void;
   setScreenKey: (key: string | null) => void;
+  setInlinePlayer: (inline: boolean) => void;
 };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -150,6 +156,11 @@ function normalizeSetlist(raw: unknown): SetlistItem[] {
     }
     return [];
   });
+}
+
+/** Celular/tablet: toque como entrada principal, sem mouse. */
+function isTouchDevice() {
+  return typeof matchMedia !== "undefined" && matchMedia("(hover: none) and (pointer: coarse)").matches;
 }
 
 // Aplica as cores antes do primeiro render, para não piscar o tema padrão.
@@ -190,6 +201,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   displayOpen: false,
   displayWindow: null,
   screenKey: local.get<string | null>("screenKey", null),
+  inlinePlayer: local.get("inlinePlayer", isTouchDevice()),
 
   async boot() {
     try {
@@ -470,6 +482,8 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   async openDisplay() {
+    // Tocando no aparelho, a projeção embutida já está montada; não há janela para abrir.
+    if (get().inlinePlayer) return true;
     // A permissão de gerenciamento de janelas só é concedida dentro de um gesto
     // do usuário, por isso isto só deve rodar a partir de um clique/tecla real.
     const opened = await openDisplayWindow(get().screenKey);
@@ -486,5 +500,12 @@ export const useApp = create<State & Actions>((set, get) => ({
   setScreenKey(key) {
     local.set("screenKey", key);
     set({ screenKey: key });
+  },
+
+  setInlinePlayer(inline) {
+    local.set("inlinePlayer", inline);
+    // Uma projeção só por vez: a janela separada fecha ao passar para o aparelho.
+    if (inline) get().closeDisplay();
+    set({ inlinePlayer: inline });
   },
 }));

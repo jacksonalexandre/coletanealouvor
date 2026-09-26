@@ -30,6 +30,7 @@ export function Transport() {
   const displayOpen = useApp((state) => state.displayOpen);
   const passage = useApp((state) => state.passage);
   const bible = useApp((state) => state.bible);
+  const inlinePlayer = useApp((state) => state.inlinePlayer);
 
   const toggle = useApp((state) => state.toggle);
   const seekTo = useApp((state) => state.seekTo);
@@ -49,6 +50,7 @@ export function Transport() {
         blank={blank}
         displayOpen={displayOpen}
         activated={player.activated}
+        inline={inlinePlayer}
         onPrev={() => movePassageVerses(-1)}
         onNext={() => movePassageVerses(1)}
         onBlank={() => setBlank(!blank)}
@@ -75,25 +77,28 @@ export function Transport() {
         <span className="text-xs font-semibold tracking-wider text-ink-400 uppercase">
           {isLive ? "No ar" : "Selecionado"}
         </span>
-        <div
-          className={cn(
-            "mt-1 aspect-video overflow-hidden rounded-xl border bg-black",
-            isLive && playing && !blank ? "border-brand-500/70" : "border-ink-700",
-          )}
-        >
-          {videoId && !(isLive && blank) ? (
-            <img
-              src={thumbnailUrl(videoId)}
-              alt=""
-              className="size-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div className="flex size-full items-center justify-center text-xs text-ink-600">
-              {isLive && blank ? "Tela apagada" : "Sem vídeo"}
-            </div>
-          )}
-        </div>
+        {/* Tocando no aparelho, o próprio player fica acima; a miniatura seria repetida. */}
+        {!inlinePlayer && (
+          <div
+            className={cn(
+              "mt-1 aspect-video overflow-hidden rounded-xl border bg-black",
+              isLive && playing && !blank ? "border-brand-500/70" : "border-ink-700",
+            )}
+          >
+            {videoId && !(isLive && blank) ? (
+              <img
+                src={thumbnailUrl(videoId)}
+                alt=""
+                className="size-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="flex size-full items-center justify-center text-xs text-ink-600">
+                {isLive && blank ? "Tela apagada" : "Sem vídeo"}
+              </div>
+            )}
+          </div>
+        )}
         <p className="mt-2 text-sm text-ink-200">
           {hymn.title}
           <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>
@@ -103,7 +108,7 @@ export function Transport() {
             No ar agora: <span className="text-ink-300">{liveHymn.title}</span>
           </p>
         )}
-        <Status displayOpen={displayOpen} activated={player.activated} error={player.error} />
+        <Status displayOpen={displayOpen} activated={player.activated} error={player.error} inline={inlinePlayer} />
       </div>
 
       <VideoLink hymnId={hymn.id} videoId={videoId} />
@@ -185,6 +190,7 @@ function PassageTransport({
   blank,
   displayOpen,
   activated,
+  inline,
   onPrev,
   onNext,
   onBlank,
@@ -195,6 +201,7 @@ function PassageTransport({
   blank: boolean;
   displayOpen: boolean;
   activated: boolean;
+  inline: boolean;
   onPrev: () => void;
   onNext: () => void;
   onBlank: () => void;
@@ -213,7 +220,7 @@ function PassageTransport({
             </p>
           ))}
         </div>
-        <Status displayOpen={displayOpen} activated={activated} error={null} />
+        <Status displayOpen={displayOpen} activated={activated} error={null} inline={inline} />
       </div>
 
       <div className="mt-auto space-y-3">
@@ -242,12 +249,15 @@ function Status({
   displayOpen,
   activated,
   error,
+  inline,
 }: {
   displayOpen: boolean;
   activated: boolean;
   error: string | null;
+  inline: boolean;
 }) {
   if (error) return <Line tone="danger">{error}</Line>;
+  if (inline) return <Line tone="ok">Tocando neste aparelho.</Line>;
   if (!displayOpen) {
     return (
       <Line tone="muted">

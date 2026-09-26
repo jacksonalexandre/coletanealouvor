@@ -69,10 +69,18 @@ const erros: Record<number, string> = {
   150: "O dono do vídeo não permite reprodução incorporada.",
 };
 
-/** Janela de projeção: só o vídeo do hino, sem nenhum controle visível. */
-export default function Display() {
+/**
+ * Janela de projeção: só o vídeo do hino, sem nenhum controle visível.
+ *
+ * `embedded`: a mesma projeção dentro da tela de controle (celular), sem abrir
+ * outra janela. O canal é o mesmo — BroadcastChannel entrega mensagens entre
+ * objetos da mesma página. Aí o toque em "Tocar" já é o gesto que libera o som,
+ * o teclado fica com o controle e o player mostra os próprios botões, porque o
+ * iOS só deixa começar um vídeo com som a partir de um toque dentro dele.
+ */
+export default function Display({ embedded = false }: { embedded?: boolean }) {
   const [live, setLive] = useState<LiveState>(emptyLive);
-  const [activated, setActivated] = useState(false);
+  const [activated, setActivated] = useState(embedded);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -81,7 +89,8 @@ export default function Display() {
   const channelRef = useRef<ReturnType<typeof createChannel> | null>(null);
   const liveRef = useRef(live);
   const stateRef = useRef({ playing: false, buffering: false, ended: false });
-  const activatedRef = useRef(false);
+  const activatedRef = useRef(embedded);
+  const rootRef = useRef<HTMLDivElement>(null);
   liveRef.current = live;
 
   const report = useCallback((patch: Partial<PlayerState> = {}) => {
@@ -132,16 +141,17 @@ export default function Display() {
         playerRef.current = new YT.Player(mountRef.current, {
           host: "https://www.youtube-nocookie.com",
           playerVars: {
-            controls: 0,
+            controls: embedded ? 1 : 0,
             disablekb: 1,
             modestbranding: 1,
             rel: 0,
             iv_load_policy: 3,
             playsinline: 1,
-            fs: 0,
+            fs: embedded ? 1 : 0,
           },
           events: {
             onReady: () => {
+              if (activatedRef.current) playerRef.current?.unMute();
               setReady(true);
               report({ ready: true });
             },
@@ -211,8 +221,9 @@ export default function Display() {
     return () => clearInterval(timer);
   }, [report]);
 
-  // Teclado da janela de projeção.
+  // Teclado da janela de projeção. Embutida, o controle já ouve o teclado da página.
   useEffect(() => {
+    if (embedded) return;
     const onKey = (event: KeyboardEvent) => {
       const channel = channelRef.current;
       if (!channel) return;
@@ -232,12 +243,15 @@ export default function Display() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [embedded]);
 
   const toggleFullscreen = async () => {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
-      else await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+      else {
+        const target = embedded ? rootRef.current : document.documentElement;
+        await target?.requestFullscreen({ navigationUI: "hide" });
+      }
     } catch {
       // Navegador pode recusar sem gesto do usuário; segue em janela.
     }
@@ -262,8 +276,10 @@ export default function Display() {
 
   return (
     <div
-      className="relative h-dvh w-screen overflow-hidden"
-      style={{ background }}
+      ref={rootRef}
+      className={embedded ? "relative size-full overflow-hidden" : "relative h-dvh w-screen overflow-hidden"}
+      // Tamanhos em cqw/cqh: acompanham a janela inteira ou o quadro embutido.
+      style={{ background, containerType: "size" }}
       onDoubleClick={toggleFullscreen}
     >
       <div className="absolute inset-0 [&>iframe]:size-full">
@@ -272,18 +288,20 @@ export default function Display() {
 
       {live.passage && !live.blank && (
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-20 text-center"
+          className={`absolute inset-0 flex flex-col items-center justify-center text-center ${
+            embedded ? "gap-3 overflow-y-auto px-4 py-3" : "gap-8 px-20"
+          }`}
           style={{ background: live.passageStyle.background, color: live.passageStyle.color }}
         >
           <p
             className="font-semibold tracking-wide uppercase opacity-75"
-            style={{ fontSize: `${live.passageStyle.fontSize * 0.6}rem` }}
+            style={{ fontSize: passageSize(live.passageStyle.fontSize * 0.6, embedded) }}
           >
             {live.passage.reference}
           </p>
           <div
             className="max-w-5xl space-y-4 leading-relaxed"
-            style={{ fontSize: `${live.passageStyle.fontSize}rem` }}
+            style={{ fontSize: passageSize(live.passageStyle.fontSize, embedded) }}
           >
             {live.passage.verses.map((verse) => (
               <p key={verse.number}>
@@ -340,6 +358,9 @@ export default function Display() {
   );
 }
 
+/** Na janela, o tamanho em rem configurado; embutida, proporcional ao quadro (1rem ≈ 1/80 da largura de um projetor). */
+const passageSize = (rem: number, embedded: boolean) => (embedded ? `${rem * 1.25}cqw` : `${rem}rem`);
+
 const ROLL_MS = 1800;
 
 /** Resultado do sorteio em tela cheia, depois de uma "roleta" rápida de valores. */
@@ -376,16 +397,16 @@ function DrawScreen({ draw, background, accent }: { draw: LiveDraw; background: 
 
   return (
     <div
-      className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-16 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center gap-[3cqh] px-[5cqw] text-center"
       style={{ background }}
     >
-      <p className="text-3xl font-semibold tracking-[0.3em] text-white/60 uppercase">Sorteio</p>
+      <p className="text-[min(5cqh,3cqw)] font-semibold tracking-[0.3em] text-white/60 uppercase">Sorteio</p>
       <p
         key={rolling ? "rolling" : `result-${draw.nonce}`}
         className={`max-w-full font-bold break-words tabular-nums ${rolling ? "opacity-70" : "animate-[draw-pop_450ms_ease-out]"}`}
         style={{
           color: accent,
-          fontSize: draw.kind === "number" ? "min(40vh, 30vw)" : long ? "min(14vh, 8vw)" : "min(22vh, 12vw)",
+          fontSize: draw.kind === "number" ? "min(40cqh, 30cqw)" : long ? "min(14cqh, 8cqw)" : "min(22cqh, 12cqw)",
           lineHeight: 1.05,
         }}
       >
@@ -412,23 +433,23 @@ function CountdownScreen({
 
   return (
     <div
-      className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-16 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center gap-[2cqh] px-[5cqw] text-center"
       style={{ background }}
     >
       {countdown.label && (
-        <p className="max-w-full text-[min(6vh,4vw)] font-semibold break-words text-white/75">{countdown.label}</p>
+        <p className="max-w-full text-[min(6cqh,4cqw)] font-semibold break-words text-white/75">{countdown.label}</p>
       )}
       <p
         className={`font-bold tabular-nums ${finished ? "animate-pulse" : ""}`}
         style={{
           color: accent,
-          fontSize: text.length > 5 ? "min(30vh, 17vw)" : "min(38vh, 24vw)",
+          fontSize: text.length > 5 ? "min(30cqh, 17cqw)" : "min(38cqh, 24cqw)",
           lineHeight: 1,
         }}
       >
         {text}
       </p>
-      <p className="text-[min(5vh,3vw)] font-medium text-white/55 tabular-nums">{formatClock(now)}</p>
+      <p className="text-[min(5cqh,3cqw)] font-medium text-white/55 tabular-nums">{formatClock(now)}</p>
     </div>
   );
 }
