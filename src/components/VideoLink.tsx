@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, Download, Link2, Trash2 } from "lucide-react";
+import { Check, Link2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { parseVideoId, watchUrl } from "@/lib/youtube";
@@ -8,13 +8,12 @@ import { useApp } from "@/store/useApp";
 type Props = { hymnId: number; videoId: string | null };
 
 /**
- * Cadastro do vídeo de um hino. Enquanto não existe o mapa completo em
- * public/data/videos.json, o operador cola o link e o app guarda no navegador.
+ * Cadastro do vídeo de um hino. O mapa vem do Supabase (coletanea_videos); o
+ * que o operador cola aqui fica no navegador dele, por cima do banco.
  */
 export function VideoLink({ hymnId, videoId }: Props) {
   const setVideo = useApp((state) => state.setVideo);
   const clearVideo = useApp((state) => state.clearVideo);
-  const exportVideos = useApp((state) => state.exportVideos);
 
   const [input, setInput] = useState("");
   const [invalid, setInvalid] = useState(false);
@@ -97,13 +96,6 @@ export function VideoLink({ hymnId, videoId }: Props) {
         </Button>
       </div>
       {invalid && <p className="text-xs text-amber-400">Não reconheci um vídeo nesse link.</p>}
-      <button
-        onClick={exportVideos}
-        className="flex items-center gap-1.5 text-[11px] text-ink-400 hover:text-ink-200"
-      >
-        <Download className="size-3" />
-        Exportar mapeamento como videos.json
-      </button>
     </div>
   );
 }

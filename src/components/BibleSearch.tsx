@@ -185,9 +185,7 @@ export function BibleSearch() {
           {bibleLoading ? (
             "Carregando…"
           ) : (
-            <span>
-              Bíblia não disponível. Rode <code className="mx-1">npm run import:bible</code> e recarregue.
-            </span>
+            <span>Bíblia não disponível. Verifique a conexão ou se a tradução já foi importada no banco.</span>
           )}
         </div>
       </div>

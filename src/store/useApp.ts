@@ -133,7 +133,6 @@ type Actions = {
 
   setVideo: (hymnId: number, input: string) => boolean;
   clearVideo: (hymnId: number) => void;
-  exportVideos: () => void;
 
   addToSetlist: (id: number) => void;
   addPassageToSetlist: (ref: PassageRef) => void;
@@ -270,7 +269,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       });
       if (get().bibleVersion === version) set({ bible: bible.books, bibleLoading: false });
     } catch {
-      // Sem public/data/biblia-<versão>.json (ex: `npm run import:bible` não rodou ainda).
+      // Versão ainda não importada no Supabase (ou offline sem cache).
       if (get().bibleVersion === version) set({ bibleLoading: false });
     }
   },
@@ -482,17 +481,6 @@ export const useApp = create<State & Actions>((set, get) => ({
     // Só para a projeção se o hino editado for o que está no ar; mexer no link de
     // outro hino não pode interromper o que já está tocando.
     set({ videos, playing: hymnId === get().liveHymnId ? false : get().playing });
-  },
-
-  /** Baixa o mapa completo para virar public/data/videos.json no projeto. */
-  exportVideos() {
-    const blob = new Blob([JSON.stringify(get().videos, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "videos.json";
-    link.click();
-    URL.revokeObjectURL(url);
   },
 
   addToSetlist(id) {

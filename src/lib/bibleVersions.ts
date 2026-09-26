@@ -1,6 +1,6 @@
 export type BibleVersionId = "ara" | "arc" | "ntlh" | "nvi";
 
-/** Traduções disponíveis; bate com scripts/import-bible.mjs e public/data/biblia-<id>.json. */
+/** Traduções disponíveis; bate com a tabela coletanea_biblia_versoes no Supabase. */
 export const BIBLE_VERSIONS: { id: BibleVersionId; abbrev: string; name: string }[] = [
   { id: "ara", abbrev: "ARA", name: "Almeida Revista e Atualizada" },
   { id: "arc", abbrev: "ARC", name: "Almeida Revista e Corrigida" },

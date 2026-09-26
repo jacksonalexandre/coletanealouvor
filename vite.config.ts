@@ -37,13 +37,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
-        runtimeCaching: [
-          {
-            urlPattern: /\/data\/.*\.json$/,
-            handler: "StaleWhileRevalidate",
-            options: { cacheName: "acervo-json", expiration: { maxEntries: 32 } },
-          },
-        ],
+        // O acervo (Supabase) fica em cache no IndexedDB pelo próprio app (lib/storage).
       },
     }),
   ],

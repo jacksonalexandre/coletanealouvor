@@ -8,11 +8,10 @@ O escopo é deliberadamente pequeno: buscar o hino pelo título ou número, mont
 
 ```bash
 npm install
-npm run import:hymnal   # gera public/data/hymnal.json (uma vez)
-npm run import:videos   # gera public/data/videos.json a partir das playlists
-npm run import:bible    # gera public/data/biblia.json (uma vez)
 npm run dev             # http://localhost:5173
 ```
+
+O acervo (hinário, vídeos e Bíblia) vem do Supabase — ver **Acervo no Supabase** abaixo. Copie `.env.example` para `.env.local` e preencha a chave pública (anon) do projeto (Supabase → Project Settings → API Keys). No deploy do GitHub Pages, as mesmas duas vêm das variáveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` do repositório.
 
 Build de produção:
 
@@ -66,23 +65,21 @@ Também dá para colar o link direto no campo de etapa da programação: em vez 
 
 ## Vídeos dos hinos
 
-O app precisa saber qual vídeo do YouTube corresponde a cada hino. O mapa vive em `public/data/videos.json`, no formato `{ "<id do hino>": "<id do vídeo>" }`.
+O app precisa saber qual vídeo do YouTube corresponde a cada hino. O mapa vive na tabela `coletanea_videos` do Supabase (hino → id do vídeo), montado pela importação de vídeos: ela lê as playlists da tabela `coletanea_playlists`, tira o número do hino do título de cada vídeo ("… Hino 12 …") e casa com o hinário. Se o YouTube bloquear a leitura, nada é apagado.
 
-`npm run import:videos` monta esse arquivo sozinho: lê as playlists listadas em `scripts/playlists.json`, tira o número do hino do título de cada vídeo ("… Hino 12 …") e casa com o hinário. Ele confere se o título do vídeo bate com o do hinário e avisa quando não bate, sem parar a importação. `--check` relata sem gravar.
+Para acrescentar uma playlist, insira a URL em `coletanea_playlists` e rode `select public.coletanea_importar('videos');`.
 
-Para acrescentar uma playlist, some a URL em `scripts/playlists.json` e rode de novo.
-
-Também dá para cadastrar um hino avulso pela interface: abra o hino e cole o link no campo do painel de comando. O app aceita link normal, `youtu.be`, `/embed/`, `/shorts/` ou o id cru, guarda no navegador (por cima do arquivo) e o botão **Exportar mapeamento** baixa um `videos.json` com tudo.
+Também dá para cadastrar o vídeo de um hino pela interface: abra o hino e cole o link no campo do painel de comando. O app aceita link normal, `youtu.be`, `/embed/`, `/shorts/` ou o id cru e guarda no navegador, por cima do banco.
 
 O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_policy=3`. Isso tira cookies de rastreio, vídeos relacionados e anotações — **não tira anúncio**. Quem decide se há anúncio é a monetização do vídeo. Um canal não monetizado roda limpo; fora isso, a saída é o operador estar logado com YouTube Premium naquele navegador.
 
 ## Hinário
 
-`npm run import:hymnal` grava `public/data/hymnal.json` (~50 KB): id, número e título dos 601 hinos (1 a 600 — o 587 tem as variações A e B). Nada além disso; a busca funciona offline depois da primeira carga, guardada em IndexedDB.
+Tabela `coletanea_hinos`: id, número e título dos 601 hinos (1 a 600 — o 587 tem as variações A e B), importados da API do LouvorJá. Nada além disso; a busca funciona offline depois da primeira carga, guardada em IndexedDB.
 
 ## Passagens bíblicas
 
-`npm run import:bible` grava `public/data/biblia-<versão>.json` (~4 MB cada) com quatro traduções, a partir dos releases de [damarals/biblias](https://github.com/damarals/biblias):
+Tabela `coletanea_versiculos` (cerca de 31 mil versículos por tradução), com quatro traduções importadas dos releases de [damarals/biblias](https://github.com/damarals/biblias):
 
 | Sigla | Tradução |
 | --- | --- |
@@ -91,13 +88,40 @@ O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_p
 | NTLH | Nova Tradução na Linguagem de Hoje |
 | NVI | Nova Versão Internacional |
 
-O script confere se cada livro trouxe o número certo de capítulos e descarta o que passar disso (a fonte já teve nota de rodapé mal separada virando capítulo fantasma — o próprio projeto de origem mantém uma worklist desses casos). `--only ara,arc` gera só as versões pedidas.
+A importação confere se cada livro trouxe o número certo de capítulos (tabela `coletanea_biblia_livros`) e descarta o que passar disso (a fonte já teve nota de rodapé mal separada virando capítulo fantasma — o próprio projeto de origem mantém uma worklist desses casos). O app baixa a tradução inteira uma vez (~4 MB) e guarda em IndexedDB; só baixa de novo quando a tradução for reimportada.
 
 Na coluna **Bíblia** (aba própria no celular): escolha o livro (em colunas, ordem ajustável na engrenagem), o capítulo e o(s) versículo(s) — capítulo e versículo são grades só de número, pra selecionar rápido; shift-clique estende o intervalo e o texto escolhido aparece embaixo da grade antes de confirmar. **Projetar** manda a passagem pra tela e **+** acrescenta ao roteiro. Passagem não tem som, então a projeção mostra direto, sem pedir o clique de ativação (esse clique continua valendo pra vídeo). A passagem some o vídeo da projeção enquanto está em cartaz; **Encerrar passagem** ou abrir outro hino volta ao normal.
 
 O ícone de engrenagem (mesma linha da busca, e também no cabeçalho do capítulo/versículo) reúne toda a configuração: tradução (ARA/ARC/NTLH/NVI — troca atualiza a projeção na hora, mesmo com passagem em cartaz), ordem dos livros (ordem da Bíblia ou A-Z) e a aparência da passagem na projeção (tamanho da fonte, cor de fundo e da letra). Fica salvo no navegador.
 
-Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
+Sem a tradução no banco (ou offline sem cache), a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
+
+## Acervo no Supabase
+
+Hinário, vídeos e Bíblia ficam no projeto Supabase `ei-clube-db`, em tabelas com prefixo `coletanea_` (para conviver com as tabelas de outros sistemas no mesmo banco). As migrações estão em `supabase/migrations/`.
+
+| Tabela | Conteúdo |
+| --- | --- |
+| `coletanea_hinos` | Número, título e texto de busca de cada hino |
+| `coletanea_videos` | Vídeo do YouTube de cada hino |
+| `coletanea_playlists` | Playlists lidas pela importação de vídeos |
+| `coletanea_biblia_versoes` / `coletanea_biblia_livros` | Traduções e os 66 livros (ordem e capítulos esperados) |
+| `coletanea_versiculos` | Texto da Bíblia, um versículo por linha |
+| `coletanea_revisoes` | Quando cada parte mudou — o app só baixa de novo o que mudou |
+| `coletanea_importacoes` | Histórico das importações (privado) |
+
+O app lê com a chave pública (anon), pelas funções `coletanea_hinario()`, `coletanea_mapa_videos()`, `coletanea_biblia(versão)` e `coletanea_revisao()`, que devolvem cada parte em uma chamada só. As políticas RLS só permitem leitura; ninguém grava pelo app.
+
+**Importar / atualizar** (no SQL Editor do Supabase):
+
+```sql
+select public.coletanea_importar('tudo');                 -- hinário, Bíblia e vídeos
+select public.coletanea_importar('videos');               -- só os vídeos das playlists
+select public.coletanea_importar('biblia', array['ara']); -- só uma tradução
+select * from public.coletanea_importacoes order by id desc limit 5;  -- resultado
+```
+
+Quem faz o trabalho é a Edge Function `coletanea-importar` (`supabase/functions/`), que busca as fontes e grava com a service role. A função `coletanea_importar` chama essa Edge Function pelo `pg_net`, com um token que fica só no banco, e não é exposta à chave pública.
 
 ## Configurações gerais
 
@@ -147,10 +171,9 @@ Sem o client ID, o botão não aparece.
 ## Estrutura
 
 ```
-scripts/import-hymnal.mjs   Gera o índice do hinário
-scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
-scripts/import-bible.mjs    Gera o texto da Bíblia
-scripts/playlists.json      Playlists do YouTube usadas na importação
+supabase/migrations/        Tabelas coletanea_*, políticas RLS e funções de leitura/importação
+supabase/functions/         Edge Function coletanea-importar (hinário, Bíblia, vídeos)
+src/lib/supabase.ts         Leitura do acervo no Supabase (API REST, chave pública)
 src/lib/appearance.ts       Tema claro/escuro e cores globais do app e da projeção
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
@@ -161,7 +184,7 @@ src/lib/screens.ts          Descoberta de telas e abertura da janela de projeç�
 src/lib/countdown.ts        Cronômetro regressivo (horário final, formatação, relógio)
 src/lib/draw.ts             Sorteio de número e de nome
 src/lib/googleAuth.ts       Login com o Google (Google Identity Services)
-src/lib/storage.ts          Cache do índice (IndexedDB), mapa de vídeos, preferências
+src/lib/storage.ts          Acervo do Supabase com cache em IndexedDB, preferências
 src/lib/youtube.ts          Leitura de link do YouTube
 src/lib/useLive.ts          Lado do controle do canal
 src/store/useApp.ts         Estado global (zustand)

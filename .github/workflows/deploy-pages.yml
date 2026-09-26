@@ -27,16 +27,9 @@ jobs:
 
       - run: npm ci
 
-      # Gera o índice do hinário; sem ele a busca não tem o que mostrar.
-      - run: npm run import:hymnal
-
-      # Mapa hino -> vídeo: lê playlists públicas do YouTube, então é melhor
-      # esforço (o layout da página pode mudar). Sem ele, os hinos aparecem
-      # sem vídeo em vez de travar o deploy.
-      - run: npm run import:videos || true
-
-      # Texto da Bíblia (ARA, ARC, NTLH, NVI) para a busca de passagens.
-      - run: npm run import:bible
+      # Hinário, vídeos e Bíblia vêm do Supabase em tempo de execução (tabelas
+      # coletanea_*); o build só precisa da URL e da chave pública (anon), nas
+      # variáveis do repositório (Settings → Secrets and variables → Actions → Variables).
 
       - name: Build (GitHub Pages serve em /<repo>/)
         run: npm run build
@@ -45,6 +38,8 @@ jobs:
           # Client ID do login com o Google (Settings → Secrets and variables →
           # Actions → Variables). Vazio, o botão de login simplesmente não aparece.
           VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+          VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
 
       # GitHub Pages não tem um "_redirects" como a Netlify: para abrir
       # /projecao direto (ou dar F5 nela) sem 404, o 404.html vira uma cópia

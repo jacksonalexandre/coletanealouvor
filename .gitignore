@@ -4,7 +4,5 @@ dev-dist
 .DS_Store
 *.local
 .env.local
-/public/data/
-# O mapa hino -> vídeo é curado, vale versionar.
-!/public/data/videos.json
 *.tsbuildinfo
+.env

@@ -1,5 +1,6 @@
 import { openDB, type IDBPDatabase } from "idb";
 import type { BibleVersionId } from "@/lib/bibleVersions";
+import { rpc } from "@/lib/supabase";
 import type { Bible, Hymnal, VideoMap } from "@/lib/types";
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
@@ -31,57 +32,79 @@ async function write(key: string, value: unknown) {
   }
 }
 
+/** Quando cada parte do acervo mudou no banco; uma consulta pequena por sessão. */
+let revisionsPromise: Promise<Record<string, string>> | null = null;
+function revisions() {
+  if (!revisionsPromise) {
+    revisionsPromise = rpc<Record<string, string>>("coletanea_revisao").catch((error) => {
+      revisionsPromise = null;
+      throw error;
+    });
+  }
+  return revisionsPromise;
+}
+
 /**
- * Carrega um JSON servindo primeiro o que está em IndexedDB e revalidando em
- * segundo plano — a busca abre sem esperar a rede.
+ * Serve primeiro o que está em IndexedDB e revalida em segundo plano — a busca
+ * abre sem esperar a rede. Só baixa de novo quando a revisão no banco mudou.
  */
-async function cachedJson<T>(url: string, key: string, onFresh?: (value: T) => void): Promise<T> {
-  const cached = await read<{ etag: string; value: T }>(key);
-  const revalidate = fetch(url)
-    .then(async (response) => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const etag = response.headers.get("etag") ?? "";
-      if (cached && etag && etag === cached.etag) return cached.value;
-      const value = (await response.json()) as T;
-      await write(key, { etag, value });
+async function cached<T>(
+  key: string,
+  revisionKey: string,
+  load: () => Promise<T>,
+  onFresh?: (value: T) => void,
+): Promise<T> {
+  const stored = await read<{ revision?: string; value: T }>(key);
+  const revalidate = revisions()
+    .then(async (all) => {
+      const revision = all[revisionKey] ?? "";
+      if (stored && stored.revision === revision) return stored.value;
+      const value = await load();
+      await write(key, { revision, value });
       return value;
     })
     .catch((error) => {
-      if (cached) return cached.value;
+      if (stored) return stored.value;
       throw error;
     });
 
-  if (cached) {
+  if (stored) {
     void revalidate.then((value) => {
-      if (value !== cached.value) onFresh?.(value);
+      if (value !== stored.value) onFresh?.(value);
     });
-    return cached.value;
+    return stored.value;
   }
   return revalidate;
 }
 
-/** Caminho absoluto dos dados estáticos, respeitando o base path do deploy (ex: GitHub Pages). */
-const dataUrl = (file: string) => `${import.meta.env.BASE_URL}data/${file}`;
-
 export function loadHymnal(onFresh?: (hymnal: Hymnal) => void) {
-  return cachedJson<Hymnal>(dataUrl("hymnal.json"), "hymnal", onFresh);
+  return cached("hymnal", "hinario", () => rpc<Hymnal>("coletanea_hinario"), onFresh);
 }
 
 export function loadBible(version: BibleVersionId, onFresh?: (bible: Bible) => void) {
-  return cachedJson<Bible>(dataUrl(`biblia-${version}.json`), `biblia:${version}`, onFresh);
+  return cached(
+    `biblia:${version}`,
+    `biblia:${version}`,
+    async () => {
+      const bible = await rpc<Bible | null>("coletanea_biblia", { p_versao: version });
+      // Versão ainda não importada no banco: a aba Bíblia mostra "não disponível".
+      if (!bible?.books.length) throw new Error(`Bíblia ${version} não importada`);
+      return bible;
+    },
+    onFresh,
+  );
 }
 
 /**
- * Mapa hino -> vídeo. O arquivo do projeto é a base; o que o operador cadastra
- * na mão fica por cima, no navegador dele.
+ * Mapa hino -> vídeo. O banco é a base; o que o operador cadastra na mão fica
+ * por cima, no navegador dele.
  */
 export async function loadVideoMap(): Promise<VideoMap> {
   let base: VideoMap = {};
   try {
-    const response = await fetch(dataUrl("videos.json"));
-    if (response.ok) base = (await response.json()) as VideoMap;
+    base = await cached("videos", "videos", () => rpc<VideoMap>("coletanea_mapa_videos"));
   } catch {
-    // Sem arquivo de vídeos ainda: vale só o que o operador cadastrar.
+    // Offline na primeira carga: vale só o que o operador cadastrou.
   }
   return { ...base, ...local.get<VideoMap>("videos", {}) };
 }
