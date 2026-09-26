@@ -60,7 +60,7 @@ const legacyMusic: (Extract<Content, { kind: "youtube" }> & {
 ];
 
 export type MusicCollection = { id: string; title: string; year?: number; group: string; source: string; orderKnown: boolean };
-export type MusicTrack = { id: string; title: string; collectionId: string; track?: number; tags: string[]; videoId?: string; lyrics?: boolean; availability?: string; source: string };
+export type MusicTrack = { id: string; title: string; collectionId: string; track?: number; tags: string[]; videoId?: string; lyrics?: boolean; availability?: string; source: string; alternateTitles?: string[]; recordingNote?: string; verification?: {title: string; publisher: string} };
 export const musicCollections: MusicCollection[] = catalog.collections;
 export const musicTracks: MusicTrack[] = catalog.tracks;
 const collections = new Map(musicCollections.map(c => [c.id, c]));
@@ -73,4 +73,4 @@ export const musicLibrary = [
   ...musicTracks.flatMap(track => { const content = trackContent(track); return content ? [content] : []; }),
   ...legacyMusic.filter(item => !musicTracks.some(t => t.videoId === item.videoId)),
 ];
-export const musicSearchText = (track: MusicTrack) => [track.title, collections.get(track.collectionId)?.title, track.track, ...track.tags].join(" ");
+export const musicSearchText = (track: MusicTrack) => [track.title, collections.get(track.collectionId)?.title, collections.get(track.collectionId)?.year, track.track?.toString().padStart(2,"0"), ...(track.alternateTitles??[]), ...track.tags].join(" ");

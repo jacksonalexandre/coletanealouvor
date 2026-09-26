@@ -30,8 +30,9 @@ export function MusicCatalog() {
     {query.length || album || group === "offering" ? <>
       <p className="hint my-2">{found.length} faixas · {found.filter(t=>t.videoId).length} com vídeo. Selecionar apenas prepara.</p>
       {found.slice(0,limit).map(t => { const content = trackContent(t); return <div key={t.id} className="catalog-track">
-        <div className="catalog-track-meta">{t.track ? `Faixa ${String(t.track).padStart(2,"0")} · ` : ""}{t.videoId ? t.lyrics ? "Com letra · indicação do vídeo" : "Vídeo · letra não confirmada" : "Sem vídeo verificado"}</div>
+        <div className="catalog-track-meta" title={t.verification ? `${t.verification.title} · ${t.verification.publisher}` : undefined}>{t.track ? `Faixa ${String(t.track).padStart(2,"0")} · ` : ""}{t.videoId ? t.lyrics ? "Com letra · indicação do vídeo" : "Vídeo · letra não confirmada" : "Sem vídeo verificado"}</div>
         {content ? <ContentRow item={content} /> : <div className="content-row unavailable-track"><span>{t.title}<small>{musicCollections.find(c=>c.id===t.collectionId)?.title}</small></span><span className="hint">Indisponível</span></div>}
+        {t.recordingNote && <p className="hint pb-2">{t.recordingNote}</p>}
       </div>; })}
       {!found.length && <p className="hint my-4">Nenhuma faixa encontrada. Tente o título, ano ou nome da coletânea.</p>}
       {found.length>limit && <Button variant="secondary" onClick={() => setLimit(limit+60)}>Mostrar mais faixas</Button>}

@@ -27,10 +27,10 @@ async function cached(key, run) {
   return value;
 }
 const decode = s => s.replaceAll('&quot;','"').replaceAll('&#039;',"'").replaceAll('&amp;','&').replaceAll('&lt;','<').replaceAll('&gt;','>');
-async function church(url) {
+export async function church(url) {
   return cached(url, async () => JSON.parse(decode((await (await request(url)).text()).match(/data-page="([^"]+)"/)[1])).props);
 }
-async function discography(artist) {
+export async function discography(artist) {
   const url = `https://www.cifraclub.com/${artist}/discografia.html`;
   return cached(url, async () => {
     const html = await (await request(url)).text();
@@ -51,8 +51,13 @@ async function discography(artist) {
 }
 export async function search(query) {
   return cached('search:'+query, async()=>{
-    const html = await(await request('https://www.youtube.com/results?search_query='+encodeURIComponent(query))).text();
-    const data = JSON.parse(html.match(/var ytInitialData = (.*?);<\/script>/s)[1]);
+    let match;
+    for(let attempt=0;attempt<2&&!match;attempt++) {
+      const html = await(await request('https://www.youtube.com/results?search_query='+encodeURIComponent(query))).text();
+      match=html.match(/var ytInitialData = (.*?);<\/script>/s);
+    }
+    if(!match)throw new Error('YouTube did not return search metadata; retry later');
+    const data = JSON.parse(match[1]);
     const videos=[];
     function visit(o){if(!o||typeof o!=='object')return;if(o.videoRenderer){const v=o.videoRenderer; videos.push({videoId:v.videoId,title:v.title?.runs?.map(r=>r.text).join('')||'',publisher:v.ownerText?.runs?.map(r=>r.text).join('')||'',duration:v.lengthText?.simpleText||''});}for(const v of Object.values(o))if(typeof v==='object')visit(v);}
     visit(data); return videos;
@@ -66,7 +71,7 @@ export async function verify(videoId) {
   });
 }
 const official = s => /gravadorant|gravadora novo tempo|feliz7play|adventistas|casa publicadora brasileira|nt kids|ministerio jovem|ministerio da musica|novo tom|daniel ludtke|tia ceceu|nosso amiguinho|arautos do rei|vocal livre/.test(norm(s));
-const lyric = s => /\b(letra|letras|lyrics|lyric|legendado|legenda|multimidia)\b/.test(norm(s));
+export const lyric = s => /\b(letra|letras|lyrics|lyric|lirycs|legendado|legenda|multimidia)\b/.test(norm(s));
 function match(title, videoTitle) {
   const a=norm(title).replace(/\b(medley|pt|part|vol|i|ii)\b/g,'').trim();
   const b=norm(videoTitle);
@@ -75,8 +80,33 @@ function match(title, videoTitle) {
   return words.length>=2 && words.every(w=>b.includes(w));
 }
 async function save(data) { await writeFile(output, JSON.stringify(data,null,2)+'\n'); }
+export function titleMatches(title, videoTitle) {
+  const a=norm(title.replace(/\([^)]*\)/g,'')).replace(/\bmedley\b/g,'').replace(/\s+/g,' ').trim();
+  if(a.length<=10) {
+    return videoTitle.split(/\s[-–—]\s|[|•]|\([^)]*\)/).some(part => norm(part).replace(/^\d+ /,'') === a);
+  }
+  return (` ${norm(videoTitle)} `).includes(` ${a} `);
+}
+export function contextMatches(track, collection, video) {
+  if(track.recordingNote&&track.videoId===video.videoId)return true;
+  if (track.candidateId === video.videoId) return true;
+  const text=norm(video.title+' '+video.publisher);
+  if(collection.id.startsWith('jovem'))return /ministerio jovem|cd jovem|dvd jovem|tema ja|tema jovem/.test(text) && !/hinario|adoradores/.test(text);
+  const id=collection.id;
+  if(id.startsWith('adoradores'))return text.includes(norm(collection.title));
+  if(id.startsWith('daniel-ludtke-minha'))return /minha vida e uma viagem/.test(text);
+  if(id.startsWith('daniel-ludtke'))return /daniel ludtke/.test(text);
+  if(id.startsWith('tia-ceceu'))return /tia ceceu/.test(text);
+  if(id.startsWith('turma-do'))return /nosso amiguinho|turminha/.test(text);
+  if(id.startsWith('celebra'))return /celebra (sao paulo|sp)/.test(text);
+  if(id.startsWith('ministerio-de-louvor'))return /esta escrito/.test(text);
+  if(id.startsWith('momentos-de-louvor'))return /momentos de louvor/.test(text);
+  if(id==='ate-que-ele-venha')return /publicacoes|ate que ele venha/.test(text);
+  return text.includes(norm(collection.title));
+}
 const action = process.argv[2];
 if(action==='inventory') {
+  try { await readFile(output); throw new Error('Inventory already exists. Use map/refine; never overwrite curated data.'); } catch(error) { if(error.code!=='ENOENT') throw error; }
   const data={researchedAt:date,collections:[],tracks:[]};
   const list=Object.values((await church('https://iasdermelinda.com.br/musicas/albuns')).list);
   const allowed=/Ministério (?:Jovem|JA|da Mulher|de louvor)|Adoradores|Celebra São Paulo|Momentos de louvor|Daniel Lüdtke|Acústico Novo Tempo|Semana Santa|Pôr do sol|Arautos do Rei|Prisma Brasil|Grupo Novo Tempo|Coral Jovem|Até que Ele venha|Na presença de Deus|Na trilha da conquista|Viva em Mim/;
@@ -109,6 +139,34 @@ if(action==='inventory') {
     }
   }
   await save(data); console.log('INVENTORY',data.collections.length,data.tracks.length);
+}
+if(action==='refine'||action==='repair') {
+  const data=JSON.parse(await readFile(output,'utf8'));
+  const queue=data.tracks.filter(t=>{const c=data.collections.find(c=>c.id===t.collectionId);return !t.verification || !contextMatches(t,c,t.verification) || !titleMatches(t.title,t.verification.title) || (action==='refine'&&!t.lyrics);});
+  let done=0;
+  for(const t of queue) {
+    const c=data.collections.find(c=>c.id===t.collectionId);
+    const valid=t.verification && titleMatches(t.title,t.verification.title) && contextMatches(t,c,t.verification);
+    const queryContext=c.group==='youth'?`Ministério Jovem ${c.year}`:c.title;
+    try {
+      let hits=await search(`"${t.title}" ${queryContext} "letra"`);
+      if(!hits.some(v=>lyric(v.title)&&titleMatches(t.title,v.title)&&contextMatches(t,c,v)))hits.push(...await search(`${t.title} ${queryContext} lyrics`));
+      if(t.candidateId){const v=await verify(t.candidateId);if(v)hits.push(v);}
+      const options=hits.filter(v=>titleMatches(t.title,v.title)&&contextMatches(t,c,v)&&!/(?:karaoke|tutorial|aula|completo|instrumental)/i.test(v.title)&&(!/play\s?back/i.test(v.title)||/vocal/i.test(v.title)))
+        .sort((a,b)=>((lyric(b.title)?100:0)+(official(b.publisher)?30:0))-((lyric(a.title)?100:0)+(official(a.publisher)?30:0)));
+      const replacement=options.find(v=>!valid||lyric(v.title));
+      if(replacement) {
+        const v=await verify(replacement.videoId);
+        if(v&&titleMatches(t.title,v.title)){t.videoId=v.videoId;t.lyrics=lyric(v.title);t.verification={...v,method:'youtube-oembed',lyricEvidence:t.lyrics?'title':null};t.availability='verified';}
+      } else if(!valid && t.verification) {
+        t.rejectedVideo={videoId:t.videoId,reason:'Title/collection correspondence not reliable'};
+        delete t.videoId;delete t.verification;delete t.lyrics;t.availability='unmapped';
+      }
+      t.researchedAt=date;
+    }catch(error){console.log('RETRY',t.id,error.message);}
+    if(++done%20===0){await save(data);console.log('REFINED',done,'/',queue.length,'mapped',data.tracks.filter(t=>t.videoId).length,'lyrics',data.tracks.filter(t=>t.lyrics).length);}
+  }
+  await save(data);
 }
 if(action==='map') {
   const data=JSON.parse(await readFile(output,'utf8'));
