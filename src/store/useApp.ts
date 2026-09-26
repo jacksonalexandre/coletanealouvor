@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { type Appearance, applyAppearance, DEFAULT_APPEARANCE, normalizeAppearance } from "@/lib/appearance";
 import { clampPassage, findBook } from "@/lib/bible";
 import { type BibleVersionId, DEFAULT_BIBLE_VERSION, isBibleVersion } from "@/lib/bibleVersions";
 import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
@@ -7,7 +8,9 @@ import { loadBible, loadHymnal, loadVideoMap, local } from "@/lib/storage";
 import { parseVideoId } from "@/lib/youtube";
 import type {
   BibleBook,
+  DrawResult,
   Hymn,
+  LiveDraw,
   PassageRef,
   PlayerState,
   SetlistItem,
@@ -51,6 +54,10 @@ type State = {
   passage: PassageRef | null;
   /** Aparência da passagem na projeção (fonte, fundo, cor da letra). */
   passageStyle: PassageStyle;
+  /** Cores globais do app e da projeção. */
+  appearance: Appearance;
+  /** Sorteio em cartaz na projeção. */
+  draw: LiveDraw | null;
 
   /** O que o operador quer que aconteça na projeção. */
   playing: boolean;
@@ -82,6 +89,10 @@ type Actions = {
   closePassage: () => void;
   movePassageVerses: (delta: number) => void;
   setPassageStyle: (patch: Partial<PassageStyle>) => void;
+  setAppearance: (patch: Partial<Appearance>) => void;
+  resetAppearance: () => void;
+  showDraw: (draw: DrawResult) => Promise<void>;
+  closeDraw: () => void;
 
   play: () => Promise<void>;
   pause: () => void;
@@ -136,6 +147,10 @@ function normalizeSetlist(raw: unknown): SetlistItem[] {
   });
 }
 
+// Aplica as cores antes do primeiro render, para não piscar o tema padrão.
+const initialAppearance = normalizeAppearance(local.get<unknown>("appearance", DEFAULT_APPEARANCE));
+if (typeof document !== "undefined") applyAppearance(initialAppearance);
+
 export const useApp = create<State & Actions>((set, get) => ({
   hymns: [],
   loading: true,
@@ -157,6 +172,8 @@ export const useApp = create<State & Actions>((set, get) => ({
   liveHymnId: null,
   passage: null,
   passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
+  appearance: initialAppearance,
+  draw: null,
 
   playing: false,
   blank: false,
@@ -228,6 +245,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       liveHymnId: get().hymnId,
       activeUid: get().hymnUid,
       passage: null,
+      draw: null,
       playing: false,
       blank: false,
       seek: null,
@@ -258,6 +276,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       passage: clampPassage(get().bible, ref) ?? ref,
       activeUid: itemUid,
       liveHymnId: null,
+      draw: null,
       playing: false,
       blank: false,
     });
@@ -281,6 +300,29 @@ export const useApp = create<State & Actions>((set, get) => ({
     const passageStyle = { ...get().passageStyle, ...patch };
     local.set("passageStyle", passageStyle);
     set({ passageStyle });
+  },
+
+  setAppearance(patch) {
+    const appearance = { ...get().appearance, ...patch };
+    local.set("appearance", appearance);
+    applyAppearance(appearance);
+    set({ appearance });
+  },
+
+  resetAppearance() {
+    local.set("appearance", DEFAULT_APPEARANCE);
+    applyAppearance(DEFAULT_APPEARANCE);
+    set({ appearance: DEFAULT_APPEARANCE });
+  },
+
+  async showDraw(draw) {
+    set({ draw: { ...draw, nonce: Date.now() }, blank: false });
+    // Sortear é um gesto do operador, então dá para abrir a projeção se estiver fechada.
+    if (!get().displayOpen) await get().openDisplay();
+  },
+
+  closeDraw() {
+    set({ draw: null });
   },
 
   async play() {

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createChannel } from "@/lib/channel";
+import { randomIndex } from "@/lib/draw";
 import { emptyLive } from "@/lib/useLive";
-import type { LiveState, PlayerState } from "@/lib/types";
+import type { LiveDraw, LiveState, PlayerState } from "@/lib/types";
 
 type YTPlayer = {
   loadVideoById: (id: string) => void;
@@ -255,10 +256,15 @@ export default function Display() {
     report({ activated: true });
   };
 
-  const covered = live.blank || (!live.videoId && !live.passage);
+  const covered = live.blank || (!live.videoId && !live.passage && !live.draw);
+  const background = live.appearance.displayBackground;
 
   return (
-    <div className="relative h-dvh w-screen overflow-hidden bg-black" onDoubleClick={toggleFullscreen}>
+    <div
+      className="relative h-dvh w-screen overflow-hidden"
+      style={{ background }}
+      onDoubleClick={toggleFullscreen}
+    >
       <div className="absolute inset-0 [&>iframe]:size-full">
         <div ref={mountRef} className="size-full" />
       </div>
@@ -290,18 +296,24 @@ export default function Display() {
         </div>
       )}
 
-      {/* Tela preta por cima: vídeo/passagem continuam por baixo. */}
+      {live.draw && !live.blank && (
+        <DrawScreen draw={live.draw} background={background} accent={live.appearance.accent} />
+      )}
+
+      {/* Tela apagada por cima: vídeo/passagem continuam por baixo. */}
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-200 ${
+        className={`absolute inset-0 transition-opacity duration-200 ${
           covered ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
+        style={{ background }}
       />
 
-      {/* Passagem não tem som: mostra direto, sem pedir o clique de ativação. */}
-      {!activated && !live.passage && (
+      {/* Passagem e sorteio não têm som: mostram direto, sem pedir o clique de ativação. */}
+      {!activated && !live.passage && !live.draw && (
         <button
           onClick={activate}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black text-ink-200"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-ink-200"
+          style={{ background }}
         >
           <span className="text-2xl font-semibold">Clique para ativar o som</span>
           <span className="text-sm text-ink-400">
@@ -319,6 +331,61 @@ export default function Display() {
           Tela de projeção pronta
         </div>
       )}
+    </div>
+  );
+}
+
+const ROLL_MS = 1800;
+
+/** Resultado do sorteio em tela cheia, depois de uma "roleta" rápida de valores. */
+function DrawScreen({ draw, background, accent }: { draw: LiveDraw; background: string; accent: string }) {
+  const [shown, setShown] = useState(draw.value);
+  const [rolling, setRolling] = useState(false);
+
+  useEffect(() => {
+    const candidate = () =>
+      draw.kind === "number"
+        ? String(draw.min + randomIndex(draw.max - draw.min + 1))
+        : draw.names[randomIndex(draw.names.length)];
+
+    setRolling(true);
+    const started = performance.now();
+    let timer = 0;
+    // Começa rápido e vai desacelerando até parar no resultado.
+    const tick = () => {
+      const elapsed = performance.now() - started;
+      if (elapsed >= ROLL_MS) {
+        setShown(draw.value);
+        setRolling(false);
+        return;
+      }
+      setShown(candidate());
+      timer = window.setTimeout(tick, 50 + (elapsed / ROLL_MS) ** 2 * 250);
+    };
+    tick();
+    return () => clearTimeout(timer);
+    // O nonce muda a cada sorteio; o resto do objeto vem junto.
+  }, [draw.nonce]);
+
+  const long = draw.kind === "name" && shown.length > 14;
+
+  return (
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-16 text-center"
+      style={{ background }}
+    >
+      <p className="text-3xl font-semibold tracking-[0.3em] text-white/60 uppercase">Sorteio</p>
+      <p
+        key={rolling ? "rolling" : `result-${draw.nonce}`}
+        className={`max-w-full font-bold break-words tabular-nums ${rolling ? "opacity-70" : "animate-[draw-pop_450ms_ease-out]"}`}
+        style={{
+          color: accent,
+          fontSize: draw.kind === "number" ? "min(40vh, 30vw)" : long ? "min(14vh, 8vw)" : "min(22vh, 12vw)",
+          lineHeight: 1.05,
+        }}
+      >
+        {shown}
+      </p>
     </div>
   );
 }

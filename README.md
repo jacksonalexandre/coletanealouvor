@@ -87,6 +87,27 @@ O ícone de engrenagem (mesma linha da busca, e também no cabeçalho do capítu
 
 Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
 
+## Configurações gerais
+
+A engrenagem no topo (ao lado do sorteio) reúne as cores globais, salvas no navegador:
+
+| Opção | Onde aparece |
+| --- | --- |
+| Cor de destaque | Botões, seleção, indicador de "no ar" — no controle e no resultado do sorteio na projeção |
+| Fundo do app | Tela de controle (cabeçalho, campos e bordas acompanham em tons mais claros) |
+| Fundo da projeção | Projeção sem vídeo, tela apagada (`B`) e sorteio |
+
+A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta ao tema original. As cores foram pensadas para fundos escuros: com um fundo claro, o texto do controle perde contraste.
+
+## Sorteio
+
+O ícone de dados no topo abre o sorteio, em dois modos:
+
+- **Número**: sorteia entre o número inicial (1 por padrão) e o final (50 por padrão).
+- **Nome**: cole ou digite os nomes, um por linha; linhas vazias são ignoradas e os espaços nas pontas, descartados.
+
+**Não repetir** (ligado por padrão) tira da roda o que já saiu; a lista "Já sorteados" mostra o histórico e **Recomeçar** zera. Mudar o intervalo ou a lista também recomeça. Com **Mostrar na projeção** ligado, cada sorteio vai para a tela da igreja com uma roleta rápida antes do resultado (abrindo a projeção se estiver fechada); **Tirar sorteio da projeção** volta ao que estava por baixo. Pôr um hino ou passagem no ar também encerra o sorteio. O sorteio usa `crypto.getRandomValues`, sem viés.
+
 ## Login com o Google
 
 O canto direito do topo tem o botão **Fazer login com o Google** (Google Identity Services). Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
@@ -109,12 +130,14 @@ scripts/import-hymnal.mjs   Gera o índice do hinário
 scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
 scripts/import-bible.mjs    Gera o texto da Bíblia
 scripts/playlists.json      Playlists do YouTube usadas na importação
+src/lib/appearance.ts       Cores globais (destaque, fundo do app e da projeção)
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
 src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeção
 src/lib/channel.ts          Canal controle <-> projeção
 src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
+src/lib/draw.ts             Sorteio de número e de nome
 src/lib/googleAuth.ts       Login com o Google (Google Identity Services)
 src/lib/storage.ts          Cache do índice (IndexedDB), mapa de vídeos, preferências
 src/lib/youtube.ts          Leitura de link do YouTube

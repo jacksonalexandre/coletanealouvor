@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { passageReference, passageVerses } from "@/lib/bible";
 import { createChannel, type ChannelMessage } from "@/lib/channel";
+import { DEFAULT_APPEARANCE } from "@/lib/appearance";
 import { DEFAULT_PASSAGE_STYLE } from "@/lib/passageStyle";
 import { useApp } from "@/store/useApp";
 import type { LiveState } from "@/lib/types";
@@ -14,6 +15,8 @@ export const emptyLive: LiveState = {
   seek: null,
   passage: null,
   passageStyle: DEFAULT_PASSAGE_STYLE,
+  appearance: DEFAULT_APPEARANCE,
+  draw: null,
   updatedAt: 0,
 };
 
@@ -29,6 +32,8 @@ export function useControlLink() {
   const passage = useApp((state) => state.passage);
   const bible = useApp((state) => state.bible);
   const passageStyle = useApp((state) => state.passageStyle);
+  const appearance = useApp((state) => state.appearance);
+  const draw = useApp((state) => state.draw);
 
   const setPlayer = useApp((state) => state.setPlayer);
   const setDisplayOpen = useApp((state) => state.setDisplayOpen);
@@ -53,9 +58,11 @@ export function useControlLink() {
       seek,
       passage: passageLive,
       passageStyle,
+      appearance,
+      draw,
       updatedAt: Date.now(),
     }),
-    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle],
+    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle, appearance, draw],
   );
 
   const stateRef = useRef(state);
