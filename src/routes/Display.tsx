@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createChannel } from "@/lib/channel";
+import { formatClock, formatRemaining, useNow } from "@/lib/countdown";
 import { randomIndex } from "@/lib/draw";
 import { emptyLive } from "@/lib/useLive";
-import type { LiveDraw, LiveState, PlayerState } from "@/lib/types";
+import type { LiveCountdown, LiveDraw, LiveState, PlayerState } from "@/lib/types";
 
 type YTPlayer = {
   loadVideoById: (id: string) => void;
@@ -256,7 +257,7 @@ export default function Display() {
     report({ activated: true });
   };
 
-  const covered = live.blank || (!live.videoId && !live.passage && !live.draw);
+  const covered = live.blank || (!live.videoId && !live.passage && !live.draw && !live.countdown);
   const background = live.appearance.displayBackground;
 
   return (
@@ -300,6 +301,10 @@ export default function Display() {
         <DrawScreen draw={live.draw} background={background} accent={live.appearance.accent} />
       )}
 
+      {live.countdown && !live.blank && (
+        <CountdownScreen countdown={live.countdown} background={background} accent={live.appearance.accent} />
+      )}
+
       {/* Tela apagada por cima: vídeo/passagem continuam por baixo. */}
       <div
         className={`absolute inset-0 transition-opacity duration-200 ${
@@ -308,8 +313,8 @@ export default function Display() {
         style={{ background }}
       />
 
-      {/* Passagem e sorteio não têm som: mostram direto, sem pedir o clique de ativação. */}
-      {!activated && !live.passage && !live.draw && (
+      {/* Passagem, sorteio e cronômetro não têm som: mostram direto, sem pedir o clique de ativação. */}
+      {!activated && !live.passage && !live.draw && !live.countdown && (
         <button
           onClick={activate}
           className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-ink-200"
@@ -386,6 +391,44 @@ function DrawScreen({ draw, background, accent }: { draw: LiveDraw; background: 
       >
         {shown}
       </p>
+    </div>
+  );
+}
+
+/** Contagem regressiva grande até o horário final, com o relógio atual pequeno embaixo. */
+function CountdownScreen({
+  countdown,
+  background,
+  accent,
+}: {
+  countdown: LiveCountdown;
+  background: string;
+  accent: string;
+}) {
+  const now = useNow();
+  const remaining = countdown.endsAt - now.getTime();
+  const finished = remaining <= 0;
+  const text = formatRemaining(remaining);
+
+  return (
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-16 text-center"
+      style={{ background }}
+    >
+      {countdown.label && (
+        <p className="max-w-full text-[min(6vh,4vw)] font-semibold break-words text-white/75">{countdown.label}</p>
+      )}
+      <p
+        className={`font-bold tabular-nums ${finished ? "animate-pulse" : ""}`}
+        style={{
+          color: accent,
+          fontSize: text.length > 5 ? "min(30vh, 17vw)" : "min(38vh, 24vw)",
+          lineHeight: 1,
+        }}
+      >
+        {text}
+      </p>
+      <p className="text-[min(5vh,3vw)] font-medium text-white/55 tabular-nums">{formatClock(now)}</p>
     </div>
   );
 }

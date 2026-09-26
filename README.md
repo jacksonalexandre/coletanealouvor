@@ -99,6 +99,12 @@ A engrenagem no topo (ao lado do sorteio) reúne as cores globais, salvas no nav
 
 A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta ao tema original. As cores foram pensadas para fundos escuros: com um fundo claro, o texto do controle perde contraste.
 
+## Cronômetro
+
+O ícone de cronômetro no topo abre a contagem regressiva até um **horário final** (ex: o início do culto). Digite o horário ou use os atalhos **+5/+10/+15/+30 min**; se o horário já passou hoje, vale o de amanhã (o painel avisa). O texto acima do contador é opcional (ex: "O culto começa em").
+
+**Iniciar na projeção** mostra o contador grande — `MM:SS`, ou `H:MM:SS` quando falta mais de uma hora — com o relógio atual pequeno embaixo, nas cores das configurações gerais. Ao zerar, o `00:00` fica piscando até o operador tirar. Mudou o horário ou o texto com o cronômetro no ar? **Atualizar na projeção**. Cada janela conta pelo próprio relógio, então o contador não depende do canal para andar. Pôr um hino, passagem ou sorteio no ar tira o cronômetro.
+
 ## Sorteio
 
 O ícone de dados no topo abre o sorteio, em dois modos:
@@ -137,6 +143,7 @@ src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeç�
 src/lib/channel.ts          Canal controle <-> projeção
 src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
+src/lib/countdown.ts        Cronômetro regressivo (horário final, formatação, relógio)
 src/lib/draw.ts             Sorteio de número e de nome
 src/lib/googleAuth.ts       Login com o Google (Google Identity Services)
 src/lib/storage.ts          Cache do índice (IndexedDB), mapa de vídeos, preferências

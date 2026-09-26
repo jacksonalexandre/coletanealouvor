@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MonitorPlay, MonitorX } from "lucide-react";
 import { AppearanceSettings } from "@/components/AppearanceSettings";
+import { Countdown } from "@/components/Countdown";
 import { GoogleLogin } from "@/components/GoogleLogin";
 import { Raffle } from "@/components/Raffle";
 import { Button } from "@/components/ui/button";
@@ -83,6 +84,7 @@ export function TopBar() {
         </Button>
       )}
 
+      <Countdown />
       <Raffle />
       <AppearanceSettings />
       <GoogleLogin />

@@ -10,6 +10,7 @@ import type {
   BibleBook,
   DrawResult,
   Hymn,
+  LiveCountdown,
   LiveDraw,
   PassageRef,
   PlayerState,
@@ -58,6 +59,8 @@ type State = {
   appearance: Appearance;
   /** Sorteio em cartaz na projeção. */
   draw: LiveDraw | null;
+  /** Cronômetro regressivo em cartaz na projeção. */
+  countdown: LiveCountdown | null;
 
   /** O que o operador quer que aconteça na projeção. */
   playing: boolean;
@@ -93,6 +96,8 @@ type Actions = {
   resetAppearance: () => void;
   showDraw: (draw: DrawResult) => Promise<void>;
   closeDraw: () => void;
+  showCountdown: (countdown: LiveCountdown) => Promise<void>;
+  closeCountdown: () => void;
 
   play: () => Promise<void>;
   pause: () => void;
@@ -174,6 +179,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
   appearance: initialAppearance,
   draw: null,
+  countdown: null,
 
   playing: false,
   blank: false,
@@ -246,6 +252,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       activeUid: get().hymnUid,
       passage: null,
       draw: null,
+      countdown: null,
       playing: false,
       blank: false,
       seek: null,
@@ -277,6 +284,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       activeUid: itemUid,
       liveHymnId: null,
       draw: null,
+      countdown: null,
       playing: false,
       blank: false,
     });
@@ -316,13 +324,22 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   async showDraw(draw) {
-    set({ draw: { ...draw, nonce: Date.now() }, blank: false });
+    set({ draw: { ...draw, nonce: Date.now() }, countdown: null, blank: false });
     // Sortear é um gesto do operador, então dá para abrir a projeção se estiver fechada.
     if (!get().displayOpen) await get().openDisplay();
   },
 
   closeDraw() {
     set({ draw: null });
+  },
+
+  async showCountdown(countdown) {
+    set({ countdown, draw: null, blank: false });
+    if (!get().displayOpen) await get().openDisplay();
+  },
+
+  closeCountdown() {
+    set({ countdown: null });
   },
 
   async play() {

@@ -88,7 +88,17 @@ export type LiveState = {
   appearance: Appearance;
   /** Resultado de sorteio em cartaz; fica por cima do vídeo/passagem. */
   draw: LiveDraw | null;
+  /** Contagem regressiva em cartaz; fica por cima do vídeo/passagem. */
+  countdown: LiveCountdown | null;
   updatedAt: number;
+};
+
+/** Cronômetro regressivo até um horário; cada janela calcula o restante pelo próprio relógio. */
+export type LiveCountdown = {
+  /** Horário final, em ms desde a época. */
+  endsAt: number;
+  /** Texto opcional acima do contador (ex: "O culto começa em"). */
+  label: string;
 };
 
 /** Resultado de um sorteio; o intervalo/lista alimenta a animação de roleta na projeção. */

@@ -17,6 +17,7 @@ export const emptyLive: LiveState = {
   passageStyle: DEFAULT_PASSAGE_STYLE,
   appearance: DEFAULT_APPEARANCE,
   draw: null,
+  countdown: null,
   updatedAt: 0,
 };
 
@@ -34,6 +35,7 @@ export function useControlLink() {
   const passageStyle = useApp((state) => state.passageStyle);
   const appearance = useApp((state) => state.appearance);
   const draw = useApp((state) => state.draw);
+  const countdown = useApp((state) => state.countdown);
 
   const setPlayer = useApp((state) => state.setPlayer);
   const setDisplayOpen = useApp((state) => state.setDisplayOpen);
@@ -60,9 +62,10 @@ export function useControlLink() {
       passageStyle,
       appearance,
       draw,
+      countdown,
       updatedAt: Date.now(),
     }),
-    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle, appearance, draw],
+    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle, appearance, draw, countdown],
   );
 
   const stateRef = useRef(state);
