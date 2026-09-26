@@ -38,6 +38,12 @@ Clicar (uma vez) num hino ou passagem só seleciona, pro painel mostrar o hino/e
 
 A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O controle publica o que quer (vídeo, tocar/pausar, volume, posição, tela apagada) e a projeção devolve o estado real do player.
 
+### No celular: toca no próprio aparelho
+
+No celular (e tablet) não há segunda tela, então o app **não abre a janela de projeção**: a projeção fica embutida no topo da aba **Ao vivo** e **Tocar** (ou duplo toque num hino) toca ali mesmo. Quando algo entra no ar — hino, passagem, sorteio, cronômetro — o app troca sozinho para essa aba. Trocar de aba depois não para o som. Toque duas vezes no quadro para tela cheia.
+
+A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **Configurações gerais → Tocar neste aparelho** — dá para ligar no desktop ou desligar num tablet ligado a um projetor. O canal é o mesmo `BroadcastChannel`, que também entrega mensagens dentro da própria página. Embutido, o player mostra os botões do YouTube: no iPhone o Safari só deixa começar um vídeo com som a partir de um toque dentro do próprio vídeo; se **Tocar** não arrancar, toque no play do quadro.
+
 **Na primeira vez, clique uma vez na janela de projeção.** O navegador não deixa um vídeo com som começar sozinho em uma janela onde ninguém clicou. Esse clique também entra em tela cheia e vale para o culto inteiro.
 
 ### Atalhos de teclado
@@ -51,6 +57,12 @@ A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O 
 | `F` (na projeção) | Tela cheia |
 
 As teclas funcionam nas duas janelas.
+
+## Link avulso do YouTube
+
+Para um vídeo fora do hinário (abertura, clipe, vinheta), use o ícone de **link** no topo: cole o link (normal, `youtu.be`, `/shorts/`, `/live/`…) e escolha **Projetar agora** — vai para a projeção e já toca — ou **Na programação**. O título vem do YouTube quando possível; dá para digitar outro.
+
+Também dá para colar o link direto no campo de etapa da programação: em vez de uma etapa de texto, entra um vídeo. Na programação, o vídeo se comporta como um hino: duplo clique toca, e `→`/`←` passam por ele. No painel **Ao vivo** ele aparece como "No ar · link", com os mesmos controles (tocar/pausar, linha do tempo, apagar tela, volume) e **Encerrar vídeo**. Clicar num hino enquanto o link está no ar só seleciona; **Tocar** então troca para o hino.
 
 ## Vídeos dos hinos
 
@@ -89,15 +101,18 @@ Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — s
 
 ## Configurações gerais
 
-A engrenagem no topo (ao lado do sorteio) reúne as cores globais, salvas no navegador:
+A engrenagem no topo reúne a reprodução ("Tocar neste aparelho", ver acima) e as cores, salvas no navegador:
 
 | Opção | Onde aparece |
 | --- | --- |
-| Cor de destaque | Botões, seleção, indicador de "no ar" — no controle e no resultado do sorteio na projeção |
-| Fundo do app | Tela de controle (cabeçalho, campos e bordas acompanham em tons mais claros) |
-| Fundo da projeção | Projeção sem vídeo, tela apagada (`B`) e sorteio |
+| Tema (Escuro / Claro) | Tela de controle inteira; trocar o tema volta o fundo e a fonte do app para os do tema |
+| Cor de destaque | Botões, seleção, indicador de "no ar" — no controle e no número/contador da projeção |
+| Fundo do app | Tela de controle |
+| Cor da fonte | Textos do controle; os tons mais fracos (legendas, bordas, campos) são misturas do fundo com a fonte |
+| Fundo da projeção | Projeção sem vídeo, tela apagada (`B`), sorteio e cronômetro |
+| Fonte da projeção | Textos do sorteio e do cronômetro, e o relógio |
 
-A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta ao tema original. As cores foram pensadas para fundos escuros: com um fundo claro, o texto do controle perde contraste.
+A aparência das passagens bíblicas (fonte, fundo e letra) continua na engrenagem da coluna Bíblia. **Restaurar cores padrão** volta às cores do tema atual.
 
 ## Cronômetro
 
@@ -136,7 +151,7 @@ scripts/import-hymnal.mjs   Gera o índice do hinário
 scripts/import-videos.mjs   Gera o mapa hino -> vídeo a partir das playlists
 scripts/import-bible.mjs    Gera o texto da Bíblia
 scripts/playlists.json      Playlists do YouTube usadas na importação
-src/lib/appearance.ts       Cores globais (destaque, fundo do app e da projeção)
+src/lib/appearance.ts       Tema claro/escuro e cores globais do app e da projeção
 src/lib/bible.ts            Recorte e referência de passagens bíblicas
 src/lib/bibleVersions.ts    Catálogo das traduções disponíveis (ARA, ARC, NTLH, NVI)
 src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeção

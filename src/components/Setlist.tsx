@@ -15,12 +15,13 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { BookOpen, GripVertical, ListPlus, Trash2 } from "lucide-react";
+import { BookOpen, Film, GripVertical, ListPlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { passageReference } from "@/lib/bible";
 import { SETLIST_TEMPLATES } from "@/lib/templates";
 import { cn } from "@/lib/utils";
+import { DEFAULT_VIDEO_TITLE, fetchVideoTitle, looksLikeYouTube, parseVideoId } from "@/lib/youtube";
 import { useApp } from "@/store/useApp";
 import type { SetlistItem } from "@/lib/types";
 
@@ -32,6 +33,7 @@ export function Setlist() {
   const clear = useApp((state) => state.clearSetlist);
   const loadTemplate = useApp((state) => state.loadSetlistTemplate);
   const addLabel = useApp((state) => state.addLabelToSetlist);
+  const addVideo = useApp((state) => state.addVideoToSetlist);
 
   const [labelInput, setLabelInput] = useState("");
 
@@ -45,10 +47,13 @@ export function Setlist() {
     reorder(arrayMove(setlist, from, to));
   };
 
-  const submitLabel = () => {
+  const submitLabel = async () => {
     if (!labelInput.trim()) return;
-    addLabel(labelInput);
+    // Link do YouTube colado no campo vira um vídeo na programação, não uma etapa.
+    const videoId = looksLikeYouTube(labelInput) ? parseVideoId(labelInput) : null;
     setLabelInput("");
+    if (videoId) addVideo({ videoId, title: (await fetchVideoTitle(videoId)) ?? DEFAULT_VIDEO_TITLE });
+    else addLabel(labelInput);
   };
 
   return (
@@ -82,15 +87,15 @@ export function Setlist() {
           <Input
             value={labelInput}
             onChange={(event) => setLabelInput(event.target.value)}
-            onKeyDown={(event) => event.key === "Enter" && submitLabel()}
-            placeholder="Etapa da programação (ex: Boas-vindas)"
+            onKeyDown={(event) => event.key === "Enter" && void submitLabel()}
+            placeholder="Etapa ou link do YouTube"
             className="h-8 text-xs"
           />
           <Button
             variant="secondary"
             size="icon"
             className="h-8 w-8 shrink-0"
-            onClick={submitLabel}
+            onClick={() => void submitLabel()}
             disabled={!labelInput.trim()}
             aria-label="Adicionar etapa ao roteiro"
           >
@@ -155,6 +160,7 @@ function Row({ item, index, active }: { item: SetlistItem; index: number; active
       {item.type === "hymn" && <HymnRow item={item} active={active} />}
       {item.type === "passage" && <PassageRow item={item} active={active} />}
       {item.type === "label" && <LabelRow item={item} />}
+      {item.type === "video" && <VideoRow item={item} active={active} />}
       <Button
         variant="ghost"
         size="icon"
@@ -215,6 +221,22 @@ function PassageRow({
     >
       <BookOpen className="mr-2 inline size-3.5 shrink-0 text-brand-400" />
       {bible.length ? passageReference(bible, ref) : "Passagem"}
+    </button>
+  );
+}
+
+/** Vídeo avulso do YouTube; duplo clique projeta e toca. */
+function VideoRow({ item, active }: { item: Extract<SetlistItem, { type: "video" }>; active: boolean }) {
+  const playLink = useApp((state) => state.playLink);
+
+  return (
+    <button
+      onDoubleClick={() => void playLink({ videoId: item.videoId, title: item.title }, item.uid)}
+      title="Duplo clique: abre a projeção e já toca"
+      className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
+    >
+      <Film className="mr-2 inline size-3.5 shrink-0 text-brand-400" />
+      {item.title}
     </button>
   );
 }

@@ -25,7 +25,10 @@ export const emptyLive: LiveState = {
 export function useControlLink() {
   // O que está no ar é liveHymnId, não o que o operador tem selecionado/olhando agora.
   const hymn = useApp((state) => state.hymn(state.liveHymnId));
-  const videoId = useApp((state) => state.videoOf(state.liveHymnId));
+  const hymnVideoId = useApp((state) => state.videoOf(state.liveHymnId));
+  // Vídeo avulso (link colado) tem prioridade: os dois nunca estão no ar juntos.
+  const liveLink = useApp((state) => state.liveLink);
+  const videoId = liveLink?.videoId ?? hymnVideoId;
   const blank = useApp((state) => state.blank);
   const playing = useApp((state) => state.playing);
   const volume = useApp((state) => state.volume);
@@ -53,7 +56,7 @@ export function useControlLink() {
   const state = useMemo<LiveState>(
     () => ({
       videoId,
-      title: hymn ? `${hymn.title} (${hymn.number})` : "",
+      title: liveLink ? liveLink.title : hymn ? `${hymn.title} (${hymn.number})` : "",
       blank,
       playing,
       volume,
@@ -65,7 +68,7 @@ export function useControlLink() {
       countdown,
       updatedAt: Date.now(),
     }),
-    [videoId, hymn, blank, playing, volume, seek, passageLive, passageStyle, appearance, draw, countdown],
+    [videoId, liveLink, hymn, blank, playing, volume, seek, passageLive, passageStyle, appearance, draw, countdown],
   );
 
   const stateRef = useRef(state);

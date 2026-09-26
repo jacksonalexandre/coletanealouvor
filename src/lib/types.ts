@@ -60,7 +60,17 @@ export type SetlistItem =
       uid: string;
       type: "label";
       text: string;
-    };
+    }
+  | ({
+      uid: string;
+      type: "video";
+    } & LiveLink);
+
+/** Vídeo avulso do YouTube (fora do hinário), colado pelo operador. */
+export type LiveLink = {
+  videoId: string;
+  title: string;
+};
 
 /** Modelo pronto de programação (culto de sábado, escola sabatina) para montar o roteiro. */
 export type SetlistTemplate = {

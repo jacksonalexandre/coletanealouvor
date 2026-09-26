@@ -3,6 +3,7 @@ import { MonitorPlay, MonitorX } from "lucide-react";
 import { AppearanceSettings } from "@/components/AppearanceSettings";
 import { Countdown } from "@/components/Countdown";
 import { GoogleLogin } from "@/components/GoogleLogin";
+import { LinkPlayer } from "@/components/LinkPlayer";
 import { Raffle } from "@/components/Raffle";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@/assets/logo.png";
@@ -17,6 +18,7 @@ export function TopBar() {
   const closeDisplay = useApp((state) => state.closeDisplay);
   const screenKey = useApp((state) => state.screenKey);
   const setScreenKey = useApp((state) => state.setScreenKey);
+  const inlinePlayer = useApp((state) => state.inlinePlayer);
   const [screens, setScreens] = useState<ScreenInfo[]>([]);
   const [hint, setHint] = useState<string | null>(null);
 
@@ -39,13 +41,14 @@ export function TopBar() {
   return (
     <header className="flex flex-wrap items-center gap-2 border-b border-ink-800 bg-ink-900 px-3 py-2">
       <h1 className="mr-auto flex items-center gap-2 text-sm font-semibold text-ink-200">
-        <img src={logoUrl} alt="" className="h-7 w-auto" />
+        {/* O logo é branco: no tema claro (sem .dark), inverte para escuro. */}
+        <img src={logoUrl} alt="" className="h-7 w-auto invert dark:invert-0" />
         <span>
           Coletânea <span className="text-brand-400">de Louvor</span>
         </span>
       </h1>
 
-      {screens.length > 1 && (
+      {!inlinePlayer && screens.length > 1 && (
         <select
           value={screenKey ?? ""}
           onChange={(event) => setScreenKey(event.target.value || null)}
@@ -60,30 +63,36 @@ export function TopBar() {
         </select>
       )}
 
-      <span
-        className={cn(
-          "hidden items-center gap-1.5 text-xs sm:flex",
-          displayOpen ? "text-brand-400" : "text-ink-400",
-        )}
-      >
-        <span
-          className={cn("size-2 rounded-full", displayOpen ? "bg-brand-500" : "bg-ink-600")}
-        />
-        {displayOpen ? "Projeção conectada" : "Projeção fechada"}
-      </span>
+      {/* Tocando no aparelho não há janela de projeção para abrir/fechar. */}
+      {!inlinePlayer && (
+        <>
+          <span
+            className={cn(
+              "hidden items-center gap-1.5 text-xs sm:flex",
+              displayOpen ? "text-brand-400" : "text-ink-400",
+            )}
+          >
+            <span
+              className={cn("size-2 rounded-full", displayOpen ? "bg-brand-500" : "bg-ink-600")}
+            />
+            {displayOpen ? "Projeção conectada" : "Projeção fechada"}
+          </span>
 
-      {displayOpen && displayWindow ? (
-        <Button variant="outline" onClick={closeDisplay}>
-          <MonitorX className="size-4" />
-          Fechar projeção
-        </Button>
-      ) : (
-        <Button onClick={open}>
-          <MonitorPlay className="size-4" />
-          Abrir projeção
-        </Button>
+          {displayOpen && displayWindow ? (
+            <Button variant="outline" onClick={closeDisplay}>
+              <MonitorX className="size-4" />
+              Fechar projeção
+            </Button>
+          ) : (
+            <Button onClick={open}>
+              <MonitorPlay className="size-4" />
+              Abrir projeção
+            </Button>
+          )}
+        </>
       )}
 
+      <LinkPlayer />
       <Countdown />
       <Raffle />
       <AppearanceSettings />

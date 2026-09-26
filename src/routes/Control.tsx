@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookOpen, ListMusic, Radio, Search } from "lucide-react";
 import { BibleSearch } from "@/components/BibleSearch";
 import { HymnSearch } from "@/components/HymnSearch";
+import { InlinePlayer } from "@/components/InlinePlayer";
 import { Setlist } from "@/components/Setlist";
 import { TopBar } from "@/components/TopBar";
 import { Transport } from "@/components/Transport";
@@ -19,6 +20,8 @@ export default function Control() {
   const error = useApp((state) => state.error);
   const boot = useApp((state) => state.boot);
   const [tab, setTab] = useState<Tab>("hinos");
+  const inlinePlayer = useApp((state) => state.inlinePlayer);
+  useFollowLive(inlinePlayer, () => setTab("ao-vivo"));
 
   useEffect(() => {
     void boot();
@@ -54,8 +57,12 @@ export default function Control() {
           <Setlist />
         </section>
 
-        <section className={cn("min-h-0", tab === "ao-vivo" ? "block" : "hidden lg:block")}>
-          <Transport />
+        {/* A projeção embutida continua montada nas outras abas: o som não para ao trocar de aba. */}
+        <section className={cn("min-h-0 flex-col", tab === "ao-vivo" ? "flex" : "hidden lg:flex")}>
+          {inlinePlayer && <InlinePlayer />}
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <Transport />
+          </div>
         </section>
       </main>
 
@@ -120,6 +127,27 @@ function Splash({ message }: { message: string }) {
       {message}
     </div>
   );
+}
+
+/**
+ * Tocando no aparelho, o vídeo/passagem só aparece na aba "Ao vivo". Quando algo
+ * entra no ar (Tocar, Projetar, sorteio, cronômetro), vai para ela sozinho.
+ */
+function useFollowLive(enabled: boolean, show: () => void) {
+  const showRef = useRef(show);
+  showRef.current = show;
+
+  useEffect(() => {
+    if (!enabled) return;
+    return useApp.subscribe((state, previous) => {
+      const started =
+        (state.playing && !previous.playing) ||
+        (state.passage !== null && state.passage !== previous.passage && !previous.passage) ||
+        (state.draw !== null && state.draw !== previous.draw) ||
+        (state.countdown !== null && state.countdown !== previous.countdown);
+      if (started) showRef.current();
+    });
+  }, [enabled]);
 }
 
 function useShortcuts() {
