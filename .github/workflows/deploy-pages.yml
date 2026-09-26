@@ -42,6 +42,9 @@ jobs:
         run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          # Client ID do login com o Google (Settings → Secrets and variables →
+          # Actions → Variables). Vazio, o botão de login simplesmente não aparece.
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
 
       # GitHub Pages não tem um "_redirects" como a Netlify: para abrir
       # /projecao direto (ou dar F5 nela) sem 404, o 404.html vira uma cópia

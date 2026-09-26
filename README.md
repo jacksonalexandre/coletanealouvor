@@ -87,6 +87,21 @@ O ícone de engrenagem (mesma linha da busca, e também no cabeçalho do capítu
 
 Sem os arquivos gerados, a busca de hinos continua funcionando normalmente — só a aba Bíblia fica indisponível.
 
+## Login com o Google
+
+O canto direito do topo tem o botão **Fazer login com o Google** (Google Identity Services). Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
+
+Como o app é estático, tudo acontece no navegador: o Google devolve um ID token e o app guarda só o perfil (nome, e-mail, foto) em `localStorage`. Na volta, o Google entra sozinho na mesma conta (`auto_select`) até o operador clicar em **Sair**.
+
+Para ativar:
+
+1. No [Google Cloud Console](https://console.cloud.google.com/apis/credentials), crie uma credencial **ID do cliente OAuth** do tipo **Aplicativo da Web**.
+2. Em **Origens JavaScript autorizadas**, inclua `http://localhost:5173`, `http://localhost` (exigido pelo Google para testes locais) e a origem do deploy (ex: `https://<usuario>.github.io`).
+3. Local: crie `.env.local` com `VITE_GOOGLE_CLIENT_ID=<id>.apps.googleusercontent.com`.
+4. GitHub Pages: em Settings → Secrets and variables → Actions → **Variables**, crie `GOOGLE_CLIENT_ID` com o mesmo valor. O client ID não é segredo (vai no JavaScript público).
+
+Sem o client ID, o botão não aparece.
+
 ## Estrutura
 
 ```
@@ -100,10 +115,12 @@ src/lib/passageStyle.ts     Tipo e padrão da aparência da passagem na projeç�
 src/lib/channel.ts          Canal controle <-> projeção
 src/lib/templates.ts        Modelos de programação (culto de sábado, escola sabatina)
 src/lib/screens.ts          Descoberta de telas e abertura da janela de projeção
+src/lib/googleAuth.ts       Login com o Google (Google Identity Services)
 src/lib/storage.ts          Cache do índice (IndexedDB), mapa de vídeos, preferências
 src/lib/youtube.ts          Leitura de link do YouTube
 src/lib/useLive.ts          Lado do controle do canal
 src/store/useApp.ts         Estado global (zustand)
+src/store/useAuth.ts        Usuário logado com o Google
 src/routes/Control.tsx      Tela de controle
 src/routes/Display.tsx      Tela de projeção (IFrame Player API)
 ```
