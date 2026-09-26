@@ -1,8 +1,9 @@
 import type { Content } from "./content";
+import catalog from "@/data/music/catalog.json";
 
 // Metadata and embedded playback checked on 2026-09-26 (UTC).
 // Only remote references; no audio, video, lyrics or album artwork is redistributed.
-export const musicLibrary: (Extract<Content, { kind: "youtube" }> & {
+const legacyMusic: (Extract<Content, { kind: "youtube" }> & {
   publisher: string;
   source: string;
 })[] = [
@@ -57,3 +58,19 @@ export const musicLibrary: (Extract<Content, { kind: "youtube" }> & {
     source: "https://www.youtube.com/watch?v=9sJxWBf6w-s",
   },
 ];
+
+export type MusicCollection = { id: string; title: string; year?: number; group: string; source: string; orderKnown: boolean };
+export type MusicTrack = { id: string; title: string; collectionId: string; track?: number; tags: string[]; videoId?: string; lyrics?: boolean; availability?: string; source: string };
+export const musicCollections: MusicCollection[] = catalog.collections;
+export const musicTracks: MusicTrack[] = catalog.tracks;
+const collections = new Map(musicCollections.map(c => [c.id, c]));
+export const trackContent = (track: MusicTrack): Extract<Content, { kind: "youtube" }> | null => track.videoId ? ({
+  kind: "youtube", title: track.title, videoId: track.videoId, catalogId: track.id,
+  collection: collections.get(track.collectionId)?.title,
+  category: track.tags.join(" · "), track: track.track,
+}) : null;
+export const musicLibrary = [
+  ...musicTracks.flatMap(track => { const content = trackContent(track); return content ? [content] : []; }),
+  ...legacyMusic.filter(item => !musicTracks.some(t => t.videoId === item.videoId)),
+];
+export const musicSearchText = (track: MusicTrack) => [track.title, collections.get(track.collectionId)?.title, track.track, ...track.tags].join(" ");

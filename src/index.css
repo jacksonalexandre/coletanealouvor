@@ -305,6 +305,17 @@ kbd {
   gap: 0.3em 0.7em;
   justify-content: center;
 }
+.music-categories { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0; }
+.music-categories button { font-size: 12px; padding: 6px 9px; border: 1px solid #384350; border-radius: 4px; }
+.music-categories button[aria-pressed="true"] { background: #263e54; border-color: #9cbfda; color: #e4f2ff; }
+.music-albums { display: flex; flex-direction: column; gap: 2px; }
+.music-album { display: flex; gap: 10px; align-items: center; text-align: left; padding: 9px 3px; border-bottom: 1px solid #29303a; font-size: 13px; }
+.music-album:hover { background: #242e39; }
+.music-album img, .album-placeholder { width: 70px; height: 44px; object-fit: cover; flex-shrink: 0; }
+.album-placeholder { display: grid; place-items: center; background: #253240; font-size: 24px; }
+.music-album small, .unavailable-track small { display: block; color: #a5b1bd; margin-top: 4px; font-size: 11px; }
+.catalog-track-meta { color: #9eb0bf; font-size: 10px; padding: 10px 2px 0; }
+.unavailable-track { justify-content: space-between; font-size: 13px; color: #a5b1bd; }
 .live-transport {
   display: flex;
   flex-wrap: wrap;

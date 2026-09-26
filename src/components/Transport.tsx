@@ -127,6 +127,7 @@ export function Transport() {
           </div>
           <div className="monitor-caption">
             {preview?.title ?? "Busque ou selecione um item"}
+            {preview?.kind === "youtube" && preview.collection && <span>{preview.collection}</span>}
             {preview?.kind === "media" && (
               <span>
                 Slide {preview.slide + 1} / {preview.assetIds.length}

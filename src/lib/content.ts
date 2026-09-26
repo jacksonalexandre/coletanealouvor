@@ -11,6 +11,8 @@ export type Content =
       videoId: string;
       collection?: string;
       category?: string;
+      catalogId?: string;
+      track?: number;
     }
   | { kind: "media"; title: string; assetIds: string[]; slide: number }
   | { kind: "text"; title: string; body: string }
