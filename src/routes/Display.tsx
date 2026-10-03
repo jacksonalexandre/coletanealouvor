@@ -257,8 +257,12 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
     }
   };
 
-  /** Primeiro clique nesta janela: libera o som e entra em tela cheia. */
-  const activate = () => {
+  /**
+   * Libera o som. Pelo clique na janela também entra em tela cheia; sem gesto
+   * (navegador já autoriza som neste site) só libera.
+   */
+  const activate = (fromGesture = true) => {
+    if (activatedRef.current) return;
     activatedRef.current = true;
     setActivated(true);
     const player = playerRef.current;
@@ -267,9 +271,24 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       player.setVolume(Math.round(liveRef.current.volume * 100));
       if (liveRef.current.playing) player.playVideo();
     }
-    void toggleFullscreen();
+    if (fromGesture && !document.fullscreenElement) void toggleFullscreen();
     report({ activated: true });
   };
+
+  // Se o navegador já deixa tocar com som sem clique (site com "Som: Permitir"
+  // ou uso frequente), dispensa o "Clique para ativar o som".
+  const activateRef = useRef(activate);
+  activateRef.current = activate;
+  useEffect(() => {
+    if (embedded) return;
+    let cancelled = false;
+    void canAutoplayWithSound().then((allowed) => {
+      if (allowed && !cancelled) activateRef.current(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [embedded]);
 
   const covered = live.blank || (!live.videoId && !live.passage && !live.draw && !live.countdown);
   const background = live.appearance.displayBackground;
@@ -340,7 +359,7 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       {/* Passagem, sorteio e cronômetro não têm som: mostram direto, sem pedir o clique de ativação. */}
       {!activated && !live.passage && !live.draw && !live.countdown && (
         <button
-          onClick={activate}
+          onClick={() => activate()}
           className="absolute inset-0 flex flex-col items-center justify-center gap-3"
           style={{ background, color: text }}
         >
@@ -362,6 +381,32 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       )}
     </div>
   );
+}
+
+/**
+ * O navegador deixa começar som sem gesto nesta janela? Firefox responde direto;
+ * no Chrome/Edge um AudioContext só chega a "running" sem gesto quando o
+ * autoplay com som está liberado para o site.
+ */
+async function canAutoplayWithSound(): Promise<boolean> {
+  const nav = navigator as Navigator & { getAutoplayPolicy?: (type: "mediaelement") => string };
+  if (typeof nav.getAutoplayPolicy === "function") {
+    try {
+      return nav.getAutoplayPolicy("mediaelement") === "allowed";
+    } catch {
+      // Segue para o teste com AudioContext.
+    }
+  }
+  if (typeof AudioContext === "undefined") return false;
+  const context = new AudioContext();
+  try {
+    await Promise.race([context.resume(), new Promise((resolve) => setTimeout(resolve, 500))]);
+    return context.state === "running";
+  } catch {
+    return false;
+  } finally {
+    void context.close();
+  }
 }
 
 /** Na janela, o tamanho em rem configurado; embutida, proporcional ao quadro (1rem ≈ 1/80 da largura de um projetor). */

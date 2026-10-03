@@ -75,8 +75,10 @@ export type DisplayWindow = {
 
 export async function openDisplayWindow(savedKey?: string | null): Promise<DisplayWindow | null> {
   const screen = await preferredScreen(savedKey);
+  // "fullscreen" (Chrome/Edge 119+, com a permissão de gerenciamento de janelas)
+  // já abre a janela em tela cheia na tela escolhida; sem suporte é ignorado.
   const features = screen
-    ? `popup=yes,left=${screen.left},top=${screen.top},width=${screen.width},height=${screen.height}`
+    ? `popup=yes,left=${screen.left},top=${screen.top},width=${screen.width},height=${screen.height},fullscreen`
     : "popup=yes,width=1280,height=720";
 
   const child = window.open(`${import.meta.env.BASE_URL}projecao`, "coletanea-projecao", features);
