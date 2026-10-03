@@ -1,6 +1,6 @@
 import { useApp } from "@/store/useApp";
 
-/** Ação de teclado ou da barra da projeção; a projeção manda pelo canal para o controle executar. */
+/** Ação de teclado; a janela de projeção manda pelo canal para o controle executar. */
 export type ShortcutAction =
   | { type: "toggle" }
   | { type: "next" }
@@ -11,8 +11,6 @@ export type ShortcutAction =
   | { type: "seekBy"; seconds: number }
   | { type: "seekPercent"; percent: number }
   | { type: "seekEnd" }
-  | { type: "seekTo"; seconds: number }
-  | { type: "volume"; value: number }
   | { type: "volumeBy"; delta: number };
 
 /**
@@ -61,14 +59,10 @@ export function runShortcut(action: ShortcutAction) {
       return store.setBlank(!store.blank);
     case "mute":
       return store.toggleMute();
-    case "volume":
-      return store.setVolume(action.value);
     case "volumeBy":
       return store.setVolume(Math.min(1, Math.max(0, Math.round((store.volume + action.delta) * 100) / 100)));
     case "seekBy":
       return store.seekBy(action.seconds);
-    case "seekTo":
-      return store.seekTo(action.seconds);
     case "seekPercent":
       if (duration > 0) store.seekTo((duration * action.percent) / 100);
       return;

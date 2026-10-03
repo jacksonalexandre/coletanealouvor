@@ -63,8 +63,6 @@ A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **C
 
 As teclas seguem o padrão do YouTube e funcionam nas duas janelas. A exceção são as setas sozinhas, que passam de hino; os 5 segundos ficam no `Shift`.
 
-Na janela de projeção, mexer o mouse mostra uma barra de controle no rodapé (tocar/pausar, anterior/próximo, linha do tempo, volume, apagar tela, tela cheia). Com o mouse parado por 2,5 s ou fora da janela, a barra e o cursor somem, sem aparecer na transmissão.
-
 ## Link avulso do YouTube
 
 Para um vídeo fora do hinário (abertura, clipe, vinheta), use o ícone de **link** no topo: cole o link (normal, `youtu.be`, `/shorts/`, `/live/`…) e escolha **Projetar agora** — vai para a projeção e já toca — ou **Na programação**. O título vem do YouTube quando possível; dá para digitar outro.

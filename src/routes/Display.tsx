@@ -1,21 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  EyeOff,
-  Maximize,
-  Minimize,
-  Pause,
-  Play,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
-import { Slider } from "@/components/ui/slider";
 import { createChannel } from "@/lib/channel";
 import { formatClock, formatRemaining, useNow } from "@/lib/countdown";
 import { randomIndex } from "@/lib/draw";
-import { shortcutFor, type ShortcutAction } from "@/lib/shortcuts";
-import { cn, formatDuration } from "@/lib/utils";
+import { shortcutFor } from "@/lib/shortcuts";
 import { emptyLive } from "@/lib/useLive";
 import type { LiveCountdown, LiveDraw, LiveState, PlayerState } from "@/lib/types";
 
@@ -31,6 +18,8 @@ type YTPlayer = {
   getCurrentTime: () => number;
   getDuration: () => number;
   destroy: () => void;
+  /** Fora da API documentada, mas é o que desliga legenda ligada pelo dono do vídeo. */
+  unloadModule?: (name: string) => void;
 };
 
 type YTNamespace = {
@@ -58,6 +47,28 @@ declare global {
 }
 
 let apiPromise: Promise<YTNamespace> | null = null;
+
+/**
+ * Posição e duração do vídeo. O objeto do player existe antes do onReady, mas
+ * os métodos só aparecem quando o iframe termina de carregar.
+ */
+function playerTime(player: YTPlayer | null) {
+  if (typeof player?.getCurrentTime !== "function") return { currentTime: 0, duration: 0 };
+  return { currentTime: player.getCurrentTime() || 0, duration: player.getDuration() || 0 };
+}
+
+/**
+ * Desliga a legenda. `cc_load_policy: 0` não basta quando o dono do vídeo deixa
+ * a legenda ligada por padrão ou o navegador lembra a preferência do YouTube.
+ */
+function hideCaptions(player: YTPlayer | null) {
+  try {
+    player?.unloadModule?.("captions");
+    player?.unloadModule?.("cc");
+  } catch {
+    // Método interno: se o YouTube mudar, segue com legenda em vez de quebrar.
+  }
+}
 
 /** Carrega a IFrame Player API uma única vez por janela. */
 function loadYouTubeApi(): Promise<YTNamespace> {
@@ -115,8 +126,7 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       playing: stateRef.current.playing,
       buffering: stateRef.current.buffering,
       ended: stateRef.current.ended,
-      currentTime: player?.getCurrentTime() ?? 0,
-      duration: player?.getDuration() ?? 0,
+      ...playerTime(player),
       error: null,
       updatedAt: Date.now(),
       ...patch,
@@ -162,6 +172,7 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
             iv_load_policy: 3,
             playsinline: 1,
             fs: embedded ? 1 : 0,
+            cc_load_policy: 0,
           },
           events: {
             onReady: () => {
@@ -170,6 +181,8 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
               report({ ready: true });
             },
             onStateChange: (event) => {
+              // O módulo de legenda só carrega quando o vídeo começa: desliga aí.
+              if (event.data === YT.PlayerState.PLAYING) hideCaptions(playerRef.current);
               stateRef.current = {
                 playing: event.data === YT.PlayerState.PLAYING,
                 buffering: event.data === YT.PlayerState.BUFFERING,
@@ -274,7 +287,8 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
     activatedRef.current = true;
     setActivated(true);
     const player = playerRef.current;
-    if (player) {
+    // Antes do onReady os métodos não existem; o onReady e os efeitos aplicam som e play.
+    if (player && ready) {
       player.unMute();
       player.setVolume(Math.round(liveRef.current.volume * 100));
       if (liveRef.current.playing) player.playVideo();
@@ -298,10 +312,6 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
     };
   }, [embedded]);
 
-  const send = (action: ShortcutAction) => channelRef.current?.post({ type: "command", action });
-  const showBar = !embedded && activated && !!live.videoId && !live.passage && !live.draw && !live.countdown;
-  const barVisible = useIdleVisibility(rootRef, showBar);
-
   const covered = live.blank || (!live.videoId && !live.passage && !live.draw && !live.countdown);
   const background = live.appearance.displayBackground;
   const text = live.appearance.displayText;
@@ -314,9 +324,6 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
       style={{ background, containerType: "size" }}
       onDoubleClick={toggleFullscreen}
     >
-      {/* O iframe do YouTube engole o movimento do mouse: esta camada o capta por cima.
-          Mouse parado: somem a barra e o cursor, para não aparecerem na transmissão. */}
-      {showBar && <div className={cn("absolute inset-0 z-20", !barVisible && "cursor-none")} />}
       <div className="absolute inset-0 [&>iframe]:size-full">
         <div ref={mountRef} className="size-full" />
       </div>
@@ -385,16 +392,6 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
         </button>
       )}
 
-      {showBar && (
-        <ProjectionBar
-          visible={barVisible}
-          live={live}
-          playerRef={playerRef}
-          onAction={send}
-          onFullscreen={toggleFullscreen}
-        />
-      )}
-
       {activated && error && (
         <div className="absolute inset-x-0 bottom-8 text-center text-sm text-amber-400">{error}</div>
       )}
@@ -405,181 +402,6 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
         </div>
       )}
     </div>
-  );
-}
-
-const IDLE_MS = 2500;
-
-/**
- * Visível enquanto o mouse se mexe na janela (e sempre que está sobre a barra);
- * some depois de alguns segundos parado ou quando o mouse sai da janela.
- */
-function useIdleVisibility(rootRef: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!enabled || !root) {
-      setVisible(false);
-      return;
-    }
-    let timer = 0;
-    const show = (event: PointerEvent) => {
-      setVisible(true);
-      clearTimeout(timer);
-      const overBar = (event.target as HTMLElement | null)?.closest("[data-projection-bar]");
-      if (!overBar) timer = window.setTimeout(() => setVisible(false), IDLE_MS);
-    };
-    const hide = () => {
-      clearTimeout(timer);
-      setVisible(false);
-    };
-    root.addEventListener("pointermove", show);
-    root.addEventListener("pointerdown", show);
-    root.addEventListener("pointerleave", hide);
-    return () => {
-      clearTimeout(timer);
-      root.removeEventListener("pointermove", show);
-      root.removeEventListener("pointerdown", show);
-      root.removeEventListener("pointerleave", hide);
-    };
-  }, [rootRef, enabled]);
-
-  return visible;
-}
-
-/**
- * Barra de controle da projeção, no estilo do YouTube. Os comandos vão para o
- * controle pelo canal, como o teclado; a posição é lida direto do player daqui.
- */
-function ProjectionBar({
-  visible,
-  live,
-  playerRef,
-  onAction,
-  onFullscreen,
-}: {
-  visible: boolean;
-  live: LiveState;
-  playerRef: React.RefObject<YTPlayer | null>;
-  onAction: (action: ShortcutAction) => void;
-  onFullscreen: () => void;
-}) {
-  const [time, setTime] = useState({ current: 0, duration: 0 });
-  const [scrubbing, setScrubbing] = useState<number | null>(null);
-  const [fullscreen, setFullscreen] = useState(() => !!document.fullscreenElement);
-
-  useEffect(() => {
-    if (!visible) return;
-    const read = () =>
-      setTime({
-        current: playerRef.current?.getCurrentTime() ?? 0,
-        duration: playerRef.current?.getDuration() ?? 0,
-      });
-    read();
-    const timer = window.setInterval(read, 250);
-    return () => clearInterval(timer);
-  }, [visible, playerRef]);
-
-  useEffect(() => {
-    const update = () => setFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", update);
-    return () => document.removeEventListener("fullscreenchange", update);
-  }, []);
-
-  // Sem foco no slider: espaço e setas continuam com os atalhos da janela.
-  const blur = () => (document.activeElement as HTMLElement | null)?.blur();
-  const position = scrubbing ?? time.current;
-  const muted = live.volume === 0;
-
-  return (
-    <div
-      data-projection-bar
-      className={cn(
-        "absolute inset-x-0 bottom-0 z-30 bg-linear-to-t from-black/85 via-black/50 to-transparent px-6 pt-12 pb-4 text-white transition-opacity duration-300",
-        visible ? "opacity-100" : "pointer-events-none opacity-0",
-      )}
-      onDoubleClick={(event) => event.stopPropagation()}
-    >
-      <Slider
-        value={[Math.min(position, time.duration || 1)]}
-        min={0}
-        max={time.duration || 1}
-        step={0.5}
-        disabled={time.duration === 0}
-        onValueChange={([value]) => setScrubbing(value)}
-        onValueCommit={([value]) => {
-          onAction({ type: "seekTo", seconds: value });
-          setScrubbing(null);
-          blur();
-        }}
-      />
-      <div className="mt-3 flex items-center gap-1">
-        <BarButton title="Anterior (P)" onClick={() => onAction({ type: "prev" })}>
-          <ChevronLeft className="size-6" />
-        </BarButton>
-        <BarButton title={live.playing ? "Pausar (K)" : "Tocar (K)"} onClick={() => onAction({ type: "toggle" })}>
-          {live.playing ? <Pause className="size-6" /> : <Play className="size-6" />}
-        </BarButton>
-        <BarButton title="Próximo (N)" onClick={() => onAction({ type: "next" })}>
-          <ChevronRight className="size-6" />
-        </BarButton>
-
-        <BarButton title={muted ? "Ativar som (M)" : "Mudo (M)"} onClick={() => onAction({ type: "mute" })}>
-          {muted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
-        </BarButton>
-        <Slider
-          className="w-24"
-          value={[live.volume]}
-          min={0}
-          max={1}
-          step={0.05}
-          onValueChange={([value]) => onAction({ type: "volume", value })}
-          onValueCommit={blur}
-        />
-
-        <span className="ml-4 text-sm tabular-nums opacity-90">
-          {formatDuration(Math.floor(position))} /{" "}
-          {time.duration ? formatDuration(Math.floor(time.duration)) : "--:--"}
-        </span>
-        <span className="ml-4 min-w-0 flex-1 truncate text-sm opacity-75">{live.title}</span>
-
-        <BarButton title="Apagar tela (B)" onClick={() => onAction({ type: "blank" })} active={live.blank}>
-          <EyeOff className="size-5" />
-        </BarButton>
-        <BarButton title="Tela cheia (F)" onClick={onFullscreen}>
-          {fullscreen ? <Minimize className="size-5" /> : <Maximize className="size-5" />}
-        </BarButton>
-      </div>
-    </div>
-  );
-}
-
-function BarButton({
-  title,
-  onClick,
-  active = false,
-  children,
-}: {
-  title: string;
-  onClick: () => void;
-  active?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      title={title}
-      // Não pega foco: espaço num botão focado tocaria/pausaria duas vezes.
-      tabIndex={-1}
-      onMouseDown={(event) => event.preventDefault()}
-      onClick={onClick}
-      className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/15",
-        active && "text-amber-400",
-      )}
-    >
-      {children}
-    </button>
   );
 }
 
