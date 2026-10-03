@@ -304,45 +304,49 @@ async function importarVideos(log: string[]) {
 
 // ── Canais (cada vídeo vira um item da busca) ──────────────────────────────
 
-/** Número do hino no título, quando houver ("Hino IASD 33", "Hino 12", "HASD 12"). */
-function numberFrom(title: string): number | null {
-  const match = title.match(/\b(?:hino|hasd|iasd)\s*(?:iasd\s*)?(\d{1,3})\b/i);
-  return match ? Number(match[1]) : null;
-}
+/** Referência ao hinário antigo no título ("Hinário Adventista / Hino IASD 33"). */
+const OLD_HYMNAL = /\s*hin[aá]rio adventista\s*\/?\s*hino\s*iasd\s*(\d{1,3})\b|\s*hino\s*iasd\s*(\d{1,3})\b/i;
 
 const SMALL_WORDS = new Set(["a", "o", "as", "os", "e", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "por", "para", "com", "ao", "à"]);
 
-/** "CASTELO FORTE" -> "Castelo Forte"; título já em caixa mista fica como veio. */
+/** Palavras todas em maiúsculas viram "Castelo Forte"; o resto fica como veio. */
 function titleCase(value: string) {
-  if (value !== value.toUpperCase()) return value;
   return value
-    .toLocaleLowerCase("pt-BR")
     .split(/(\s+)/)
-    .map((word, index) =>
-      index > 0 && SMALL_WORDS.has(word) ? word : word.charAt(0).toLocaleUpperCase("pt-BR") + word.slice(1),
-    )
+    .map((word, index) => {
+      if (word.length < 2 || word !== word.toLocaleUpperCase("pt-BR") || !/\p{L}/u.test(word)) return word;
+      const lower = word.toLocaleLowerCase("pt-BR");
+      return index > 0 && SMALL_WORDS.has(lower) ? lower : lower.charAt(0).toLocaleUpperCase("pt-BR") + lower.slice(1);
+    })
     .join("");
 }
 
 /**
  * "CASTELO FORTE | Hinário Adventista / Hino IASD 33 | MENOS UM" -> título "Castelo Forte",
- * número 33, sem detalhe (o número já diz que é do hinário). "EU SOU TEU | PLAYBACK | MENOS UM"
- * -> título "Eu Sou Teu", detalhe "PLAYBACK".
+ * número antigo 33. "EU SOU TEU | PLAYBACK | MENOS UM" -> título "Eu Sou Teu", detalhe
+ * "PLAYBACK". O número do hinário ATUAL vem depois, pelo título (ver importarCanais).
  */
 function parseChannelTitle(raw: string, channel: string) {
+  const oldMatch = raw.match(OLD_HYMNAL);
+  const antigo = oldMatch ? Number(oldMatch[1] ?? oldMatch[2]) : null;
   const noise = new RegExp(`\\s*${channel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*`, "gi");
   const parts = raw
     .split("|")
-    .map((part) => part.replace(noise, " ").replace(/\s+/g, " ").trim())
+    .map((part) =>
+      part
+        .replace(new RegExp(OLD_HYMNAL.source, "gi"), " ")
+        .replace(noise, " ")
+        .replace(/\s+/g, " ")
+        .trim(),
+    )
     .filter(Boolean);
   const titulo = titleCase(parts[0] ?? raw.trim());
-  const numero = numberFrom(raw);
-  const detalhe = parts
-    .slice(1)
-    .filter((part) => !/hin[aá]rio adventista|hino\s*iasd/i.test(part))
-    .join(" · ");
-  return { titulo, numero, detalhe: detalhe || null };
+  const detalhe = parts.slice(1).join(" · ");
+  return { titulo, antigo, detalhe: detalhe || null };
 }
+
+/** Chave para casar títulos entre coleções: sem acento, sem o que vem entre parênteses. */
+const titleKey = (title: string) => slugify(title.replace(/\(.*?\)/g, " "));
 
 async function importarCanais(log: string[]) {
   const canais = check(
@@ -365,13 +369,32 @@ async function importarCanais(log: string[]) {
     ) as { id: number; chave: string }[];
     const idByKey = new Map(existing.map((row) => [row.chave, row.id]));
 
+    // Número do hinário ATUAL pelo título: o "Hino IASD 33" do vídeo é do hinário antigo
+    // (no novo, o 33 é outro hino). Título repetido no HASD (variações A/B) fica sem número.
+    const hasd = check(
+      await db.from("coletanea_hinos").select("numero, titulo").eq("colecao", "hasd"),
+      "HASD",
+    ) as { numero: number; titulo: string }[];
+    const numberByTitle = new Map<string, number | null>();
+    for (const hymn of hasd) {
+      const key = titleKey(hymn.titulo);
+      numberByTitle.set(key, numberByTitle.has(key) ? null : hymn.numero);
+    }
+
     const row = (videoId: string, title: string) => {
-      const parsed = parseChannelTitle(title, canal.filtro_titulo ?? canal.sigla);
+      const { titulo, antigo, detalhe } = parseChannelTitle(title, canal.filtro_titulo ?? canal.sigla);
+      const numero = numberByTitle.get(titleKey(titulo)) ?? null;
+      // Sem par no hinário atual, o número antigo ainda ajuda quem o conhece de cor.
+      const extra = numero == null && antigo != null ? `Hinário antigo nº ${antigo}` : null;
+      const fullDetail = [detalhe, extra].filter(Boolean).join(" · ") || null;
       return {
         colecao: canal.id,
         chave: videoId,
-        ...parsed,
-        busca: slugify(`${parsed.titulo} ${parsed.detalhe ?? ""}`),
+        titulo,
+        numero,
+        detalhe: fullDetail,
+        busca: slugify(`${titulo} ${fullDetail ?? ""}`),
+        oculto: false,
       };
     };
     const updates = [...videos]
@@ -388,13 +411,23 @@ async function importarCanais(log: string[]) {
       for (const item of created) idByKey.set(item.chave, item.id);
     }
 
+    // Já importados que não passam mais no filtro: some da busca, mas não é apagado
+    // (pode estar numa programação salva).
+    const hidden = existing.filter((item) => !videos.has(item.chave)).map((item) => item.chave);
+    for (let i = 0; i < hidden.length; i += 200) {
+      check(
+        await db.from("coletanea_hinos").update({ oculto: true }).eq("colecao", canal.id).in("chave", hidden.slice(i, i + 200)),
+        `${canal.sigla}: ocultar`,
+      );
+    }
+
     const now = new Date().toISOString();
     await insertChunks(
       "coletanea_videos",
       [...videos.keys()].map((videoId) => ({ hino_id: idByKey.get(videoId)!, video_id: videoId, atualizado_em: now })),
     );
     log.push(
-      `${canal.sigla}: ${videos.size} vídeos de hino (${inserts.length} novos, ${updates.length} atualizados; ${all.size - videos.size} ignorados pelo filtro)`,
+      `${canal.sigla}: ${videos.size} vídeos de hino (${inserts.length} novos, ${updates.length} atualizados; ${all.size - videos.size} fora do filtro, ${hidden.length} ocultos)`,
     );
   }
 
