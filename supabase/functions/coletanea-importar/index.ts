@@ -321,28 +321,83 @@ function titleCase(value: string) {
     .join("");
 }
 
+/** Versões do mesmo vídeo: viram detalhe, nunca título. */
+const VARIANT = /^(?:playback|karaok[eê]|instrumental|legendado|em libras|com libras|libras|(?:versão|vers[aã]o) .*)$/i;
+
+/** Versão citada dentro do título ("Coisas tão Pequenas (KARAOKÊ)", "Elias COM LIBRAS"). */
+// Sem \b: em JavaScript ele não trata "Ê" como letra, e "KARAOKÊ)" não fecharia a palavra.
+const INLINE_VARIANT = /\s*\(?(?<![\p{L}\d])(karaok[eê]|playback|instrumental)(?![\p{L}\d])\)?|\s+((?:em|com)\s+libras)(?![\p{L}\d])/giu;
+
+/** Ruído de título que não ajuda a achar o hino. */
+const TITLE_NOISE = /\((?:clipe |v[ií]deo )?oficial\)|\[(?:clipe |v[ií]deo )?oficial\]|\(hd\)|\bclipe oficial\b/gi;
+
+const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /**
- * "CASTELO FORTE | Hinário Adventista / Hino IASD 33 | MENOS UM" -> título "Castelo Forte",
- * número antigo 33. "EU SOU TEU | PLAYBACK | MENOS UM" -> título "Eu Sou Teu", detalhe
- * "PLAYBACK". O número do hinário ATUAL vem depois, pelo título (ver importarCanais).
+ * Separa título e detalhe de um vídeo de canal:
+ *   "CASTELO FORTE | Hinário Adventista / Hino IASD 33 | MENOS UM" -> "Castelo Forte", antigo 33
+ *   "EU SOU TEU | PLAYBACK | MENOS UM"                               -> "Eu Sou Teu" · PLAYBACK
+ *   "Bom Samaritano - Playback"                                      -> "Bom Samaritano" · Playback
+ *   "Minha Vida É Uma Viagem - Playback" (canal com o nome da música) -> título mantido
+ * O número do hinário ATUAL vem depois, pelo título (ver importarCanais).
  */
-function parseChannelTitle(raw: string, channel: string) {
+function parseChannelTitle(raw: string, channelNames: string[]) {
   const oldMatch = raw.match(OLD_HYMNAL);
   const antigo = oldMatch ? Number(oldMatch[1] ?? oldMatch[2]) : null;
-  const noise = new RegExp(`\\s*${channel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*`, "gi");
-  const parts = raw
-    .split("|")
-    .map((part) =>
-      part
-        .replace(new RegExp(OLD_HYMNAL.source, "gi"), " ")
-        .replace(noise, " ")
-        .replace(/\s+/g, " ")
-        .trim(),
-    )
+  const channelKeys = new Set(channelNames.filter(Boolean).map((name) => slugify(name)));
+  const channelNoise = channelNames
+    .filter(Boolean)
+    .map((name) => new RegExp(`\\s*${escapeRegex(name)}\\s*`, "giu"));
+
+  const clean = (part: string) =>
+    part
+      .replace(new RegExp(OLD_HYMNAL.source, "gi"), " ")
+      .replace(TITLE_NOISE, " ")
+      .replace(/\s+/g, " ")
+      .replace(/^[\s\-–·:]+|[\s\-–·:]+$/g, "")
+      .trim();
+
+  const segments = raw
+    .replace(/\p{Extended_Pictographic}/gu, " ")
+    .split(/\s*\|\s*|\s+[-–]\s+/)
+    .map(clean)
     .filter(Boolean);
-  const titulo = titleCase(parts[0] ?? raw.trim());
-  const detalhe = parts.slice(1).join(" · ");
-  return { titulo, antigo, detalhe: detalhe || null };
+
+  // O 1º segmento é o título, a não ser que seja só o nome do canal seguido de outro título.
+  let [first = raw.trim(), ...rest] = segments;
+  if (channelKeys.has(slugify(first)) && rest.length > 0 && !VARIANT.test(rest[0])) {
+    [first, ...rest] = rest;
+  }
+  // "Karaokê - MUDA TUDO": a versão veio antes do nome da música.
+  const leading: string[] = [];
+  if (VARIANT.test(first) && rest.length > 0) {
+    leading.push(first);
+    [first, ...rest] = rest;
+  }
+  // Nome do canal no meio do título, sem separador: o que vem depois vira detalhe.
+  for (const noise of channelNoise) {
+    const at = first.search(new RegExp(noise.source, "iu"));
+    if (at > 0) {
+      const after = first.slice(at).replace(new RegExp(noise.source, "iu"), " ").trim();
+      first = first.slice(0, at).trim();
+      if (after) rest.unshift(after);
+    }
+  }
+  // "(KARAOKÊ)", "COM LIBRAS" dentro do título: saem do título e vão para o detalhe.
+  first = first
+    .replace(INLINE_VARIANT, (_match, word?: string, libras?: string) => {
+      leading.push((word ?? libras ?? "").trim());
+      return " ";
+    })
+    .replace(/\s+/g, " ")
+    .trim();
+  rest = [...leading.filter(Boolean), ...rest];
+
+  const details = rest
+    .map((part) => channelNoise.reduce((text, noise) => text.replace(noise, " "), part).replace(/\s+/g, " ").trim())
+    .filter((part) => part && !channelKeys.has(slugify(part)));
+
+  return { titulo: titleCase(first), antigo, detalhe: details.join(" · ") || null };
 }
 
 /** Chave para casar títulos entre coleções: sem acento, sem o que vem entre parênteses. */
@@ -350,17 +405,33 @@ const titleKey = (title: string) => slugify(title.replace(/\(.*?\)/g, " "));
 
 async function importarCanais(log: string[]) {
   const canais = check(
-    await db.from("coletanea_colecoes").select("id, sigla, fonte_url, filtro_titulo").eq("tipo", "canal").order("ordem"),
+    await db
+      .from("coletanea_colecoes")
+      .select("id, sigla, nome, fonte_url, filtro_titulo, excluir_titulo")
+      .eq("tipo", "canal")
+      .order("ordem"),
     "coleções",
-  ) as { id: string; sigla: string; fonte_url: string | null; filtro_titulo: string | null }[];
+  ) as {
+    id: string;
+    sigla: string;
+    nome: string;
+    fonte_url: string | null;
+    filtro_titulo: string | null;
+    excluir_titulo: string | null;
+  }[];
 
   for (const canal of canais) {
     if (!canal.fonte_url) continue;
     const { videos: all } = await fetchAllVideos(canal.fonte_url);
     if (all.size === 0) throw new Error(`${canal.sigla}: nenhum vídeo encontrado; nada gravado`);
-    // Só o que é hino: o canal também tem flash mob, coletâneas, avisos…
-    const filter = canal.filtro_titulo ? new RegExp(canal.filtro_titulo, "i") : null;
-    const videos = new Map([...all].filter(([, title]) => !filter || filter.test(title)));
+    // Só o que é hino: o canal também tem flash mob, coletâneas, volumes completos…
+    const include = canal.filtro_titulo ? new RegExp(canal.filtro_titulo, "i") : null;
+    const exclude = canal.excluir_titulo ? new RegExp(canal.excluir_titulo, "i") : null;
+    const videos = new Map(
+      [...all].filter(([, title]) => (!include || include.test(title)) && !(exclude && exclude.test(title))),
+    );
+    // Nomes do canal que aparecem nos títulos e não são parte do nome da música.
+    const channelNames = [canal.filtro_titulo ?? "", canal.sigla];
 
     // Mantém o id de quem já existe: programações salvas continuam apontando para o mesmo item.
     const existing = check(
@@ -382,7 +453,7 @@ async function importarCanais(log: string[]) {
     }
 
     const row = (videoId: string, title: string) => {
-      const { titulo, antigo, detalhe } = parseChannelTitle(title, canal.filtro_titulo ?? canal.sigla);
+      const { titulo, antigo, detalhe } = parseChannelTitle(title, channelNames);
       const numero = numberByTitle.get(titleKey(titulo)) ?? null;
       // Sem par no hinário atual, o número antigo ainda ajuda quem o conhece de cor.
       const extra = numero == null && antigo != null ? `Hinário antigo nº ${antigo}` : null;
@@ -391,6 +462,7 @@ async function importarCanais(log: string[]) {
         colecao: canal.id,
         chave: videoId,
         titulo,
+        titulo_original: title,
         numero,
         detalhe: fullDetail,
         busca: slugify(`${titulo} ${fullDetail ?? ""}`),

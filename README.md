@@ -75,16 +75,17 @@ O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_p
 
 ## Hinário e coleções
 
-Os hinos vêm de **coleções** (tabela `coletanea_colecoes`), e a busca tem o filtro **Todos / HASD / Menos Um** logo abaixo do campo — a escolha fica salva (e acompanha a conta, com login):
+Os hinos vêm de **coleções** (tabela `coletanea_colecoes`), e a busca tem o filtro **Todos / HASD / Menos Um / Minha Vida é uma Viagem** logo abaixo do campo — a escolha fica salva (e acompanha a conta, com login):
 
 | Coleção | Origem |
 | --- | --- |
 | **HASD** — Hinário Adventista do Sétimo Dia | Tabela `coletanea_hinos` (601 hinos, 1 a 600 — o 587 tem as variações A e B), importada da API do LouvorJá; vídeos das playlists em `coletanea_playlists` |
 | **Menos Um** | Cada vídeo do canal [@menosum7](https://www.youtube.com/@menosum7) vira um item; só entram os vídeos com "Menos Um" no título (o canal também tem flash mob, coletâneas…) |
+| **Minha Vida é uma Viagem** | Músicas bíblicas infantis do canal [@minhavidaeumaviagem](https://www.youtube.com/@minhavidaeumaviagem); volumes completos, maratonas e coletâneas ficam de fora |
 
 O mesmo hino pode estar nas duas coleções (ex: *Castelo Forte* do HASD e do Menos Um): são itens separados, cada um com seu vídeo. Na lista "Todos", a sigla da coleção aparece ao lado do título; o detalhe da versão (*CD JOVEM*, *PLAYBACK*…) também, e entra na busca. O número de um item do Menos Um é o do **hinário atual**, achado pelo título (*Castelo Forte* → 73, igual ao HASD), então buscar "73" traz os dois. O "Hino IASD 33" que vem no título do vídeo é do hinário antigo: quando o título não tem par no hinário atual, ele aparece só no detalhe ("Hinário antigo nº 128"). Vídeos do canal que não passam no filtro ficam ocultos (`oculto`), não apagados.
 
-Para acrescentar um canal: insira uma linha em `coletanea_colecoes` com `tipo = 'canal'`, a URL da aba de vídeos em `fonte_url` e, se quiser, um `filtro_titulo` (expressão regular); depois `select public.coletanea_importar('canais');`. A busca funciona offline depois da primeira carga, guardada em IndexedDB.
+Para acrescentar um canal: insira uma linha em `coletanea_colecoes` com `tipo = 'canal'`, a URL da aba de vídeos em `fonte_url` e, se precisar, `filtro_titulo` (só entram vídeos cujo título bate) e/ou `excluir_titulo` (os que batem ficam de fora) — expressões regulares em JavaScript, sem diferenciar maiúsculas; depois `select public.coletanea_importar('canais');`. A importação separa título e detalhe pelos separadores `|` e ` - `, tira o nome do canal e ruídos como "(Clipe Oficial)", e manda versões (*Playback*, *Karaokê*, *em Libras*) para o detalhe; o título original fica em `titulo_original`. A busca funciona offline depois da primeira carga, guardada em IndexedDB.
 
 ## Passagens bíblicas
 
