@@ -81,3 +81,9 @@ export const useAuth = create<AuthState>((set) => ({
     });
   },
 }));
+
+/**
+ * Cadastrar, trocar ou remover o vídeo de um hino exige login. Build sem
+ * Supabase não tem login nenhum: aí segue liberado, como antes.
+ */
+export const canEditHymns = (state: Pick<AuthState, "user">) => !supabase || !!state.user;

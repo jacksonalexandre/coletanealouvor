@@ -7,6 +7,7 @@ import { Setlist } from "@/components/Setlist";
 import { TopBar } from "@/components/TopBar";
 import { Transport } from "@/components/Transport";
 import { gridColumns, type PanelId } from "@/lib/layout";
+import { belongsToTarget, runShortcut, shortcutFor } from "@/lib/shortcuts";
 import { useControlLink } from "@/lib/useLive";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
@@ -160,26 +161,13 @@ function useFollowLive(enabled: boolean, show: () => void) {
 function useShortcuts() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
-      // Com um diálogo aberto (sorteio, configurações), espaço/setas são dele.
-      if (target?.closest('[role="dialog"]')) return;
-
-      const store = useApp.getState();
-      const key = event.key.toLowerCase();
-
-      if (event.key === " ") {
-        event.preventDefault();
-        store.toggle();
-      } else if (event.key === "ArrowRight" || event.key === "PageDown" || key === "n") {
-        if (store.passage) store.movePassageVerses(1);
-        else store.stepHymn(1);
-      } else if (event.key === "ArrowLeft" || event.key === "PageUp" || key === "p") {
-        if (store.passage) store.movePassageVerses(-1);
-        else store.stepHymn(-1);
-      } else if (key === "b") {
-        store.setBlank(!store.blank);
-      }
+      if (belongsToTarget(event)) return;
+      const action = shortcutFor(event);
+      // Tela cheia só vale na janela de projeção.
+      if (!action || action.type === "fullscreen") return;
+      // Espaço rola a página e ↑/↓ rolam as colunas; aqui são do player.
+      event.preventDefault();
+      runShortcut(action);
     };
 
     window.addEventListener("keydown", onKey);

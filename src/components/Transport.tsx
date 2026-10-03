@@ -192,7 +192,7 @@ function PlaybackControls({ canPlay }: { canPlay: boolean }) {
             className="flex-1"
             onClick={toggle}
             disabled={!playing && !canPlay}
-            title="Espaço"
+            title="Espaço ou K"
           >
             {player.buffering ? (
               <Loader2 className="size-5 animate-spin" />

@@ -49,13 +49,21 @@ A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **C
 
 | Tecla | Ação |
 | --- | --- |
-| `espaço` | Tocar / pausar |
+| `espaço` `K` | Tocar / pausar |
 | `→` `N` | Próximo hino do roteiro (ou próximo versículo, com uma passagem em cartaz) |
 | `←` `P` | Hino anterior do roteiro (ou versículo anterior) |
+| `L` / `J` | Adiantar / voltar 10 segundos |
+| `Shift+→` / `Shift+←` | Adiantar / voltar 5 segundos |
+| `↑` / `↓` | Aumentar / diminuir o volume (5%) |
+| `M` | Mudo / volta ao volume de antes |
+| `0`–`9` | Pular para 0%–90% do vídeo |
+| `Home` / `End` | Início / fim do vídeo |
 | `B` | Apagar a tela (o vídeo continua rodando por baixo) |
 | `F` (na projeção) | Tela cheia |
 
-As teclas funcionam nas duas janelas.
+As teclas seguem o padrão do YouTube e funcionam nas duas janelas. A exceção são as setas sozinhas, que passam de hino; os 5 segundos ficam no `Shift`.
+
+Na janela de projeção, mexer o mouse mostra uma barra de controle no rodapé (tocar/pausar, anterior/próximo, linha do tempo, volume, apagar tela, tela cheia). Com o mouse parado por 2,5 s ou fora da janela, a barra e o cursor somem, sem aparecer na transmissão.
 
 ## Link avulso do YouTube
 
@@ -69,7 +77,7 @@ O app precisa saber qual vídeo do YouTube corresponde a cada hino. O mapa vive 
 
 Para acrescentar uma playlist, insira a URL em `coletanea_playlists` e rode `select public.coletanea_importar('videos');`.
 
-Também dá para cadastrar o vídeo de um hino pela interface: abra o hino e cole o link no campo do painel de comando. O app aceita link normal, `youtu.be`, `/embed/`, `/shorts/` ou o id cru e guarda no navegador, por cima do banco.
+Também dá para cadastrar o vídeo de um hino pela interface: abra o hino e cole o link no campo do painel de comando. O app aceita link normal, `youtu.be`, `/embed/`, `/shorts/` ou o id cru e guarda no navegador, por cima do banco. Cadastrar, trocar e remover o vídeo exige login com o Google; sem login o painel só mostra se o hino tem vídeo.
 
 O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_policy=3`. Isso tira cookies de rastreio, vídeos relacionados e anotações — **não tira anúncio**. Quem decide se há anúncio é a monetização do vídeo. Um canal não monetizado roda limpo; fora isso, a saída é o operador estar logado com YouTube Premium naquele navegador.
 

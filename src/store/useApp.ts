@@ -15,6 +15,7 @@ import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
 import { openDisplayWindow } from "@/lib/screens";
 import { loadBible, loadHymnal, loadVideoMap, local } from "@/lib/storage";
 import { parseVideoId } from "@/lib/youtube";
+import { canEditHymns, useAuth } from "@/store/useAuth";
 import type {
   BibleBook,
   DrawResult,
@@ -30,6 +31,9 @@ import type {
   SetlistTemplate,
   VideoMap,
 } from "@/lib/types";
+
+/** Volume a restaurar ao tirar do mudo. */
+let volumeBeforeMute = 1;
 
 const emptyPlayer: PlayerState = {
   ready: false,
@@ -140,7 +144,11 @@ type Actions = {
   toggle: () => void;
   resumeLink: () => Promise<void>;
   seekTo: (time: number) => void;
+  /** Avança/volta a partir da posição atual (J/L, Shift+setas). */
+  seekBy: (seconds: number) => void;
   setVolume: (volume: number) => void;
+  /** Zera o volume ou volta ao de antes (tecla M). */
+  toggleMute: () => void;
   setBlank: (blank: boolean) => void;
 
   setVideo: (hymnId: number, input: string) => boolean;
@@ -483,9 +491,28 @@ export const useApp = create<State & Actions>((set, get) => ({
     set({ seek: { time: Math.max(0, time), nonce: Date.now() } });
   },
 
+  seekBy(seconds) {
+    const { seek, player, playing } = get();
+    // Busca recém-pedida que o player ainda não confirmou: soma a partir dela (J J J).
+    const base =
+      seek && seek.nonce > player.updatedAt
+        ? seek.time
+        : player.currentTime + (playing && player.playing ? (Date.now() - player.updatedAt) / 1000 : 0);
+    const target = base + seconds;
+    get().seekTo(player.duration > 0 ? Math.min(target, player.duration - 0.5) : target);
+  },
+
   setVolume(volume) {
     local.set("volume", volume);
     set({ volume });
+  },
+
+  toggleMute() {
+    const { volume } = get();
+    if (volume > 0) {
+      volumeBeforeMute = volume;
+      get().setVolume(0);
+    } else get().setVolume(volumeBeforeMute || 1);
   },
 
   setBlank(blank) {
@@ -493,6 +520,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   setVideo(hymnId, input) {
+    if (!canEditHymns(useAuth.getState())) return false;
     const videoId = parseVideoId(input);
     if (!videoId) return false;
     const videos = { ...get().videos, [String(hymnId)]: videoId };
@@ -502,6 +530,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   },
 
   clearVideo(hymnId) {
+    if (!canEditHymns(useAuth.getState())) return;
     const videos = { ...get().videos };
     delete videos[String(hymnId)];
     const stored = { ...local.get<VideoMap>("videos", {}) };

@@ -1,3 +1,4 @@
+import type { ShortcutAction } from "@/lib/shortcuts";
 import type { LiveState, PlayerState } from "@/lib/types";
 
 export type ChannelMessage =
@@ -10,7 +11,7 @@ export type ChannelMessage =
   /** Projeção -> controle. */
   | { type: "player"; state: PlayerState }
   /** Teclado da janela de projeção. */
-  | { type: "command"; action: "next" | "prev" | "blank" | "toggle" };
+  | { type: "command"; action: ShortcutAction };
 
 const NAME = "coletanea-live";
 

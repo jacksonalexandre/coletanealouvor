@@ -3,6 +3,7 @@ import { passageReference, passageVerses } from "@/lib/bible";
 import { createChannel, type ChannelMessage } from "@/lib/channel";
 import { DEFAULT_APPEARANCE } from "@/lib/appearance";
 import { DEFAULT_PASSAGE_STYLE } from "@/lib/passageStyle";
+import { runShortcut } from "@/lib/shortcuts";
 import { useApp } from "@/store/useApp";
 import type { LiveState } from "@/lib/types";
 
@@ -88,19 +89,7 @@ export function useControlLink() {
       }
       if (message.type === "display-closed") setDisplayOpen(false);
       if (message.type === "player") setPlayer(message.state);
-      if (message.type === "command") {
-        const store = useApp.getState();
-        if (message.action === "next") {
-          if (store.passage) store.movePassageVerses(1);
-          else store.stepHymn(1);
-        }
-        if (message.action === "prev") {
-          if (store.passage) store.movePassageVerses(-1);
-          else store.stepHymn(-1);
-        }
-        if (message.action === "blank") store.setBlank(!store.blank);
-        if (message.action === "toggle") store.toggle();
-      }
+      if (message.type === "command") runShortcut(message.action);
     });
 
     channelRef.current = channel;
