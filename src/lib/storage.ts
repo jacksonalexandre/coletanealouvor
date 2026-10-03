@@ -111,6 +111,14 @@ export async function loadVideoMap(): Promise<VideoMap> {
 
 const PREFIX = "coletanea:";
 
+const listeners = new Set<(key: string) => void>();
+
+/** Avisa quem precisa saber que uma preferência mudou (ex: sincronização com a conta). */
+export function onLocalChange(listener: (key: string) => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
 export const local = {
   get<T>(key: string, fallback: T): T {
     try {
@@ -121,6 +129,17 @@ export const local = {
     }
   },
   set(key: string, value: unknown) {
+    // Regravar o mesmo valor (ex: a tradução da Bíblia a cada abertura) não é mudança.
+    try {
+      if (localStorage.getItem(PREFIX + key) === JSON.stringify(value)) return;
+    } catch {
+      // Sem acesso ao localStorage: segue e avisa mesmo assim.
+    }
+    local.write(key, value);
+    for (const listener of listeners) listener(key);
+  },
+  /** Grava sem avisar ninguém — para aplicar o que veio da conta sem mandar de volta. */
+  write(key: string, value: unknown) {
     try {
       localStorage.setItem(PREFIX + key, JSON.stringify(value));
     } catch {

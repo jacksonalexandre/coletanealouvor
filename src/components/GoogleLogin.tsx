@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { LogIn, LogOut } from "lucide-react";
+import { Cloud, CloudOff, Loader2, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/store/useAuth";
@@ -80,6 +80,7 @@ function UserMenu() {
         <div className="absolute right-0 top-11 z-50 w-64 rounded-lg border border-ink-700 bg-ink-900 p-3 shadow-xl">
           <p className="truncate text-sm font-medium text-ink-200">{user.name}</p>
           <p className="truncate text-xs text-ink-400">{user.email}</p>
+          <SyncLine />
           <Button
             variant="outline"
             size="sm"
@@ -95,5 +96,37 @@ function UserMenu() {
         </div>
       )}
     </div>
+  );
+}
+
+/** Onde as preferências estão sendo guardadas, para o operador saber se trocar de aparelho leva tudo junto. */
+function SyncLine() {
+  const status = useAuth((state) => state.syncStatus);
+  const error = useAuth((state) => state.syncError);
+
+  if (status === "syncing") {
+    return (
+      <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-400">
+        <Loader2 className="size-3.5 animate-spin" />
+        Salvando na sua conta…
+      </p>
+    );
+  }
+  if (status === "ok") {
+    return (
+      <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-400">
+        <Cloud className="size-3.5" />
+        Preferências salvas na sua conta
+      </p>
+    );
+  }
+  return (
+    <p className="mt-2 flex items-start gap-1.5 text-xs text-amber-400" title={error ?? undefined}>
+      <CloudOff className="mt-0.5 size-3.5 shrink-0" />
+      <span>
+        Preferências só neste navegador
+        {error && <span className="block text-ink-400">{error}</span>}
+      </span>
+    </p>
   );
 }

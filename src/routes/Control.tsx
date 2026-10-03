@@ -9,6 +9,7 @@ import { Transport } from "@/components/Transport";
 import { useControlLink } from "@/lib/useLive";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
+import { useAuth } from "@/store/useAuth";
 
 type Tab = "hinos" | "biblia" | "roteiro" | "ao-vivo";
 
@@ -19,6 +20,8 @@ export default function Control() {
   const loading = useApp((state) => state.loading);
   const error = useApp((state) => state.error);
   const boot = useApp((state) => state.boot);
+  const preferencesVersion = useApp((state) => state.preferencesVersion);
+  const startSync = useAuth((state) => state.startSync);
   const [tab, setTab] = useState<Tab>("hinos");
   const inlinePlayer = useApp((state) => state.inlinePlayer);
   useFollowLive(inlinePlayer, () => setTab("ao-vivo"));
@@ -26,6 +29,11 @@ export default function Control() {
   useEffect(() => {
     void boot();
   }, [boot]);
+
+  // Com login, as preferências vão e vêm da conta; o que chega é aplicado na hora.
+  useEffect(() => {
+    startSync(() => void useApp.getState().reloadPreferences());
+  }, [startSync]);
 
   if (loading) return <Splash message="Carregando o hinário…" />;
   if (error) return <Splash message={`Não foi possível carregar o hinário: ${error}`} />;
@@ -45,7 +53,8 @@ export default function Control() {
         <section
           className={cn("min-h-0 border-ink-800 lg:border-r", tab === "biblia" ? "block" : "hidden lg:block")}
         >
-          <BibleSearch />
+          {/* A ordem dos livros é lida ao montar: remonta quando chegam preferências da conta. */}
+          <BibleSearch key={preferencesVersion} />
         </section>
 
         <section

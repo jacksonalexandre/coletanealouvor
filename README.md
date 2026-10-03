@@ -166,6 +166,19 @@ Para funcionar, o provedor Google já precisa estar ativo no projeto (é o mesmo
 
 Sem `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` no build, o botão não aparece.
 
+### Preferências na conta
+
+**Com login**, as preferências vão para a conta (tabela `coletanea_preferencias`, uma linha por usuário, protegida por RLS — cada um só lê e grava a própria) e voltam em qualquer aparelho em que a pessoa entrar:
+
+- programação do culto, cores e tema, aparência das passagens, tradução e ordem dos livros da Bíblia;
+- vídeos cadastrados na mão, nomes e intervalo do sorteio, texto e horário do cronômetro.
+
+Ficam só no aparelho: a tela do projetor, "Tocar neste aparelho" e o volume.
+
+**Sem login**, as mesmas preferências continuam salvas no navegador, como sempre; sair da conta também não apaga nada do navegador.
+
+No login vale a versão mais recente: se o navegador mudou depois do último envio (sem login ou offline), ele sobe para a conta; senão, a conta desce para o navegador. Um navegador com preferências de outra conta perde para a conta que entrou. Depois, cada mudança é enviada em ~1,5 s (várias seguidas viram um envio só). O menu da conta mostra se está tudo salvo na conta ou só no navegador.
+
 ## Estrutura
 
 ```
@@ -182,6 +195,7 @@ src/lib/screens.ts          Descoberta de telas e abertura da janela de projeç�
 src/lib/countdown.ts        Cronômetro regressivo (horário final, formatação, relógio)
 src/lib/draw.ts             Sorteio de número e de nome
 src/lib/storage.ts          Acervo do Supabase com cache em IndexedDB, preferências
+src/lib/preferenceSync.ts   Preferências na conta (Supabase) ou só no navegador
 src/lib/youtube.ts          Leitura de link do YouTube
 src/lib/useLive.ts          Lado do controle do canal
 src/store/useApp.ts         Estado global (zustand)

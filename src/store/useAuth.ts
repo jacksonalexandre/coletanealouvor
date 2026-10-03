@@ -1,5 +1,6 @@
 import type { Session } from "@supabase/supabase-js";
 import { create } from "zustand";
+import { startPreferenceSync, type SyncStatus } from "@/lib/preferenceSync";
 import { supabase } from "@/lib/supabase";
 
 export type AuthUser = {
@@ -15,10 +16,15 @@ type AuthState = {
   ready: boolean;
   /** Mensagem para o operador quando o login falha (offline, redirect recusado…). */
   authError: string | null;
+  /** Preferências na conta: desligado (sem login), enviando, em dia ou com erro. */
+  syncStatus: SyncStatus;
+  syncError: string | null;
   /** Lê a sessão atual e passa a ouvir as mudanças; seguro chamar mais de uma vez. */
   initAuth: () => Promise<void>;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  /** Liga a sincronização das preferências com a conta (só na tela de controle). */
+  startSync: (onApplied: () => void) => void;
 };
 
 function userFromSession(session: Session | null): AuthUser | null {
@@ -39,6 +45,8 @@ export const useAuth = create<AuthState>((set) => ({
   user: null,
   ready: false,
   authError: null,
+  syncStatus: "off",
+  syncError: null,
 
   initAuth: async () => {
     if (!supabase || initialized) return;
@@ -61,7 +69,15 @@ export const useAuth = create<AuthState>((set) => ({
   },
 
   signOut: async () => {
+    // As preferências ficam no navegador: sair não apaga nada.
     await supabase?.auth.signOut();
     set({ user: null });
+  },
+
+  startSync: (onApplied) => {
+    startPreferenceSync({
+      onApplied,
+      onStatus: (syncStatus, error) => set({ syncStatus, syncError: error ?? null }),
+    });
   },
 }));

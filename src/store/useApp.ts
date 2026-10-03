@@ -97,7 +97,8 @@ type Actions = {
   hymn: (id: number | null) => Hymn | null;
   videoOf: (id: number | null) => string | null;
   book: (abbrev: string) => BibleBook | null;
-  setBibleVersion: (version: BibleVersionId) => Promise<void>;
+  /** `persist: false` só carrega (abertura do app), sem contar como mudança de preferência. */
+  setBibleVersion: (version: BibleVersionId, persist?: boolean) => Promise<void>;
 
   openHymn: (id: number, uid?: string | null) => void;
   /** Põe no ar o hino selecionado agora (sem tocar); usado por Tocar/duplo clique/próximo. */
@@ -150,6 +151,10 @@ type Actions = {
   closeDisplay: () => void;
   setScreenKey: (key: string | null) => void;
   setInlinePlayer: (inline: boolean) => void;
+  /** Relê do navegador as preferências (ex: depois de chegarem da conta no login). */
+  reloadPreferences: () => Promise<void>;
+  /** Muda quando as preferências são recarregadas; remonta o que lê do navegador só ao abrir. */
+  preferencesVersion: number;
 };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -225,6 +230,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   displayWindow: null,
   screenKey: local.get<string | null>("screenKey", null),
   inlinePlayer: local.get("inlinePlayer", isTouchDevice()),
+  preferencesVersion: 0,
 
   async boot() {
     try {
@@ -243,7 +249,7 @@ export const useApp = create<State & Actions>((set, get) => ({
 
     // A Bíblia é um recurso à parte: sem ela a busca de passagens some, mas o
     // hinário continua funcionando normalmente.
-    await get().setBibleVersion(get().bibleVersion);
+    await get().setBibleVersion(get().bibleVersion, false);
   },
 
   hymn(id) {
@@ -260,8 +266,8 @@ export const useApp = create<State & Actions>((set, get) => ({
     return findBook(get().bible, abbrev);
   },
 
-  async setBibleVersion(version) {
-    local.set("bibleVersion", version);
+  async setBibleVersion(version, persist = true) {
+    if (persist) local.set("bibleVersion", version);
     set({ bibleVersion: version, bibleLoading: true });
     try {
       const bible = await loadBible(version, (fresh) => {
@@ -568,6 +574,24 @@ export const useApp = create<State & Actions>((set, get) => ({
   setScreenKey(key) {
     local.set("screenKey", key);
     set({ screenKey: key });
+  },
+
+  async reloadPreferences() {
+    const appearance = normalizeAppearance(local.get<unknown>("appearance", DEFAULT_APPEARANCE));
+    applyAppearance(appearance);
+    set({
+      appearance,
+      passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
+      setlist: normalizeSetlist(local.get<unknown[]>("setlist", [])),
+      preferencesVersion: get().preferencesVersion + 1,
+    });
+
+    const stored = local.get("bibleVersion", DEFAULT_BIBLE_VERSION);
+    const version = isBibleVersion(stored) ? stored : DEFAULT_BIBLE_VERSION;
+    if (version !== get().bibleVersion) void get().setBibleVersion(version, false);
+
+    // Vídeos cadastrados na mão vêm por cima do mapa do banco (já em cache).
+    set({ videos: await loadVideoMap() });
   },
 
   setInlinePlayer(inline) {
