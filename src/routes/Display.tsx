@@ -3,6 +3,7 @@ import { createChannel } from "@/lib/channel";
 import { formatClock, formatRemaining, useNow } from "@/lib/countdown";
 import { randomIndex } from "@/lib/draw";
 import { shortcutFor } from "@/lib/shortcuts";
+import { cn } from "@/lib/utils";
 import { emptyLive } from "@/lib/useLive";
 import type { LiveCountdown, LiveDraw, LiveState, PlayerState } from "@/lib/types";
 
@@ -115,6 +116,7 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
   const liveRef = useRef(live);
   const stateRef = useRef({ playing: false, buffering: false, ended: false });
   const activatedRef = useRef(embedded);
+  const activatedAtRef = useRef(0);
   const rootRef = useRef<HTMLDivElement>(null);
   liveRef.current = live;
 
@@ -285,6 +287,7 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
   const activate = (fromGesture = true) => {
     if (activatedRef.current) return;
     activatedRef.current = true;
+    activatedAtRef.current = Date.now();
     setActivated(true);
     const player = playerRef.current;
     // Antes do onReady os métodos não existem; o onReady e os efeitos aplicam som e play.
@@ -319,12 +322,25 @@ export default function Display({ embedded = false }: { embedded?: boolean }) {
   return (
     <div
       ref={rootRef}
-      className={embedded ? "relative size-full overflow-hidden" : "relative h-dvh w-screen overflow-hidden"}
+      className={
+        embedded ? "relative size-full overflow-hidden" : "relative h-dvh w-screen overflow-hidden select-none"
+      }
       // Tamanhos em cqw/cqh: acompanham a janela inteira ou o quadro embutido.
       style={{ background, containerType: "size" }}
-      onDoubleClick={toggleFullscreen}
+      onDoubleClick={() => {
+        // O 1º clique do duplo foi o de ativar o som, que já entrou em tela cheia.
+        if (Date.now() - activatedAtRef.current < 600) return;
+        void toggleFullscreen();
+      }}
     >
-      <div className="absolute inset-0 [&>iframe]:size-full">
+      {/* Na janela, o clique não chega ao iframe: se ele pegasse o foco, o teclado
+          iria para o YouTube (que está com disablekb) e os atalhos parariam. */}
+      <div
+        className={cn(
+          "absolute inset-0 [&>iframe]:size-full",
+          !embedded && "[&>iframe]:pointer-events-none",
+        )}
+      >
         <div ref={mountRef} className="size-full" />
       </div>
 

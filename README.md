@@ -33,7 +33,7 @@ O botão **Abrir projeção** abre `/projecao` em uma janela separada. Em Chrome
 
 Não precisa abrir a projeção antes: apertar **Tocar** (ou duplo clique num hino, na busca ou no roteiro) abre a projeção sozinho se ainda estiver fechada, e já toca.
 
-Clicar (uma vez) num hino ou passagem só seleciona, pro painel mostrar o hino/editar o link do vídeo — não mexe no que já está na tela. Só entra no ar de verdade com **Tocar**, duplo clique, `→`/`←` (próximo/anterior) ou o botão **Projetar** da Bíblia; enquanto isso, o painel mostra "Selecionado" em vez de "No ar" e avisa o que continua em cartaz. Isso vale pra tudo: buscar outro hino, trocar a tradução da Bíblia, editar o link de um vídeo — nada disso derruba o que já está projetado.
+Clicar (uma vez) num hino ou passagem só seleciona, pro painel mostrar o hino/editar o link do vídeo — não mexe no que já está na tela. Só entra no ar de verdade com **Tocar**, duplo clique, `N`/`P` (próximo/anterior) ou o botão **Projetar** da Bíblia; enquanto isso, o painel mostra "Selecionado" em vez de "No ar" e avisa o que continua em cartaz. Isso vale pra tudo: buscar outro hino, trocar a tradução da Bíblia, editar o link de um vídeo — nada disso derruba o que já está projetado.
 
 A sincronia é local, por `BroadcastChannel` — sem servidor, sem latência. O controle publica o que quer (vídeo, tocar/pausar, volume, posição, tela apagada) e a projeção devolve o estado real do player.
 
@@ -50,8 +50,9 @@ A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **C
 | Tecla | Ação |
 | --- | --- |
 | `espaço` `K` | Tocar / pausar |
-| `→` `N` | Próximo hino do roteiro (ou próximo versículo, com uma passagem em cartaz) |
-| `←` `P` | Hino anterior do roteiro (ou versículo anterior) |
+| `N` `PageDown` | Próximo hino do roteiro (ou próximo versículo, com uma passagem em cartaz) |
+| `P` `PageUp` | Hino anterior do roteiro (ou versículo anterior) |
+| `→` / `←` | Adiantar / voltar 10 segundos (com uma passagem em cartaz, próximo / anterior versículo) |
 | `L` / `J` | Adiantar / voltar 10 segundos |
 | `Shift+→` / `Shift+←` | Adiantar / voltar 5 segundos |
 | `↑` / `↓` | Aumentar / diminuir o volume (5%) |
@@ -59,15 +60,15 @@ A detecção é automática (tela de toque, sem mouse) e pode ser trocada em **C
 | `0`–`9` | Pular para 0%–90% do vídeo |
 | `Home` / `End` | Início / fim do vídeo |
 | `B` | Apagar a tela (o vídeo continua rodando por baixo) |
-| `F` (na projeção) | Tela cheia |
+| `F` ou duplo clique (na projeção) | Entrar / sair da tela cheia |
 
-As teclas seguem o padrão do YouTube e funcionam nas duas janelas. A exceção são as setas sozinhas, que passam de hino; os 5 segundos ficam no `Shift`.
+As teclas seguem o padrão do YouTube e funcionam nas duas janelas. Para trocar de hino, use `N`/`P` ou o passador de slides (`PageDown`/`PageUp`).
 
 ## Link avulso do YouTube
 
 Para um vídeo fora do hinário (abertura, clipe, vinheta), use o ícone de **link** no topo: cole o link (normal, `youtu.be`, `/shorts/`, `/live/`…) e escolha **Projetar agora** — vai para a projeção e já toca — ou **Na programação**. O título vem do YouTube quando possível; dá para digitar outro.
 
-Também dá para colar o link direto no campo de etapa da programação: em vez de uma etapa de texto, entra um vídeo. Na programação, o vídeo se comporta como um hino: duplo clique toca, e `→`/`←` passam por ele. No painel **Ao vivo** ele aparece como "No ar · link", com os mesmos controles (tocar/pausar, linha do tempo, apagar tela, volume) e **Encerrar vídeo**. Clicar num hino enquanto o link está no ar só seleciona; **Tocar** então troca para o hino.
+Também dá para colar o link direto no campo de etapa da programação: em vez de uma etapa de texto, entra um vídeo. Na programação, o vídeo se comporta como um hino: duplo clique toca, e `N`/`P` passam por ele. No painel **Ao vivo** ele aparece como "No ar · link", com os mesmos controles (tocar/pausar, linha do tempo, apagar tela, volume) e **Encerrar vídeo**. Clicar num hino enquanto o link está no ar só seleciona; **Tocar** então troca para o hino.
 
 ## Vídeos dos hinos
 

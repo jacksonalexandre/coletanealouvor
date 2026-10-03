@@ -9,27 +9,31 @@ export type ShortcutAction =
   | { type: "fullscreen" }
   | { type: "mute" }
   | { type: "seekBy"; seconds: number }
+  /** ←/→: no vídeo, volta/adianta; com passagem em cartaz, troca de versículo. */
+  | { type: "arrow"; direction: 1 | -1; seconds: number }
   | { type: "seekPercent"; percent: number }
   | { type: "seekEnd" }
   | { type: "volumeBy"; delta: number };
 
 /**
- * Teclas no padrão do YouTube (K, J/L, ↑/↓, M, 0–9, Home/End). As setas sozinhas
- * já passam de hino/versículo, então os 5 s do YouTube ficam em Shift+←/→.
+ * Teclas no padrão do YouTube (K, J/L, ←/→, ↑/↓, M, 0–9, Home/End). Hino seguinte
+ * e anterior ficam em N/P e PageDown/PageUp, que é o que o passador de slides manda.
  */
 export function shortcutFor(event: KeyboardEvent): ShortcutAction | null {
   if (event.ctrlKey || event.metaKey || event.altKey) return null;
   const key = event.key.toLowerCase();
 
   if (event.shiftKey) {
-    if (event.key === "ArrowRight") return { type: "seekBy", seconds: 5 };
-    if (event.key === "ArrowLeft") return { type: "seekBy", seconds: -5 };
+    if (event.key === "ArrowRight") return { type: "arrow", direction: 1, seconds: 5 };
+    if (event.key === "ArrowLeft") return { type: "arrow", direction: -1, seconds: 5 };
     return null;
   }
 
   if (event.key === " " || key === "k") return { type: "toggle" };
-  if (event.key === "ArrowRight" || event.key === "PageDown" || key === "n") return { type: "next" };
-  if (event.key === "ArrowLeft" || event.key === "PageUp" || key === "p") return { type: "prev" };
+  if (event.key === "PageDown" || key === "n") return { type: "next" };
+  if (event.key === "PageUp" || key === "p") return { type: "prev" };
+  if (event.key === "ArrowRight") return { type: "arrow", direction: 1, seconds: 10 };
+  if (event.key === "ArrowLeft") return { type: "arrow", direction: -1, seconds: 10 };
   if (key === "b") return { type: "blank" };
   if (key === "f") return { type: "fullscreen" };
   if (key === "m") return { type: "mute" };
@@ -63,6 +67,10 @@ export function runShortcut(action: ShortcutAction) {
       return store.setVolume(Math.min(1, Math.max(0, Math.round((store.volume + action.delta) * 100) / 100)));
     case "seekBy":
       return store.seekBy(action.seconds);
+    case "arrow":
+      return store.passage
+        ? store.movePassageVerses(action.direction)
+        : store.seekBy(action.direction * action.seconds);
     case "seekPercent":
       if (duration > 0) store.seekTo((duration * action.percent) / 100);
       return;
