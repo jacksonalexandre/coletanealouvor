@@ -44,4 +44,6 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(process.cwd(), "src") },
   },
+  // `npm run dev` já abre o app no navegador padrão.
+  server: { open: true },
 });
