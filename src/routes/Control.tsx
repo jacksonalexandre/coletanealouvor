@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { BookOpen, ListMusic, Radio, Search } from "lucide-react";
 import { BibleSearch } from "@/components/BibleSearch";
 import { HymnSearch } from "@/components/HymnSearch";
 import { InlinePlayer } from "@/components/InlinePlayer";
+import { PANEL_META } from "@/components/LayoutSettings";
 import { Setlist } from "@/components/Setlist";
 import { TopBar } from "@/components/TopBar";
 import { Transport } from "@/components/Transport";
+import { gridColumns, type PanelId } from "@/lib/layout";
 import { useControlLink } from "@/lib/useLive";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 import { useAuth } from "@/store/useAuth";
-
-type Tab = "hinos" | "biblia" | "roteiro" | "ao-vivo";
 
 export default function Control() {
   useControlLink();
@@ -22,7 +21,11 @@ export default function Control() {
   const boot = useApp((state) => state.boot);
   const preferencesVersion = useApp((state) => state.preferencesVersion);
   const startSync = useAuth((state) => state.startSync);
-  const [tab, setTab] = useState<Tab>("hinos");
+  const layout = useApp((state) => state.layout);
+  const panels = layout.filter((panel) => panel.visible);
+  const [tab, setTab] = useState<PanelId>(() => panels[0]?.id ?? "ao-vivo");
+  // Aba escolhida foi ocultada: cai na primeira que sobrou.
+  const current = panels.some((panel) => panel.id === tab) ? tab : (panels[0]?.id ?? "ao-vivo");
   const inlinePlayer = useApp((state) => state.inlinePlayer);
   useFollowLive(inlinePlayer, () => setTab("ao-vivo"));
 
@@ -42,64 +45,59 @@ export default function Control() {
     <div className="flex h-dvh flex-col bg-ink-950">
       <TopBar />
 
-      {/* Desktop: hinos, bíblia, programação e comando lado a lado. Mobile: uma aba por vez. */}
-      <main className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_280px_360px]">
-        <section
-          className={cn("min-h-0 border-ink-800 lg:border-r", tab === "hinos" ? "block" : "hidden lg:block")}
-        >
-          <HymnSearch />
-        </section>
-
-        <section
-          className={cn("min-h-0 border-ink-800 lg:border-r", tab === "biblia" ? "block" : "hidden lg:block")}
-        >
-          {/* A ordem dos livros é lida ao montar: remonta quando chegam preferências da conta. */}
-          <BibleSearch key={preferencesVersion} />
-        </section>
-
-        <section
-          className={cn(
-            "min-h-0 border-ink-800 lg:border-r",
-            tab === "roteiro" ? "block" : "hidden lg:block",
-          )}
-        >
-          <Setlist />
-        </section>
-
-        {/* A projeção embutida continua montada nas outras abas: o som não para ao trocar de aba. */}
-        <section className={cn("min-h-0 flex-col", tab === "ao-vivo" ? "flex" : "hidden lg:flex")}>
-          {inlinePlayer && <InlinePlayer />}
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <Transport />
-          </div>
-        </section>
+      {/* Desktop: colunas lado a lado, na ordem e largura escolhidas. Mobile: uma aba por vez. */}
+      <main
+        className="grid min-h-0 flex-1 lg:grid-cols-(--columns)"
+        style={{ "--columns": gridColumns(panels) } as React.CSSProperties}
+      >
+        {panels.map((panel, index) => {
+          const active = panel.id === current;
+          const last = index === panels.length - 1;
+          if (panel.id === "ao-vivo") {
+            // A projeção embutida continua montada nas outras abas: o som não para ao trocar de aba.
+            return (
+              <section
+                key={panel.id}
+                className={cn(
+                  "min-h-0 flex-col border-ink-800",
+                  !last && "lg:border-r",
+                  active ? "flex" : "hidden lg:flex",
+                )}
+              >
+                {inlinePlayer && <InlinePlayer />}
+                <div className="min-h-0 flex-1 overflow-y-auto">
+                  <Transport />
+                </div>
+              </section>
+            );
+          }
+          return (
+            <section
+              key={panel.id}
+              className={cn("min-h-0 border-ink-800", !last && "lg:border-r", active ? "block" : "hidden lg:block")}
+            >
+              {panel.id === "hinos" && <HymnSearch />}
+              {/* A ordem dos livros é lida ao montar: remonta quando chegam preferências da conta. */}
+              {panel.id === "biblia" && <BibleSearch key={preferencesVersion} />}
+              {panel.id === "roteiro" && <Setlist />}
+            </section>
+          );
+        })}
       </main>
 
       <nav className="flex border-t border-ink-800 bg-ink-900 lg:hidden">
-        <TabButton
-          icon={<Search className="size-5" />}
-          label="Hinos"
-          active={tab === "hinos"}
-          onClick={() => setTab("hinos")}
-        />
-        <TabButton
-          icon={<BookOpen className="size-5" />}
-          label="Bíblia"
-          active={tab === "biblia"}
-          onClick={() => setTab("biblia")}
-        />
-        <TabButton
-          icon={<ListMusic className="size-5" />}
-          label="Programação"
-          active={tab === "roteiro"}
-          onClick={() => setTab("roteiro")}
-        />
-        <TabButton
-          icon={<Radio className="size-5" />}
-          label="Ao vivo"
-          active={tab === "ao-vivo"}
-          onClick={() => setTab("ao-vivo")}
-        />
+        {panels.map((panel) => {
+          const { label, icon: Icon } = PANEL_META[panel.id];
+          return (
+            <TabButton
+              key={panel.id}
+              icon={<Icon className="size-5" />}
+              label={label}
+              active={panel.id === current}
+              onClick={() => setTab(panel.id)}
+            />
+          );
+        })}
       </nav>
     </div>
   );

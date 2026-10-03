@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabase";
 export const SYNCED_KEYS = [
   "setlist",
   "appearance",
+  "layout",
   "passageStyle",
   "bibleVersion",
   "bibleBookOrder",

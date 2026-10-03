@@ -10,6 +10,7 @@ import {
 } from "@/lib/appearance";
 import { clampPassage, findBook } from "@/lib/bible";
 import { type BibleVersionId, DEFAULT_BIBLE_VERSION, isBibleVersion } from "@/lib/bibleVersions";
+import { DEFAULT_LAYOUT, type Layout, normalizeLayout } from "@/lib/layout";
 import { DEFAULT_PASSAGE_STYLE, type PassageStyle } from "@/lib/passageStyle";
 import { openDisplayWindow } from "@/lib/screens";
 import { loadBible, loadHymnal, loadVideoMap, local } from "@/lib/storage";
@@ -74,6 +75,8 @@ type State = {
   passageStyle: PassageStyle;
   /** Cores globais do app e da projeção. */
   appearance: Appearance;
+  /** Colunas da tela de controle (ordem, quais aparecem e largura). */
+  layout: Layout;
   /** Sorteio em cartaz na projeção. */
   draw: LiveDraw | null;
   /** Cronômetro regressivo em cartaz na projeção. */
@@ -125,6 +128,8 @@ type Actions = {
   /** Troca o tema; fundo e fonte do app voltam para os do tema escolhido. */
   setTheme: (theme: Theme) => void;
   resetAppearance: () => void;
+  setLayout: (layout: Layout) => void;
+  resetLayout: () => void;
   showDraw: (draw: DrawResult) => Promise<void>;
   closeDraw: () => void;
   showCountdown: (countdown: LiveCountdown) => Promise<void>;
@@ -234,6 +239,7 @@ export const useApp = create<State & Actions>((set, get) => ({
   passage: null,
   passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
   appearance: initialAppearance,
+  layout: normalizeLayout(local.get<unknown>("layout", DEFAULT_LAYOUT)),
   draw: null,
   countdown: null,
 
@@ -593,6 +599,16 @@ export const useApp = create<State & Actions>((set, get) => ({
     set({ screenKey: key });
   },
 
+  setLayout(layout) {
+    const next = normalizeLayout(layout);
+    local.set("layout", next);
+    set({ layout: next });
+  },
+
+  resetLayout() {
+    get().setLayout(DEFAULT_LAYOUT);
+  },
+
   async reloadPreferences() {
     const appearance = normalizeAppearance(local.get<unknown>("appearance", DEFAULT_APPEARANCE));
     applyAppearance(appearance);
@@ -601,6 +617,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
       setlist: normalizeSetlist(local.get<unknown[]>("setlist", [])),
       hymnCollection: local.get<string | null>("hymnCollection", null),
+      layout: normalizeLayout(local.get<unknown>("layout", DEFAULT_LAYOUT)),
       preferencesVersion: get().preferencesVersion + 1,
     });
 

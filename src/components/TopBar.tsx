@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MonitorPlay, MonitorX } from "lucide-react";
 import { AppearanceSettings } from "@/components/AppearanceSettings";
+import { LayoutSettings } from "@/components/LayoutSettings";
 import { Countdown } from "@/components/Countdown";
 import { GoogleLogin } from "@/components/GoogleLogin";
 import { LinkPlayer } from "@/components/LinkPlayer";
@@ -95,6 +96,7 @@ export function TopBar() {
       <LinkPlayer />
       <Countdown />
       <Raffle />
+      <LayoutSettings />
       <AppearanceSettings />
       <GoogleLogin />
 
