@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { BookOpen, Film, GripVertical, ListPlus, Trash2 } from "lucide-react";
+import { HymnMeta } from "@/components/HymnMeta";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { passageReference } from "@/lib/bible";
@@ -196,7 +197,7 @@ function HymnRow({
       className={cn("min-w-0 flex-1 truncate text-left text-sm", active ? "text-ink-100" : "text-ink-200")}
     >
       {hymn?.title ?? "Hino removido"}
-      {hymn && <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>}
+      {hymn && <HymnMeta hymn={hymn} />}
     </button>
   );
 }

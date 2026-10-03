@@ -10,6 +10,7 @@ import {
   Volume2,
   X,
 } from "lucide-react";
+import { HymnMeta } from "@/components/HymnMeta";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { VideoLink } from "@/components/VideoLink";
@@ -128,7 +129,7 @@ export function Transport() {
         )}
         <p className="mt-2 text-sm text-ink-200">
           {hymn.title}
-          <span className="ml-2 text-xs tabular-nums text-ink-500">{hymn.number}</span>
+          <HymnMeta hymn={hymn} />
         </p>
         {!isLive && (liveHymn || liveLink) && (
           <p className="mt-1 text-xs text-ink-400">

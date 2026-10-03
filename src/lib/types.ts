@@ -2,18 +2,31 @@ import type { Appearance } from "@/lib/appearance";
 import type { PassageStyle } from "@/lib/passageStyle";
 
 export type Hymn = {
-  /** Identificador estável; o número se repete nas variações A/B. */
+  /** Identificador estável; o número se repete nas variações A/B e entre coleções. */
   id: number;
-  number: number;
+  /** Número no hinário; vídeo de canal nem sempre tem. */
+  number: number | null;
   title: string;
   /** Título sem acento e em minúsculas, para a busca. */
   search: string;
+  /** Coleção de origem (ex: "hasd", "menos-um"); o mesmo hino pode estar em várias. */
+  collection: string;
+  /** Complemento que distingue versões repetidas (ex: "PLAYBACK", "CD JOVEM"). */
+  detail?: string;
+};
+
+/** Origem dos hinos: o hinário (HASD) ou um canal do YouTube (ex: Menos Um). */
+export type HymnCollection = {
+  id: string;
+  sigla: string;
+  name: string;
 };
 
 export type Hymnal = {
   generatedAt: string;
   language: string;
   hymns: Hymn[];
+  collections?: HymnCollection[];
 };
 
 /** Mapa id do hino -> id do vídeo no YouTube. */

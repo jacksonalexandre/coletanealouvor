@@ -18,6 +18,8 @@ import type {
   BibleBook,
   DrawResult,
   Hymn,
+  HymnCollection,
+  Hymnal,
   LiveCountdown,
   LiveDraw,
   LiveLink,
@@ -42,6 +44,10 @@ const emptyPlayer: PlayerState = {
 
 type State = {
   hymns: Hymn[];
+  /** Coleções de hinos (HASD, Menos Um…), na ordem do filtro. */
+  collections: HymnCollection[];
+  /** Filtro da busca de hinos: id da coleção, ou null para todas. */
+  hymnCollection: string | null;
   loading: boolean;
   error: string | null;
 
@@ -151,11 +157,20 @@ type Actions = {
   closeDisplay: () => void;
   setScreenKey: (key: string | null) => void;
   setInlinePlayer: (inline: boolean) => void;
+  setHymnCollection: (collection: string | null) => void;
   /** Relê do navegador as preferências (ex: depois de chegarem da conta no login). */
   reloadPreferences: () => Promise<void>;
   /** Muda quando as preferências são recarregadas; remonta o que lê do navegador só ao abrir. */
   preferencesVersion: number;
 };
+
+/** Cache antigo (antes das coleções) não traz "collection": tudo era do HASD. */
+function hymnalState(hymnal: Hymnal) {
+  return {
+    hymns: hymnal.hymns.map((hymn) => (hymn.collection ? hymn : { ...hymn, collection: "hasd" })),
+    collections: hymnal.collections ?? [],
+  };
+}
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -196,6 +211,8 @@ if (typeof document !== "undefined") applyAppearance(initialAppearance);
 
 export const useApp = create<State & Actions>((set, get) => ({
   hymns: [],
+  collections: [],
+  hymnCollection: local.get<string | null>("hymnCollection", null),
   loading: true,
   error: null,
 
@@ -235,10 +252,10 @@ export const useApp = create<State & Actions>((set, get) => ({
   async boot() {
     try {
       const [hymnal, videos] = await Promise.all([
-        loadHymnal((fresh) => set({ hymns: fresh.hymns })),
+        loadHymnal((fresh) => set(hymnalState(fresh))),
         loadVideoMap(),
       ]);
-      set({ hymns: hymnal.hymns, videos, loading: false });
+      set({ ...hymnalState(hymnal), videos, loading: false });
     } catch (error) {
       set({
         loading: false,
@@ -583,6 +600,7 @@ export const useApp = create<State & Actions>((set, get) => ({
       appearance,
       passageStyle: local.get("passageStyle", DEFAULT_PASSAGE_STYLE),
       setlist: normalizeSetlist(local.get<unknown[]>("setlist", [])),
+      hymnCollection: local.get<string | null>("hymnCollection", null),
       preferencesVersion: get().preferencesVersion + 1,
     });
 
@@ -592,6 +610,11 @@ export const useApp = create<State & Actions>((set, get) => ({
 
     // Vídeos cadastrados na mão vêm por cima do mapa do banco (já em cache).
     set({ videos: await loadVideoMap() });
+  },
+
+  setHymnCollection(collection) {
+    local.set("hymnCollection", collection);
+    set({ hymnCollection: collection });
   },
 
   setInlinePlayer(inline) {

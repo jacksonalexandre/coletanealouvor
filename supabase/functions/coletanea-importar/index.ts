@@ -2,7 +2,10 @@
  * Importa o acervo da Coletânea para as tabelas coletanea_* (substitui os
  * antigos scripts/import-*.mjs, que geravam JSON em public/data).
  *
- *   POST { "alvo": "hinario" | "biblia" | "videos" | "tudo", "versoes"?: ["ara", ...] }
+ *   POST { "alvo": "hinario" | "biblia" | "videos" | "canais" | "tudo", "versoes"?: ["ara", ...] }
+ *
+ * hinario/videos: coleção HASD (LouvorJá + playlists). canais: coleções do tipo
+ * "canal" (ex: Menos Um), em que cada vídeo do canal vira um item da busca.
  *   header x-importar-token: <token da tabela coletanea_importar_tokens>
  *
  * Quem chama normalmente é o próprio banco: `select public.coletanea_importar('videos')`
@@ -21,12 +24,12 @@ const BIBLE_RELEASE = "https://github.com/damarals/biblias/releases/latest/downl
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
-type Alvo = "hinario" | "biblia" | "videos" | "tudo";
+type Alvo = "hinario" | "biblia" | "videos" | "canais" | "tudo";
 
 const slugify = (value: string) =>
   value
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
@@ -62,6 +65,8 @@ async function importarHinario(log: string[]) {
   const rows = raw.map((hymn) => ({
     // O número se repete nas variações A/B; o id do acervo é a chave estável.
     id: hymn.id_music,
+    colecao: "hasd",
+    chave: String(hymn.id_music),
     numero: hymn.track,
     titulo: hymn.name,
     busca: slugify(hymn.name),
@@ -85,7 +90,7 @@ async function importarBiblia(versao: string, log: string[]) {
 
   const response = await fetch(`${BIBLE_RELEASE}/${version.sigla}.json`);
   if (!response.ok) throw new Error(`${version.sigla}: HTTP ${response.status}`);
-  const raw = JSON.parse((await response.text()).replace(/^﻿/, "")) as { chapters: string[][] }[];
+  const raw = JSON.parse((await response.text()).replace(/^\uFEFF/, "")) as { chapters: string[][] }[];
   if (raw.length !== livros.length) {
     throw new Error(`${version.sigla}: esperava ${livros.length} livros, veio ${raw.length}`);
   }
@@ -162,29 +167,73 @@ function collectVideos(data: unknown) {
   return found;
 }
 
-async function fetchPlaylist(input: string) {
-  const list = new URL(input).searchParams.get("list");
-  if (!list) throw new Error("link sem parâmetro list=");
-  const response = await fetch(`https://www.youtube.com/playlist?list=${list}`, {
-    headers: { "User-Agent": UA, "Accept-Language": "pt-BR,pt;q=0.9" },
-  });
+/** Token da próxima página (playlist e aba de vídeos do canal carregam ~30-100 por vez). */
+function findContinuation(data: unknown): string | null {
+  let token: string | null = null;
+  // deno-lint-ignore no-explicit-any
+  const walk = (node: any) => {
+    if (token || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) return node.forEach(walk);
+    const command = node.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token;
+    if (typeof command === "string") {
+      token = command;
+      return;
+    }
+    for (const value of Object.values(node)) walk(value);
+  };
+  walk(data);
+  return token;
+}
+
+/** Lê uma página do YouTube (playlist ou aba de vídeos de canal) inteira, seguindo as continuações. */
+async function fetchAllVideos(url: string, maxPages = 60) {
+  const response = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "pt-BR,pt;q=0.9" } });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const html = await response.text();
   const marker = html.indexOf("ytInitialData = ");
   if (marker === -1) throw new Error("página sem ytInitialData (mudança no YouTube ou bloqueio)");
-  const name = html.match(/<title>([^<]*)<\/title>/)?.[1]?.replace(" - YouTube", "") ?? input;
-  return { name, videos: collectVideos(JSON.parse(sliceJson(html, marker))) };
+  const name = html.match(/<title>([^<]*)<\/title>/)?.[1]?.replace(" - YouTube", "") ?? url;
+  const apiKey = html.match(/"INNERTUBE_API_KEY":"([^"]+)"/)?.[1];
+  const clientVersion = html.match(/"INNERTUBE_CLIENT_VERSION":"([^"]+)"/)?.[1] ?? "2.20250101.00.00";
+
+  let data: unknown = JSON.parse(sliceJson(html, marker));
+  const videos = collectVideos(data);
+  for (let page = 1; page < maxPages; page += 1) {
+    const token = findContinuation(data);
+    if (!token) break;
+    const next = await fetch(
+      `https://www.youtube.com/youtubei/v1/browse?prettyPrint=false${apiKey ? `&key=${apiKey}` : ""}`,
+      {
+        method: "POST",
+        headers: { "User-Agent": UA, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          context: { client: { clientName: "WEB", clientVersion, hl: "pt", gl: "BR" } },
+          continuation: token,
+        }),
+      },
+    );
+    if (!next.ok) break;
+    data = await next.json();
+    for (const [id, title] of collectVideos(data)) if (!videos.has(id)) videos.set(id, title);
+  }
+  return { name, videos };
+}
+
+async function fetchPlaylist(input: string) {
+  const list = new URL(input).searchParams.get("list");
+  if (!list) throw new Error("link sem parâmetro list=");
+  return fetchAllVideos(`https://www.youtube.com/playlist?list=${list}`);
 }
 
 async function importarVideos(log: string[]) {
-  const playlists = check(await db.from("coletanea_playlists").select("url").order("ordem"), "playlists") as {
-    url: string;
-  }[];
-  const hymns = check(await db.from("coletanea_hinos").select("id, numero, titulo"), "hinos") as {
-    id: number;
-    numero: number;
-    titulo: string;
-  }[];
+  const playlists = check(
+    await db.from("coletanea_playlists").select("url").eq("colecao", "hasd").order("ordem"),
+    "playlists",
+  ) as { url: string }[];
+  const hymns = check(
+    await db.from("coletanea_hinos").select("id, numero, titulo").eq("colecao", "hasd"),
+    "hinos",
+  ) as { id: number; numero: number; titulo: string }[];
   if (hymns.length === 0) throw new Error("importe o hinário antes dos vídeos");
 
   // número -> hinos (o 587 tem as variações A e B)
@@ -253,6 +302,106 @@ async function importarVideos(log: string[]) {
   if (problems.length) log.push(`${problems.length} avisos: ${problems.slice(0, 15).join(" | ")}`);
 }
 
+// ── Canais (cada vídeo vira um item da busca) ──────────────────────────────
+
+/** Número do hino no título, quando houver ("Hino IASD 33", "Hino 12", "HASD 12"). */
+function numberFrom(title: string): number | null {
+  const match = title.match(/\b(?:hino|hasd|iasd)\s*(?:iasd\s*)?(\d{1,3})\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+const SMALL_WORDS = new Set(["a", "o", "as", "os", "e", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "por", "para", "com", "ao", "à"]);
+
+/** "CASTELO FORTE" -> "Castelo Forte"; título já em caixa mista fica como veio. */
+function titleCase(value: string) {
+  if (value !== value.toUpperCase()) return value;
+  return value
+    .toLocaleLowerCase("pt-BR")
+    .split(/(\s+)/)
+    .map((word, index) =>
+      index > 0 && SMALL_WORDS.has(word) ? word : word.charAt(0).toLocaleUpperCase("pt-BR") + word.slice(1),
+    )
+    .join("");
+}
+
+/**
+ * "CASTELO FORTE | Hinário Adventista / Hino IASD 33 | MENOS UM" -> título "Castelo Forte",
+ * número 33, sem detalhe (o número já diz que é do hinário). "EU SOU TEU | PLAYBACK | MENOS UM"
+ * -> título "Eu Sou Teu", detalhe "PLAYBACK".
+ */
+function parseChannelTitle(raw: string, channel: string) {
+  const noise = new RegExp(`\\s*${channel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*`, "gi");
+  const parts = raw
+    .split("|")
+    .map((part) => part.replace(noise, " ").replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  const titulo = titleCase(parts[0] ?? raw.trim());
+  const numero = numberFrom(raw);
+  const detalhe = parts
+    .slice(1)
+    .filter((part) => !/hin[aá]rio adventista|hino\s*iasd/i.test(part))
+    .join(" · ");
+  return { titulo, numero, detalhe: detalhe || null };
+}
+
+async function importarCanais(log: string[]) {
+  const canais = check(
+    await db.from("coletanea_colecoes").select("id, sigla, fonte_url, filtro_titulo").eq("tipo", "canal").order("ordem"),
+    "coleções",
+  ) as { id: string; sigla: string; fonte_url: string | null; filtro_titulo: string | null }[];
+
+  for (const canal of canais) {
+    if (!canal.fonte_url) continue;
+    const { videos: all } = await fetchAllVideos(canal.fonte_url);
+    if (all.size === 0) throw new Error(`${canal.sigla}: nenhum vídeo encontrado; nada gravado`);
+    // Só o que é hino: o canal também tem flash mob, coletâneas, avisos…
+    const filter = canal.filtro_titulo ? new RegExp(canal.filtro_titulo, "i") : null;
+    const videos = new Map([...all].filter(([, title]) => !filter || filter.test(title)));
+
+    // Mantém o id de quem já existe: programações salvas continuam apontando para o mesmo item.
+    const existing = check(
+      await db.from("coletanea_hinos").select("id, chave").eq("colecao", canal.id),
+      `${canal.sigla}: existentes`,
+    ) as { id: number; chave: string }[];
+    const idByKey = new Map(existing.map((row) => [row.chave, row.id]));
+
+    const row = (videoId: string, title: string) => {
+      const parsed = parseChannelTitle(title, canal.filtro_titulo ?? canal.sigla);
+      return {
+        colecao: canal.id,
+        chave: videoId,
+        ...parsed,
+        busca: slugify(`${parsed.titulo} ${parsed.detalhe ?? ""}`),
+      };
+    };
+    const updates = [...videos]
+      .filter(([videoId]) => idByKey.has(videoId))
+      .map(([videoId, title]) => ({ id: idByKey.get(videoId)!, ...row(videoId, title) }));
+    const inserts = [...videos].filter(([videoId]) => !idByKey.has(videoId)).map(([videoId, title]) => row(videoId, title));
+
+    await insertChunks("coletanea_hinos", updates);
+    for (let i = 0; i < inserts.length; i += 500) {
+      const created = check(
+        await db.from("coletanea_hinos").insert(inserts.slice(i, i + 500), { defaultToNull: false }).select("id, chave"),
+        `${canal.sigla}: novos`,
+      ) as { id: number; chave: string }[];
+      for (const item of created) idByKey.set(item.chave, item.id);
+    }
+
+    const now = new Date().toISOString();
+    await insertChunks(
+      "coletanea_videos",
+      [...videos.keys()].map((videoId) => ({ hino_id: idByKey.get(videoId)!, video_id: videoId, atualizado_em: now })),
+    );
+    log.push(
+      `${canal.sigla}: ${videos.size} vídeos de hino (${inserts.length} novos, ${updates.length} atualizados; ${all.size - videos.size} ignorados pelo filtro)`,
+    );
+  }
+
+  await touch("hinario");
+  await touch("videos");
+}
+
 // ── Entrada ────────────────────────────────────────────────────────────────
 
 Deno.serve(async (request) => {
@@ -276,6 +425,7 @@ Deno.serve(async (request) => {
       for (const versao of versoes) await importarBiblia(versao, log);
     }
     if (alvo === "videos" || alvo === "tudo") await importarVideos(log);
+    if (alvo === "canais" || alvo === "tudo") await importarCanais(log);
   } catch (error) {
     ok = false;
     erro = (error as Error).message;

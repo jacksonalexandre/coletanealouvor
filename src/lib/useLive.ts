@@ -56,7 +56,13 @@ export function useControlLink() {
   const state = useMemo<LiveState>(
     () => ({
       videoId,
-      title: liveLink ? liveLink.title : hymn ? `${hymn.title} (${hymn.number})` : "",
+      title: liveLink
+        ? liveLink.title
+        : hymn
+          ? hymn.number != null
+            ? `${hymn.title} (${hymn.number})`
+            : hymn.title
+          : "",
       blank,
       playing,
       volume,

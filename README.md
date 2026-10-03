@@ -73,9 +73,18 @@ Também dá para cadastrar o vídeo de um hino pela interface: abra o hino e col
 
 O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_policy=3`. Isso tira cookies de rastreio, vídeos relacionados e anotações — **não tira anúncio**. Quem decide se há anúncio é a monetização do vídeo. Um canal não monetizado roda limpo; fora isso, a saída é o operador estar logado com YouTube Premium naquele navegador.
 
-## Hinário
+## Hinário e coleções
 
-Tabela `coletanea_hinos`: id, número e título dos 601 hinos (1 a 600 — o 587 tem as variações A e B), importados da API do LouvorJá. Nada além disso; a busca funciona offline depois da primeira carga, guardada em IndexedDB.
+Os hinos vêm de **coleções** (tabela `coletanea_colecoes`), e a busca tem o filtro **Todos / HASD / Menos Um** logo abaixo do campo — a escolha fica salva (e acompanha a conta, com login):
+
+| Coleção | Origem |
+| --- | --- |
+| **HASD** — Hinário Adventista do Sétimo Dia | Tabela `coletanea_hinos` (601 hinos, 1 a 600 — o 587 tem as variações A e B), importada da API do LouvorJá; vídeos das playlists em `coletanea_playlists` |
+| **Menos Um** | Cada vídeo do canal [@menosum7](https://www.youtube.com/@menosum7) vira um item; só entram os vídeos com "Menos Um" no título (o canal também tem flash mob, coletâneas…) |
+
+O mesmo hino pode estar nas duas coleções (ex: *Castelo Forte* do HASD e do Menos Um): são itens separados, cada um com seu vídeo. Na lista "Todos", a sigla da coleção aparece ao lado do título; o detalhe da versão (*CD JOVEM*, *PLAYBACK*…) também, e entra na busca. Quando o título do vídeo traz o número do hinário ("Hino IASD 33"), buscar "33" acha os dois.
+
+Para acrescentar um canal: insira uma linha em `coletanea_colecoes` com `tipo = 'canal'`, a URL da aba de vídeos em `fonte_url` e, se quiser, um `filtro_titulo` (expressão regular); depois `select public.coletanea_importar('canais');`. A busca funciona offline depois da primeira carga, guardada em IndexedDB.
 
 ## Passagens bíblicas
 
@@ -115,7 +124,8 @@ O app lê com a chave pública (anon), pelas funções `coletanea_hinario()`, `c
 **Importar / atualizar** (no SQL Editor do Supabase):
 
 ```sql
-select public.coletanea_importar('tudo');                 -- hinário, Bíblia e vídeos
+select public.coletanea_importar('tudo');                 -- hinário, Bíblia, vídeos e canais
+select public.coletanea_importar('canais');               -- só as coleções de canal (ex: Menos Um)
 select public.coletanea_importar('videos');               -- só os vídeos das playlists
 select public.coletanea_importar('biblia', array['ara']); -- só uma tradução
 select * from public.coletanea_importacoes order by id desc limit 5;  -- resultado

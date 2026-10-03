@@ -5,9 +5,12 @@ import { Input } from "@/components/ui/input";
 import { cn, normalize } from "@/lib/utils";
 import { useApp } from "@/store/useApp";
 
-/** Busca do hinário: por título ou por número. */
+/** Busca do hinário: por título ou por número, em todas as coleções ou em uma só. */
 export function HymnSearch() {
-  const hymns = useApp((state) => state.hymns);
+  const allHymns = useApp((state) => state.hymns);
+  const collections = useApp((state) => state.collections);
+  const hymnCollection = useApp((state) => state.hymnCollection);
+  const setHymnCollection = useApp((state) => state.setHymnCollection);
   const videos = useApp((state) => state.videos);
   const hymnId = useApp((state) => state.hymnId);
   const openHymn = useApp((state) => state.openHymn);
@@ -23,6 +26,16 @@ export function HymnSearch() {
   const [term, setTerm] = useState("");
   const deferred = useDeferredValue(term);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Filtro salvo de uma coleção que não existe mais: mostra todas.
+  const activeCollection = collections.some((c) => c.id === hymnCollection) ? hymnCollection : null;
+  const hymns = useMemo(
+    () => (activeCollection ? allHymns.filter((hymn) => hymn.collection === activeCollection) : allHymns),
+    [allHymns, activeCollection],
+  );
+  const siglas = useMemo(() => new Map(collections.map((c) => [c.id, c.sigla])), [collections]);
+  // Com mais de uma coleção na lista, a sigla diferencia os hinos repetidos.
+  const showSigla = collections.length > 1 && !activeCollection;
 
   const results = useMemo(() => {
     const query = normalize(deferred).trim();
@@ -71,7 +84,9 @@ export function HymnSearch() {
             if (event.key === "Enter") openFirst();
             if (event.key === "Escape") setTerm("");
           }}
-          placeholder="Buscar hino por título ou número"
+          placeholder={
+            activeCollection ? `Buscar em ${siglas.get(activeCollection)}` : "Buscar hino por título ou número"
+          }
           className="pl-9"
           autoComplete="off"
           autoFocus
@@ -86,6 +101,21 @@ export function HymnSearch() {
           </button>
         )}
       </div>
+
+      {collections.length > 1 && (
+        <div className="no-scrollbar -mt-1 flex gap-1.5 overflow-x-auto px-3 pb-2">
+          <CollectionChip label="Todos" active={!activeCollection} onClick={() => setHymnCollection(null)} />
+          {collections.map((collection) => (
+            <CollectionChip
+              key={collection.id}
+              label={collection.sigla}
+              title={collection.name}
+              active={activeCollection === collection.id}
+              onClick={() => setHymnCollection(collection.id)}
+            />
+          ))}
+        </div>
+      )}
 
       <ul className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
         {results.map((hymn) => {
@@ -104,8 +134,18 @@ export function HymnSearch() {
                   title="Duplo clique: abre a projeção e já toca"
                   className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="min-w-0 flex-1 truncate text-sm text-ink-200">{hymn.title}</span>
-                  <span className="shrink-0 text-xs tabular-nums text-ink-500">{hymn.number}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm text-ink-200">
+                    {hymn.title}
+                    {hymn.detail && <span className="ml-1.5 text-xs text-ink-400">{hymn.detail}</span>}
+                  </span>
+                  {showSigla && (
+                    <span className="shrink-0 rounded border border-ink-700 px-1 text-[10px] text-ink-400">
+                      {siglas.get(hymn.collection) ?? hymn.collection}
+                    </span>
+                  )}
+                  {hymn.number != null && (
+                    <span className="shrink-0 text-xs tabular-nums text-ink-500">{hymn.number}</span>
+                  )}
                   {hasVideo ? (
                     <Video className="size-3.5 shrink-0 text-ink-600" />
                   ) : (
@@ -130,5 +170,32 @@ export function HymnSearch() {
         )}
       </ul>
     </div>
+  );
+}
+
+function CollectionChip({
+  label,
+  title,
+  active,
+  onClick,
+}: {
+  label: string;
+  title?: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      className={cn(
+        "shrink-0 rounded-full border px-2.5 py-1 text-[11px] whitespace-nowrap",
+        active
+          ? "border-brand-600 bg-brand-600 text-ink-950"
+          : "border-ink-700 text-ink-300 hover:border-brand-600/60 hover:text-ink-100",
+      )}
+    >
+      {label}
+    </button>
   );
 }

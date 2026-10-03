@@ -19,6 +19,7 @@ export const SYNCED_KEYS = [
   "passageStyle",
   "bibleVersion",
   "bibleBookOrder",
+  "hymnCollection",
   "videos",
   "raffle",
   "countdownLabel",
