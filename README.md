@@ -233,3 +233,6 @@ Chrome ou Edge dão o posicionamento automático das telas. Brave funciona e blo
 Qualquer host estático serve. É preciso apontar todas as rotas para `index.html` (SPA); `public/_redirects` já cobre Netlify. Para Vercel, um `vercel.json` com rewrite de `/(.*)` para `/index.html`; para Nginx, `try_files $uri /index.html`.
 
 **GitHub Pages:** `.github/workflows/deploy-pages.yml` builda e publica a cada push em `master` (ative uma vez em Settings → Pages → Source: GitHub Actions). Como um Pages de projeto serve em `/<repo>/` em vez da raiz, o build usa `BASE_PATH=/<repo>/`; localmente isso não é necessário (`npm run build` sem a variável já serve da raiz, para Netlify/Vercel/Nginx).
+
+
+**Supabase sempre ativo:** o plano gratuito pausa projetos com pouco uso no banco. `.github/workflows/manter-supabase-ativo.yml` faz uma consulta leve (`coletanea_revisao`) todo dia às 06:17 de Brasília, com as mesmas variáveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` do deploy; se o projeto não responder, a execução falha e o GitHub avisa por e-mail. Dá para rodar na mão em Actions → *Manter o Supabase ativo* → Run workflow. O GitHub desliga agendamentos de repositórios sem nenhum commit há 60 dias — se isso acontecer, ele avisa por e-mail e basta reativar o workflow em Actions.

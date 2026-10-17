@@ -1,0 +1,37 @@
+name: Manter o Supabase ativo
+
+# O plano gratuito do Supabase pausa projetos com pouca atividade no banco por
+# uma semana. Uma consulta leve por dia (a revisão do acervo, a mesma que o app
+# faz ao abrir) basta para o projeto não ser pausado.
+on:
+  schedule:
+    # Todo dia às 09:17 UTC (06:17 em Brasília); minuto "quebrado" para fugir
+    # da fila de execuções do GitHub na hora cheia.
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  consulta:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar o acervo
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Variáveis SUPABASE_URL e SUPABASE_ANON_KEY não configuradas no repositório."
+            exit 1
+          fi
+          # Falha (e o GitHub avisa por e-mail) se o projeto não responder,
+          # por exemplo se já estiver pausado.
+          curl --fail-with-body --silent --show-error --max-time 30 \
+            -X POST "$SUPABASE_URL/rest/v1/rpc/coletanea_revisao" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+          echo
+          echo "Supabase respondeu."
