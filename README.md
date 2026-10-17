@@ -76,6 +76,15 @@ O app precisa saber qual vídeo do YouTube corresponde a cada hino. O mapa vive 
 
 Para acrescentar uma playlist, insira a URL em `coletanea_playlists` e rode `select public.coletanea_importar('videos');`.
 
+Para fixar o vídeo de um hino que as playlists não trazem (ou corrigir um), grave-o como **manual** — a importação não sobrescreve vídeos manuais:
+
+```sql
+insert into public.coletanea_videos (hino_id, video_id, manual)
+select id, 'hER6dGJKpqY', true from public.coletanea_hinos where colecao = 'hasd' and numero = 600
+on conflict (hino_id) do update set video_id = excluded.video_id, manual = true, atualizado_em = now();
+update public.coletanea_revisoes set atualizado_em = now() where chave = 'videos';  -- o app baixa de novo
+```
+
 Também dá para cadastrar o vídeo de um hino pela interface: abra o hino e cole o link no campo do painel de comando. O app aceita link normal, `youtu.be`, `/embed/`, `/shorts/` ou o id cru e guarda no navegador, por cima do banco. Cadastrar, trocar e remover o vídeo exige login com o Google; sem login o painel só mostra se o hino tem vídeo.
 
 O player usa `youtube-nocookie.com` com `rel=0`, `modestbranding=1` e `iv_load_policy=3`. Isso tira cookies de rastreio, vídeos relacionados e anotações — **não tira anúncio**. Quem decide se há anúncio é a monetização do vídeo. Um canal não monetizado roda limpo; fora isso, a saída é o operador estar logado com YouTube Premium naquele navegador.
