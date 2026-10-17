@@ -31,10 +31,16 @@ jobs:
       # coletanea_*); o build só precisa da URL e da chave pública (anon), nas
       # variáveis do repositório (Settings → Secrets and variables → Actions → Variables).
 
-      - name: Build (GitHub Pages serve em /<repo>/)
+      # Caminho em que o Pages serve o site: "" com domínio próprio
+      # (coletanealouvor.com.br) ou "/<repo>" no endereço github.io. Lido da
+      # configuração do Pages, então trocar o domínio não exige mexer aqui.
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build
         run: npm run build
         env:
-          BASE_PATH: /${{ github.event.repository.name }}/
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
           VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
 
