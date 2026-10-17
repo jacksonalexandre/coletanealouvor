@@ -115,7 +115,7 @@ Sem a tradução no banco (ou offline sem cache), a busca de hinos continua func
 
 ## Acervo no Supabase
 
-Hinário, vídeos e Bíblia ficam no projeto Supabase `ei-clube-db`, em tabelas com prefixo `coletanea_` (para conviver com as tabelas de outros sistemas no mesmo banco). As migrações estão em `supabase/migrations/`.
+Hinário, vídeos e Bíblia ficam no projeto Supabase `coletanea-louvor` (`gxmvjlqyhosojjqqyipx`, São Paulo), em tabelas com prefixo `coletanea_`. As migrações estão em `supabase/migrations/`: num projeto novo, aplique-as em ordem, publique a Edge Function e rode `select public.coletanea_importar('tudo');` — o acervo inteiro vem das fontes (LouvorJá, YouTube, damarals/biblias). O endereço do projeto está escrito na função `coletanea_importar` (migrações `…_coletanea_importar*.sql`).
 
 | Tabela | Conteúdo |
 | --- | --- |
@@ -173,11 +173,11 @@ O ícone de dados no topo abre o sorteio, em dois modos:
 
 ## Login com o Google
 
-O canto direito do topo tem o botão **Entrar com Google**. O login é feito pelo **Supabase Auth**, no mesmo projeto do ei-clube (a mesma conta Google vale nos dois). Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
+O canto direito do topo tem o botão **Entrar com Google**. O login é feito pelo **Supabase Auth**, no projeto `coletanea-louvor`. Depois de entrar, aparece a foto da conta; clicando nela dá para ver nome/e-mail e **Sair**. O login é opcional: o app funciona igual sem ele.
 
 O Google volta para a raiz do app (`BASE_URL`) e o `supabase-js` lê a sessão da URL e a guarda no navegador, renovando o token sozinho até o operador clicar em **Sair**.
 
-Para funcionar, o provedor Google já precisa estar ativo no projeto (é o mesmo do ei-clube) e as URLs de volta do app precisam estar em Supabase → Authentication → URL Configuration → **Redirect URLs**:
+Para funcionar, o provedor Google precisa estar ativo no projeto (Supabase → Authentication → Sign In / Providers → Google, com o client ID e o secret de uma credencial OAuth do Google Cloud cuja URI de redirecionamento autorizada seja `https://gxmvjlqyhosojjqqyipx.supabase.co/auth/v1/callback`), e as URLs de volta do app precisam estar em Supabase → Authentication → URL Configuration → **Redirect URLs**:
 
 - `http://localhost:5173/**` (desenvolvimento)
 - `https://jacksonalexandre.github.io/coletanealouvor/**` (GitHub Pages)

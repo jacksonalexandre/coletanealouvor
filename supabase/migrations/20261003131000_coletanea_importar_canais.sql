@@ -13,7 +13,7 @@ begin
   end if;
   select token into v_token from public.coletanea_importar_tokens order by criado_em desc limit 1;
   return net.http_post(
-    url := 'https://foeileysntdheuklakqs.supabase.co/functions/v1/coletanea-importar',
+    url := 'https://gxmvjlqyhosojjqqyipx.supabase.co/functions/v1/coletanea-importar',
     body := jsonb_build_object('alvo', p_alvo, 'versoes', to_jsonb(p_versoes)),
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-importar-token', v_token),
     timeout_milliseconds := 300000

@@ -1,6 +1,6 @@
 /**
- * Cliente do Supabase: login com o Google (Supabase Auth, mesmo projeto do
- * ei-clube) e leitura do acervo (tabelas coletanea_*). As funções coletanea_*
+ * Cliente do Supabase: login com o Google (Supabase Auth) e leitura do acervo
+ * (tabelas coletanea_*). As funções coletanea_*
  * devolvem cada parte do acervo em uma chamada só, no formato que o app usa.
  */
 import { createClient } from "@supabase/supabase-js";
