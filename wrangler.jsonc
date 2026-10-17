@@ -1,0 +1,14 @@
+// Publicação na Cloudflare (Workers com arquivos estáticos), no domínio
+// coletanealouvor.com.br. A Cloudflare roda `npm run build` e depois
+// `npx wrangler deploy`, que envia a pasta dist.
+{
+  // Precisa ser o mesmo nome do Worker criado no painel da Cloudflare.
+  "name": "coletanealouvor",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // App de página única: /projecao e outras rotas abrem o index.html, e o
+    // roteador do app resolve a rota (o mesmo que o _redirects fazia na Netlify).
+    "not_found_handling": "single-page-application"
+  }
+}

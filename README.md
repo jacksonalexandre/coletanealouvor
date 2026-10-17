@@ -11,7 +11,7 @@ npm install
 npm run dev             # http://localhost:5173
 ```
 
-O acervo (hinário, vídeos e Bíblia) vem do Supabase — ver **Acervo no Supabase** abaixo. Copie `.env.example` para `.env.local` e preencha a chave pública (anon) do projeto (Supabase → Project Settings → API Keys). No deploy do GitHub Pages, as mesmas duas vêm das variáveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` do repositório.
+O acervo (hinário, vídeos e Bíblia) vem do Supabase — ver **Acervo no Supabase** abaixo. Copie `.env.example` para `.env.local` e preencha a chave pública (anon) do projeto (Supabase → Project Settings → API Keys). No deploy da Cloudflare, as mesmas duas vão nas variáveis de build do Worker (ver **Deploy**).
 
 Build de produção:
 
@@ -180,7 +180,7 @@ O Google volta para a raiz do app (`BASE_URL`) e o `supabase-js` lê a sessão d
 Para funcionar, o provedor Google precisa estar ativo no projeto (Supabase → Authentication → Sign In / Providers → Google, com o client ID e o secret de uma credencial OAuth do Google Cloud cuja URI de redirecionamento autorizada seja `https://gxmvjlqyhosojjqqyipx.supabase.co/auth/v1/callback`), e as URLs de volta do app precisam estar em Supabase → Authentication → URL Configuration → **Redirect URLs**:
 
 - `http://localhost:5173/**` (desenvolvimento)
-- `https://jacksonalexandre.github.io/coletanealouvor/**` (GitHub Pages)
+- `https://coletanealouvor.com.br/**` (site na Cloudflare)
 
 Sem `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` no build, o botão não aparece.
 
@@ -230,11 +230,19 @@ Chrome ou Edge dão o posicionamento automático das telas. Brave funciona e blo
 
 ## Deploy
 
-Qualquer host estático serve. É preciso apontar todas as rotas para `index.html` (SPA); `public/_redirects` já cobre Netlify. Para Vercel, um `vercel.json` com rewrite de `/(.*)` para `/index.html`; para Nginx, `try_files $uri /index.html`.
+O site fica na **Cloudflare** (Workers com arquivos estáticos), no domínio **coletanealouvor.com.br** — o domínio foi do Registro.br para a Cloudflare. A configuração está em `wrangler.jsonc`: publica a pasta `dist` e, como é um app de página única, qualquer rota (`/projecao`…) abre o `index.html`.
 
-**GitHub Pages:** `.github/workflows/deploy-pages.yml` builda e publica a cada push em `master` (ative uma vez em Settings → Pages → Source: GitHub Actions). O caminho do site vem da própria configuração do Pages (`actions/configure-pages`): na raiz com o domínio próprio, ou em `/<repo>/` no endereço `github.io`; localmente `npm run build` já serve da raiz (Netlify/Vercel/Nginx).
+A Cloudflare builda e publica sozinha a cada push em `master` (Workers Builds, ligado ao repositório):
 
-**Domínio próprio (coletanealouvor.com.br):** no DNS do domínio (Registro.br ou onde estiver a zona), crie registros `A` do domínio para `185.199.108.153`, `185.199.109.153`, `185.199.110.153` e `185.199.111.153` (opcional: `AAAA` para `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153` e `2606:50c0:8003::153`) e um `CNAME` de `www` para `jacksonalexandre.github.io`, removendo qualquer outro `A`/`CNAME` antigo do domínio. Depois, em Settings → Pages → **Custom domain**, informe `coletanealouvor.com.br`, espere a verificação, marque **Enforce HTTPS** e rode o deploy de novo. No Supabase (Authentication → URL Configuration), inclua `https://coletanealouvor.com.br/**` nas Redirect URLs e use o domínio como Site URL.
+| Configuração (Worker → Settings → Build) | Valor |
+| --- | --- |
+| Repositório / branch | `jacksonalexandre/coletanealouvor` / `master` |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Variáveis de build | `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (as mesmas do `.env.local`) |
 
+O nome do Worker no painel precisa ser igual ao `name` do `wrangler.jsonc` (`coletanealouvor`). O domínio entra em Worker → Settings → **Domains & Routes** → Custom domain. No Supabase (Authentication → URL Configuration), use `https://coletanealouvor.com.br` como Site URL e inclua `https://coletanealouvor.com.br/**` nas Redirect URLs.
 
-**Supabase sempre ativo:** o plano gratuito pausa projetos com pouco uso no banco. `.github/workflows/manter-supabase-ativo.yml` faz uma consulta leve (`coletanea_revisao`) todo dia às 06:17 de Brasília, com as mesmas variáveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` do deploy; se o projeto não responder, a execução falha e o GitHub avisa por e-mail. Dá para rodar na mão em Actions → *Manter o Supabase ativo* → Run workflow. O GitHub desliga agendamentos de repositórios sem nenhum commit há 60 dias — se isso acontecer, ele avisa por e-mail e basta reativar o workflow em Actions.
+Para publicar da própria máquina: `npm run build && npx wrangler deploy` (pede login na Cloudflare na primeira vez).
+
+**Supabase sempre ativo:** o plano gratuito pausa projetos com pouco uso no banco. `.github/workflows/manter-supabase-ativo.yml` faz uma consulta leve (`coletanea_revisao`) todo dia às 06:17 de Brasília, com as variáveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` do repositório (Settings → Secrets and variables → Actions → Variables); se o projeto não responder, a execução falha e o GitHub avisa por e-mail. Dá para rodar na mão em Actions → *Manter o Supabase ativo* → Run workflow. O GitHub desliga agendamentos de repositórios sem nenhum commit há 60 dias — se isso acontecer, ele avisa por e-mail e basta reativar o workflow em Actions.
