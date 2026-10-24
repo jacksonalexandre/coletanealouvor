@@ -239,7 +239,7 @@ Chrome ou Edge dão o posicionamento automático das telas. Brave funciona e blo
 
 ## Deploy
 
-O site fica na **Cloudflare** (Workers com arquivos estáticos), no domínio **coletanealouvor.com.br** — o domínio foi do Registro.br para a Cloudflare. A configuração está em `wrangler.jsonc`: publica a pasta `dist` e, como é um app de página única, qualquer rota (`/projecao`…) abre o `index.html`.
+O site fica na **Cloudflare** (Workers com arquivos estáticos), no domínio **coletanealouvor.com.br** — o domínio foi do Registro.br para a Cloudflare. A configuração está em `wrangler.jsonc`: publica a pasta `dist` e, como é um app de página única, qualquer rota (`/projecao`…) abre o `index.html`. Todo acesso passa antes por `worker/index.js`, que redireciona `http://` para `https://` (301) e manda o cabeçalho HSTS nas respostas por https — o site não abre só em http.
 
 A Cloudflare builda e publica sozinha a cada push em `master` (Workers Builds, ligado ao repositório):
 
